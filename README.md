@@ -37,7 +37,7 @@ Fabric Loader 0.16.10
 [Mod Menu](https://cdn.modrinth.com/data/mOgUt4GM/versions/4xPSbh0l/modmenu-12.0.0.jar)
 
 ## Download and Installation
-- Download the latest release from [here](https://github.com/Dampen59/MineboxAdditions/releases)
+- Download the latest release from [here](https://github.com/Dampen59/MineboxAdditions/releases/latest)
 - Drop the downloaded jarfile to your ``\mods`` folder and you're all set !
 
 Be sure you have downloaded the correct version of Fabric Loader and the required dependencies otherwise you may have an error upon starting the game.
