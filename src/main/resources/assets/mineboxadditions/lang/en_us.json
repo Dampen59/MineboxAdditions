@@ -1,0 +1,19 @@
+{
+  "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuration",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings": "Alert settings",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getMouseAlerts": "Mouse",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBakeryAlerts": "Bakery",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBuckstarAlerts": "Buckstar",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getCocktailAlerts": "Cocktails",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings": "Durability settings",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Enable Haversacks durability bar",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Enable Harvesters durability bar",
+  "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Go to island when connecting to server",
+  "text.autoconfig.mineboxadditions.option.networkFeatures": "Network features",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Enable network features ? (Must reconnect to take effect)",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Display an alert when the shop offers are known",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Send an alert to other MineboxAdditions users when you discover a shop offer",
+  "mineboxadditions.strings.full_moon": "Full moon",
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's full moon"
+}

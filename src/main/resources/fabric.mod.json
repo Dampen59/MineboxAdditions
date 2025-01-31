@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "mineboxadditions",
+	"version": "${version}",
+	"name": "Minebox Additions",
+	"description": "This mod adds blatant features to Minebox",
+	"authors": [
+		"Dampen59"
+	],
+	"contact": {
+		"homepage": "https://dampen59.io/",
+		"sources": "https://github.com/Dampen59/MineboxAdditions"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/mineboxadditions/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.dampen59.mineboxadditions.MineboxAdditions"
+		],
+		"client": [
+			"io.dampen59.mineboxadditions.MineboxAdditionsClient"
+		],
+		"modmenu": [
+			"io.dampen59.mineboxadditions.ModMenuIntegration"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.3",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"another-mod": "*"
+	}
+}

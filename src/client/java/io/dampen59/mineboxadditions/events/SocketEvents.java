@@ -1,0 +1,92 @@
+package io.dampen59.mineboxadditions.events;
+
+import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.Utils;
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.sound.SoundEvents;
+import io.dampen59.mineboxadditions.ModConfig;
+import me.shedaniel.autoconfig.AutoConfig;
+
+import java.net.URI;
+
+public class SocketEvents {
+    private State modState = null;
+
+    public SocketEvents(State prmModState) {
+        this.modState = prmModState;
+        initializeSockets();
+    }
+
+    public void initializeSockets() {
+
+        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        URI uri = URI.create(config.socketServerAddress);
+        IO.Options options = IO.Options.builder().build();
+        this.modState.setSocket(IO.socket(uri, options));
+
+        this.modState.getSocket().on("S2CShopOfferEvent", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+                if (!config.networkFeatures.receiveShopsAlerts) return;
+
+                String shopName = (String) args[0];
+                String itemName = (String) args[1];
+
+                switch (shopName) {
+                    case "Mouse":
+                        if (modState.getMouseCurrentItemOffer() == null) {
+                            modState.setMouseCurrentItemOffer(itemName);
+                            Utils.showToastNotification("Mouse","The mouse is selling " + itemName + " !");
+                            Utils.playSound(SoundEvents.BLOCK_BELL_USE);
+                        }
+                        break;
+                    case "Bakery":
+                        if (modState.getBakeryCurrentItemOffer() == null) {
+                            modState.setBakeryCurrentItemOffer(itemName);
+                            Utils.showToastNotification("Bakery","It seems today we have some " + itemName + " at the Bakery !");
+                            Utils.playSound(SoundEvents.BLOCK_BELL_USE);
+                        }
+                        break;
+                    case "Buckstar":
+                        if (modState.getBuckstarCurrentItemOffer() == null) {
+                            modState.setBuckstarCurrentItemOffer(itemName);
+                            Utils.showToastNotification("Buckstar","Grab your " + itemName + " at the Buckstar !");
+                            Utils.playSound(SoundEvents.BLOCK_BELL_USE);
+                        }
+                        break;
+                    case "Cocktail":
+                        if (modState.getCocktailCurrentItemOffer() == null) {
+                            modState.setCocktailCurrentItemOffer(itemName);
+                            Utils.showToastNotification("Cocktail","The bartender is ready to serve you a " + itemName + " !");
+                            Utils.playSound(SoundEvents.BLOCK_BELL_USE);
+                        }
+                        break;
+                    default:
+                        System.out.println("[S2CShopOfferEvent] Received unknown S2CShopOfferEvent payload data. Data : " + args);
+
+                }
+
+            }
+        });
+
+        this.modState.getSocket().on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                // Data used server-side to keep track of players throughout their session
+                // It also allows to pass some metadata such as client lang to handle some server-side translations
+                String playerName = MinecraftClient.getInstance().player.getName().getString();
+                String playerUuid = MinecraftClient.getInstance().player.getUuid().toString();
+                String playerLang = MinecraftClient.getInstance().getLanguageManager().getLanguage();
+                modState.getSocket().emit("C2SHelloConnectMessage", playerUuid , playerName, playerLang);
+            }
+        });
+
+    }
+
+
+
+}
