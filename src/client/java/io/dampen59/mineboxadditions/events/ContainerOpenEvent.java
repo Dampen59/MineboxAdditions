@@ -35,7 +35,7 @@ public class ContainerOpenEvent {
             GenericContainerScreen containerScreen = (GenericContainerScreen) screen;
             int slotsCount = ((GenericContainerScreen) screen).getScreenHandler().slots.size();
 
-            if (slotsCount > 9) return;
+            if (slotsCount > 45) return;
 
             Text containerTitle = containerScreen.getTitle();
             String currentItemOffer = extractTranslationKey(containerTitle);
