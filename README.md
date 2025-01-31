@@ -10,6 +10,20 @@ MineboxAddition is a Minecraft Fabric Mod for version 1.21.3 that introduces exc
 
 Every feature can be enabled or disabled, some are disabled by default, so be sure to check out the mod settings before going in-game !
 
+### Network features informations
+When using the mod network features, some informations are sent to the server to keep track of your session and to handle some server-sided translations.
+
+The informations used are :
+- Your Minecraft username
+- Your Minecraft UUID [What's that ?!](https://minecraft.fandom.com/wiki/Universally_unique_identifier)
+- Your Minecraft client lang
+
+These informations are NOT stored anywhere, and gets automatically erased from RAM when your session ends (when you disconnect from Minebox)
+
+## Available locales
+- FR
+- EN
+
 ## Requirements
 Minecraft 1.21.3
 
