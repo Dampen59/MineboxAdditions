@@ -33,6 +33,10 @@ public class ContainerOpenEvent {
             ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
             GenericContainerScreen containerScreen = (GenericContainerScreen) screen;
+            int slotsCount = ((GenericContainerScreen) screen).getScreenHandler().slots.size();
+
+            if (slotsCount > 9) return;
+
             Text containerTitle = containerScreen.getTitle();
             String currentItemOffer = extractTranslationKey(containerTitle);
 
