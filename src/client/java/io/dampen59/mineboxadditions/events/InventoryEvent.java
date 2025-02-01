@@ -91,12 +91,12 @@ public class InventoryEvent {
         int harvesterMaxDurability = Integer.parseInt(quantityParts[1]);
 
         ComponentChanges harvesterChanges = ComponentChanges.builder()
-                .add(DataComponentTypes.DAMAGE, harvesterCurrentDurability)
+                .add(DataComponentTypes.DAMAGE, harvesterMaxDurability - harvesterCurrentDurability)
                 .add(DataComponentTypes.MAX_DAMAGE, harvesterMaxDurability)
                 .remove(DataComponentTypes.UNBREAKABLE)
                 .build();
 
-        prmItemStack.setDamage(harvesterCurrentDurability);
+        prmItemStack.setDamage(harvesterMaxDurability - harvesterCurrentDurability);
         prmItemStack.applyChanges(harvesterChanges);
     }
 
