@@ -58,8 +58,8 @@ public class ServerEvents {
                 this.modState.getSocket().disconnect();
             }
 
-            this.modState.setConnectedToMinebox(false);
-            this.modState.setLoginCommandSent(false);
+            this.modState.reset();
+
         });
     }
 

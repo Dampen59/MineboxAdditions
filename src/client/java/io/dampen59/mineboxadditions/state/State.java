@@ -19,6 +19,20 @@ public class State {
 
     private Socket objSocket = null;
 
+    public void reset() {
+        this.setConnectedToMinebox(false);
+        this.setLoginCommandSent(false);
+        this.setMouseAlertSent(false);
+        this.setBakeryAlertSent(false);
+        this.setBuckstarAlertSent(false);
+        this.setCocktailAlertSent(false);
+        this.setMouseCurrentItemOffer(null);
+        this.setBakeryCurrentItemOffer(null);
+        this.setBuckstarCurrentItemOffer(null);
+        this.setCocktailCurrentItemOffer(null);
+        this.setCurrentMoonPhase(-1);
+    }
+
     public void setConnectedToMinebox(boolean prmValue) {
         this.isConnectedToMinebox = prmValue;
     }
