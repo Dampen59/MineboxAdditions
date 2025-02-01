@@ -1,0 +1,19 @@
+{
+  "text.autoconfig.mineboxadditions.title": "Konfiguracja MineboxAdditions",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings": "Ustawienia alertów",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getMouseAlerts": "Mysz",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBakeryAlerts": "Piekarnia",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBuckstarAlerts": "Buckstar",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getCocktailAlerts": "Koktajle",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings": "Ustawienia wytrzymałości",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Włącz pasek zapełnienia sakw",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Włącz pasek wytrzymałości narzędzi żniwiarki",
+  "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Przejdź na wyspę po połączeniu z serwerem",
+  "text.autoconfig.mineboxadditions.option.networkFeatures": "Funkcje sieciowe",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Włączyć funkcje sieciowe? (Wymaga ponownego połączenia)",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Wyświetl alert, gdy dostępne są oferty sklepowe",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Wyślij alert do innych użytkowników MineboxAdditions, gdy odkryjesz ofertę sklepową",
+  "mineboxadditions.strings.full_moon": "Pełnia księżyca",
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Ustawienia wyświetlania",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca"
+}
