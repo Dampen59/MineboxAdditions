@@ -17,6 +17,9 @@
   "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's full moon",
 
+  "mineboxadditions.strings.update.title": "Update available",
+  "mineboxadditions.strings.update.content": "A new version of MineboxAdditions is available, some network features may not function anymore in your current version !",
+
   "mineboxadditions.strings.toasts.shop.mouse.open.title": "Mouse",
   "mineboxadditions.strings.toasts.shop.mouse.open.content": "The mouse is ready to sell you one of it's finest french cheese ! Go and get it !",
   "mineboxadditions.strings.toasts.shop.bakery.open.title": "Bakery",

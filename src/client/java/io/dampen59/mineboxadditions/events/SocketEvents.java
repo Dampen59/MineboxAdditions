@@ -74,15 +74,26 @@ public class SocketEvents {
             }
         });
 
+        this.modState.getSocket().on("S2CProtocolMismatch", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Utils.showToastNotification(Text.translatable("mineboxadditions.strings.update.title").getString(), Text.translatable("mineboxadditions.strings.update.content").getString());
+            }
+        });
+
         this.modState.getSocket().on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override
             public void call(Object... args) {
                 // Data used server-side to keep track of players throughout their session
                 // It also allows to pass some metadata such as client lang to handle some server-side translations
+                // and protocol version to know server-side how to communicate with our client
+                // throughout the different versions.
+                ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
                 String playerName = MinecraftClient.getInstance().player.getName().getString();
                 String playerUuid = MinecraftClient.getInstance().player.getUuid().toString();
                 String playerLang = MinecraftClient.getInstance().getLanguageManager().getLanguage();
-                modState.getSocket().emit("C2SHelloConnectMessage", playerUuid , playerName, playerLang);
+                int protocolVersion = config.protocolVersion;
+                modState.getSocket().emit("C2SHelloConnectMessage", playerUuid , playerName, playerLang, protocolVersion);
             }
         });
 

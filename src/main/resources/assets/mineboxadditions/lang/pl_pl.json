@@ -17,6 +17,9 @@
   "text.autoconfig.mineboxadditions.option.displaySettings": "Ustawienia wyświetlania",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca",
 
+  "mineboxadditions.strings.update.title": "Aktualizacja dostępna",
+  "mineboxadditions.strings.update.content": "Dostępna jest nowa wersja MineboxAdditions, niektóre funkcje sieciowe mogą już nie działać w bieżącej wersji!",
+
   "mineboxadditions.strings.toasts.shop.mouse.open.title": "Mysz",
   "mineboxadditions.strings.toasts.shop.mouse.open.content": "Mysz jest gotowa sprzedać ci swój najlepszy francuski ser ! Idź i go zdobądź !",
   "mineboxadditions.strings.toasts.shop.bakery.open.title": "Piekarnia",

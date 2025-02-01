@@ -16,6 +16,9 @@
   "text.autoconfig.mineboxadditions.option.displaySettings": "Paramètres d'affichage",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Afficher un logo dans le coin supérieur gauche en cas de pleine lune",
 
+  "mineboxadditions.strings.update.title": "Mise à jour disponible",
+  "mineboxadditions.strings.update.content": "Une nouvelle version de MineboxAdditions est disponible, certaines fonctionnalités réseau peuvent ne plus fonctionner sur votre version actuelle !",
+
   "mineboxadditions.strings.toasts.shop.mouse.open.title": "Souris",
   "mineboxadditions.strings.toasts.shop.mouse.open.content": "La souris est prête à vous vendre un de ses meilleurs fromages ! Allez le chercher !",
   "mineboxadditions.strings.toasts.shop.bakery.open.title": "Boulangerie",
