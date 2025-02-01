@@ -18,7 +18,7 @@ public class ContainerOpenEvent {
     private List<String> mouseItemsOffers = Arrays.asList("mbx.items.emmental_cheese.name", "mbx.items.cheddar_cheese.name");
     private List<String> buckstarItemsOffers = Arrays.asList("mbx.items.coffee_gray.name", "mbx.items.coffee_green.name", "mbx.items.coffee_white.name", "mbx.items.coffee_yellow.name");
     private List<String> bakeryItemsOffers = Arrays.asList("mbx.items.flour.name", "mbx.items.baking_powder.name", "mbx.items.baguette.name", "mbx.items.croissant.name", "mbx.items.blue_macaron.name", "mbx.items.green_macaron.name", "mbx.items.orange_macaron.name", "mbx.items.yellow_macaron.name");
-    private List<String> cocktailItemsOffer = Arrays.asList("mbx.items.blue_cocktail.name", "mbx.items.orange_cocktail.name", "mbx.items.red_cocktail.name", "mbx.items.yellow_cocktail.name");
+    private List<String> cocktailItemsOffer = Arrays.asList("mbx.items.blue_cocktail.name", "mbx.items.orange_cocktail.name", "mbx.items.red_cocktail.name", "mbx.items.yellow_cocktail.name", "mbx.items.lemon.name", "mbx.items.avocado.name");
 
     private State modState = null;
     public ContainerOpenEvent(State prmModState) {
