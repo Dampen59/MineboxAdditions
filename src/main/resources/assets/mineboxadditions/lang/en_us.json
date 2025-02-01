@@ -15,5 +15,23 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Send an alert to other MineboxAdditions users when you discover a shop offer",
   "mineboxadditions.strings.full_moon": "Full moon",
   "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's full moon"
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's full moon",
+
+  "mineboxadditions.strings.toasts.shop.mouse.open.title": "Mouse",
+  "mineboxadditions.strings.toasts.shop.mouse.open.content": "The mouse is ready to sell you one of it's finest french cheese ! Go and get it !",
+  "mineboxadditions.strings.toasts.shop.bakery.open.title": "Bakery",
+  "mineboxadditions.strings.toasts.shop.bakery.open.content": "Hmmm, what's that smell ? Bakery is now open !",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.content": "Need a caffeine shot ? Buckstar just opened !",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.title": "Cocktail",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.content": "Need a refreshment ? The cocktail bar is open !",
+
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.title": "Mouse",
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.content": "Wanna have a bad breath ? The mouse's selling %1$s !",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.title": "Bakery",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.content": "Ovens are smoking, it smells like %1$s !",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Come and grab your %1$s at the Buckstar !",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Cocktail",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "The bartender is ready to serve you a %1$s !"
 }

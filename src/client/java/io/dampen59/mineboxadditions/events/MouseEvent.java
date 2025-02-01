@@ -6,6 +6,7 @@ import io.dampen59.mineboxadditions.state.State;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 
 public class MouseEvent {
 
@@ -29,7 +30,7 @@ public class MouseEvent {
                         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
                         if (config.shopsAlertsSettings.getMouseAlerts == true) {
                             if (this.modState.getMouseAlertSent() == false) {
-                                Utils.showToastNotification("Mouse","The mouse is ready to sell you one of it's finest french cheese ! Go and get it !");
+                                Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.mouse.open.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.mouse.open.content").getString());
                                 Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                                 this.modState.setMouseAlertSent(true);
                             }

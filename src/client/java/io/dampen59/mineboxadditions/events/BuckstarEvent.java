@@ -6,6 +6,7 @@ import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 
 public class BuckstarEvent {
     private int EVENT_START_TIME = 10; // 10 to prevent 0-tick when changing world
@@ -27,7 +28,7 @@ public class BuckstarEvent {
                         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
                         if (config.shopsAlertsSettings.getBuckstarAlerts == true) {
                             if (this.modState.getBuckstarAlertSent() == false) {
-                                Utils.showToastNotification("Buckstar","Need a caffeine shot ? Buckstar just opened !");
+                                Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.open.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.open.content").getString());
                                 Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                                 this.modState.setBuckstarAlertSent(true);
                             }

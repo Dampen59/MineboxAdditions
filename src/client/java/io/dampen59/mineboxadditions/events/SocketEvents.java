@@ -9,6 +9,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundEvents;
 import io.dampen59.mineboxadditions.ModConfig;
 import me.shedaniel.autoconfig.AutoConfig;
+import net.minecraft.text.Text;
 
 import java.net.URI;
 
@@ -40,28 +41,28 @@ public class SocketEvents {
                     case "Mouse":
                         if (modState.getMouseCurrentItemOffer() == null) {
                             modState.setMouseCurrentItemOffer(itemName);
-                            Utils.showToastNotification("Mouse","The mouse is selling " + itemName + " !");
+                            Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;
                     case "Bakery":
                         if (modState.getBakeryCurrentItemOffer() == null) {
                             modState.setBakeryCurrentItemOffer(itemName);
-                            Utils.showToastNotification("Bakery","It seems today we have some " + itemName + " at the Bakery !");
+                            Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;
                     case "Buckstar":
                         if (modState.getBuckstarCurrentItemOffer() == null) {
                             modState.setBuckstarCurrentItemOffer(itemName);
-                            Utils.showToastNotification("Buckstar","Grab your " + itemName + " at the Buckstar !");
+                            Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;
                     case "Cocktail":
                         if (modState.getCocktailCurrentItemOffer() == null) {
                             modState.setCocktailCurrentItemOffer(itemName);
-                            Utils.showToastNotification("Cocktail","The bartender is ready to serve you a " + itemName + " !");
+                            Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;

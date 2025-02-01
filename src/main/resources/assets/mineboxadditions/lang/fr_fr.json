@@ -14,6 +14,24 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Envoyez une alerte aux autres utilisateurs de MineboxAdditions lorsque vous découvrez une offre de shop",
   "mineboxadditions.strings.full_moon": "Pleine lune",
   "text.autoconfig.mineboxadditions.option.displaySettings": "Paramètres d'affichage",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Afficher un logo dans le coin supérieur gauche en cas de pleine lune"
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Afficher un logo dans le coin supérieur gauche en cas de pleine lune",
+
+  "mineboxadditions.strings.toasts.shop.mouse.open.title": "Souris",
+  "mineboxadditions.strings.toasts.shop.mouse.open.content": "La souris est prête à vous vendre un de ses meilleurs fromages ! Allez le chercher !",
+  "mineboxadditions.strings.toasts.shop.bakery.open.title": "Boulangerie",
+  "mineboxadditions.strings.toasts.shop.bakery.open.content": "Hmmm, quelle est cette odeur ? La boulangerie est maintenant ouverte !",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.content": "Besoin d'une dose de caféine ? Le Buckstar vient d'ouvrir !",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.title": "Cocktail",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.content": "Besoin d'un rafraîchissement ? Le bar à cocktails est ouvert !",
+
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.title": "Souris",
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.content": "Envie d'une mauvaise haleine ? La souris propose %1$s !",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.title": "Boulangerie",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.content": "Les fourneaux fument, et ça sent %1$s !",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Venez chercher votre %1$s au Buckstar !",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Cocktail",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Le barman est prêt à vous servir un %1$s !"
 }
 

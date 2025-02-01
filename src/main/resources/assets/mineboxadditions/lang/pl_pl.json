@@ -15,5 +15,23 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Wyślij alert do innych użytkowników MineboxAdditions, gdy odkryjesz ofertę sklepową",
   "mineboxadditions.strings.full_moon": "Pełnia księżyca",
   "text.autoconfig.mineboxadditions.option.displaySettings": "Ustawienia wyświetlania",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca"
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca",
+
+  "mineboxadditions.strings.toasts.shop.mouse.open.title": "Mysz",
+  "mineboxadditions.strings.toasts.shop.mouse.open.content": "Mysz jest gotowa sprzedać ci swój najlepszy francuski ser ! Idź i go zdobądź !",
+  "mineboxadditions.strings.toasts.shop.bakery.open.title": "Piekarnia",
+  "mineboxadditions.strings.toasts.shop.bakery.open.content": "Hmmm, co to za zapach ? Piekarnia jest już otwarta !",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.content": "Potrzebujesz dawki kofeiny ? Buckstar właśnie się otworzył!",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.title": "Koktajl",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.content": "Potrzebujesz orzeźwienia ? Bar koktajlowy jest otwarty !",
+
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.title": "Mysz",
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.content": "Chcesz mieć nieświeży oddech? Mysz sprzedaje %1$s !",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.title": "Piekarnia",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.content": "Piece dymią, pachnie jak %1$s !",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Wpadaj po swoje %1$s do Buckstara !",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Koktajl",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Barman jest gotowy, by podać ci %1$s !"
 }

@@ -6,6 +6,7 @@ import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 
 public class BakeryEvent {
 
@@ -28,7 +29,7 @@ public class BakeryEvent {
                         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
                         if (config.shopsAlertsSettings.getBakeryAlerts == true) {
                             if (this.modState.getBakeryAlertSent() == false) {
-                                Utils.showToastNotification("Bakery","Hmmm, what's that smell ? Bakery is now open !");
+                                Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.bakery.open.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.bakery.open.content").getString());
                                 Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                                 this.modState.setBakeryAlertSent(true);
                             }

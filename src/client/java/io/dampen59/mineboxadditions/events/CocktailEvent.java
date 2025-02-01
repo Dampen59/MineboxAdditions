@@ -6,6 +6,7 @@ import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
 
 public class CocktailEvent {
     private int EVENT_START_TIME = 12000;
@@ -27,7 +28,7 @@ public class CocktailEvent {
                         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
                         if (config.shopsAlertsSettings.getCocktailAlerts == true) {
                             if (this.modState.getCocktailAlertSent() == false) {
-                                Utils.showToastNotification("Cocktail","Need a refreshment ? The cocktail bar is open !");
+                                Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.open.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.open.content").getString());
                                 Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                                 this.modState.setCocktailAlertSent(true);
                             }
