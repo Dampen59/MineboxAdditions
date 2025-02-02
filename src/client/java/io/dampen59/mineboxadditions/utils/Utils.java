@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.utils;
 
-import io.dampen59.mineboxadditions.classes.MineboxItem;
+import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;

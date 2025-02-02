@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.state;
 
-import io.dampen59.mineboxadditions.classes.MineboxItem;
+import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.socket.client.Socket;
 
 import java.util.List;

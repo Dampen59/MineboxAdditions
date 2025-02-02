@@ -3,7 +3,7 @@ package io.dampen59.mineboxadditions.events;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.state.State;
-import io.dampen59.mineboxadditions.classes.MineboxItem;
+import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.IO;
 import io.socket.client.Socket;
