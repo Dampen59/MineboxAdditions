@@ -1,6 +1,9 @@
 package io.dampen59.mineboxadditions.state;
 
+import io.dampen59.mineboxadditions.classes.MineboxItem;
 import io.socket.client.Socket;
+
+import java.util.List;
 
 public class State {
     private boolean isConnectedToMinebox = false;
@@ -17,6 +20,8 @@ public class State {
 
     private int currentMoonPhase = -1;
 
+    private List<MineboxItem> mbxItems = null;
+
     private Socket objSocket = null;
 
     public void reset() {
@@ -31,6 +36,7 @@ public class State {
         this.setBuckstarCurrentItemOffer(null);
         this.setCocktailCurrentItemOffer(null);
         this.setCurrentMoonPhase(-1);
+        this.setMbxItems(null);
     }
 
     public void setConnectedToMinebox(boolean prmValue) {
@@ -84,6 +90,9 @@ public class State {
 
     public void setCurrentMoonPhase(int prmValue) { this.currentMoonPhase = prmValue; }
     public int getCurrentMoonPhase() { return this.currentMoonPhase; }
+
+    public void setMbxItems(List<MineboxItem> prmValue) { this.mbxItems = prmValue; }
+    public List<MineboxItem> getMbxItems() { return this.mbxItems; }
 
     public void setSocket(Socket prmValue) { this.objSocket = prmValue; }
     public Socket getSocket() { return this.objSocket; }

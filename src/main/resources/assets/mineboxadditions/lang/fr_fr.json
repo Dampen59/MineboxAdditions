@@ -16,6 +16,8 @@
   "text.autoconfig.mineboxadditions.option.displaySettings": "Paramètres d'affichage",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Afficher un logo dans le coin supérieur gauche en cas de pleine lune",
 
+  "mineboxadditions.strings.tooltip.more_info": "[ALT GAUCHE] pour plus d'infos",
+
   "mineboxadditions.strings.update.title": "Mise à jour disponible",
   "mineboxadditions.strings.update.content": "Une nouvelle version de MineboxAdditions est disponible, certaines fonctionnalités réseau peuvent ne plus fonctionner sur votre version actuelle !",
 
