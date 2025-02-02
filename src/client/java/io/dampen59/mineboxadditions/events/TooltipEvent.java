@@ -68,6 +68,9 @@ public class TooltipEvent {
                             String translationKey = translatableContent.getKey();
                             if (translationKey.contains("mbx.stats.")) {
                                 String jsonKey = translationKey.replace(".", "_");
+
+                                if (mbxItem.getStats(jsonKey) == null) break; // Ignore null stats (non-migrated items)
+
                                 int minRoll = mbxItem.getStats(jsonKey).getMin();
                                 int maxRoll = mbxItem.getStats(jsonKey).getMax();
                                 String baseStats = null;
