@@ -1,8 +1,10 @@
 package io.dampen59.mineboxadditions.events;
 
+import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.classes.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
+import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
@@ -29,6 +31,7 @@ public class TooltipEvent {
     }
 
     private void onTooltip(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> texts) {
+        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
         boolean isAltPressed = InputUtil.isKeyPressed(
                 MinecraftClient.getInstance().getWindow().getHandle(), LEFT_ALT_KEY
@@ -36,10 +39,16 @@ public class TooltipEvent {
 
         if (!Utils.isMineboxItem(itemStack)) return;
         if (!Utils.itemHaveStats(itemStack)) return;
+        if (!config.networkFeatures.enableNetworkFeatures) return;
 
         if (isAltPressed) {
 
             String itemId = Utils.getMineboxItemId(itemStack);
+
+            if (modState.getMbxItems() == null) {
+                System.out.println("[MineboxAdditions] Can't display more infos because State mbxItems is null :o");
+                return;
+            }
 
             MineboxItem mbxItem = Utils.findItemByName(modState.getMbxItems(), itemId);
             if (mbxItem == null) return;
