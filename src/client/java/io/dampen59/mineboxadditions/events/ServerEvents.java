@@ -64,7 +64,7 @@ public class ServerEvents {
     }
 
     public boolean isMinebox(String hostname) {
-        return mineboxHostnames.stream().anyMatch(hostname::contains);
+        return mineboxHostnames.stream().anyMatch(hostname.toLowerCase()::contains);
     }
 
 }
