@@ -11,7 +11,7 @@ public class ModConfig implements ConfigData {
     public String socketServerAddress = "http://mbxadditions.dampen59.io:3000";
 
     @ConfigEntry.Gui.Excluded
-    public int protocolVersion = 1;
+    public int protocolVersion = 2;
 
     @ConfigEntry.Gui.CollapsibleObject
     public

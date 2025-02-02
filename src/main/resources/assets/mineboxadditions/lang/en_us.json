@@ -17,6 +17,8 @@
   "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's full moon",
 
+  "mineboxadditions.strings.tooltip.more_info": "Press [LEFT ALT] for more infos",
+
   "mineboxadditions.strings.update.title": "Update available",
   "mineboxadditions.strings.update.content": "A new version of MineboxAdditions is available, some network features may not function anymore in your current version !",
 

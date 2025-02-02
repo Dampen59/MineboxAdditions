@@ -1,6 +1,9 @@
 package io.dampen59.mineboxadditions.events;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.classes.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -12,6 +15,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.text.Text;
 
 import java.net.URI;
+import java.util.List;
 
 public class SocketEvents {
     private State modState = null;
@@ -78,6 +82,21 @@ public class SocketEvents {
             @Override
             public void call(Object... args) {
                 Utils.showToastNotification(Text.translatable("mineboxadditions.strings.update.title").getString(), Text.translatable("mineboxadditions.strings.update.content").getString());
+            }
+        });
+
+        this.modState.getSocket().on("S2CMineboxItemsStats", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                String jsonData = (String) args[0];
+
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    modState.setMbxItems(mapper.readValue(jsonData, mapper.getTypeFactory().constructCollectionType(List.class, MineboxItem.class)));
+                } catch (JsonProcessingException e) {
+                    System.out.println("[MineboxAdditions] Could not load Minebox Items Stats JSON data :( " + e.getMessage());
+                }
+
             }
         });
 
