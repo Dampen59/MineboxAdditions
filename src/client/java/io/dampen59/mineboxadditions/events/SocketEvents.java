@@ -19,6 +19,7 @@ import java.util.List;
 
 public class SocketEvents {
     private State modState = null;
+    public static final int protocolVersion = 2;
 
     public SocketEvents(State prmModState) {
         this.modState = prmModState;
@@ -107,17 +108,11 @@ public class SocketEvents {
                 // It also allows to pass some metadata such as client lang to handle some server-side translations
                 // and protocol version to know server-side how to communicate with our client
                 // throughout the different versions.
-                ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
                 String playerName = MinecraftClient.getInstance().player.getName().getString();
                 String playerUuid = MinecraftClient.getInstance().player.getUuid().toString();
                 String playerLang = MinecraftClient.getInstance().getLanguageManager().getLanguage();
-                int protocolVersion = config.protocolVersion;
                 modState.getSocket().emit("C2SHelloConnectMessage", playerUuid , playerName, playerLang, protocolVersion);
             }
         });
-
     }
-
-
-
 }
