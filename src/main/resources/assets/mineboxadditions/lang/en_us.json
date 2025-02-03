@@ -14,8 +14,15 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Display an alert when the shop offers are known",
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Send an alert to other MineboxAdditions users when you discover a shop offer",
   "mineboxadditions.strings.full_moon": "Full moon",
+
   "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's full moon",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Items pickup tooltip settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Enable the feature",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "Max tooltips to display at the same time",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Tooltip duration (in seconds)",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "Merge lines with the same item",
 
   "mineboxadditions.strings.tooltip.more_info": "Press [LEFT ALT] for more infos",
 

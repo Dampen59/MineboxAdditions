@@ -43,22 +43,18 @@ public class ContainerOpenEvent {
             if (currentItemOffer == null) return;
 
             if (mouseItemsOffers.contains(currentItemOffer)) {
-                this.modState.setMouseCurrentItemOffer(currentItemOffer);
                 if (config.networkFeatures.sendShopsAlerts) this.modState.getSocket().emit("C2SShopOfferEvent", "Mouse", currentItemOffer);
             }
 
             if (bakeryItemsOffers.contains(currentItemOffer)) {
-                this.modState.setBakeryCurrentItemOffer(currentItemOffer);
                 if (config.networkFeatures.sendShopsAlerts) this.modState.getSocket().emit("C2SShopOfferEvent", "Bakery", currentItemOffer);
             }
 
             if (buckstarItemsOffers.contains(currentItemOffer)) {
-                this.modState.setBuckstarCurrentItemOffer(currentItemOffer);
                 if (config.networkFeatures.sendShopsAlerts) this.modState.getSocket().emit("C2SShopOfferEvent", "Buckstar", currentItemOffer);
             }
 
             if (cocktailItemsOffer.contains(currentItemOffer)) {
-                this.modState.setCocktailCurrentItemOffer(currentItemOffer);
                 if (config.networkFeatures.sendShopsAlerts) this.modState.getSocket().emit("C2SShopOfferEvent", "Cocktail", currentItemOffer);
             }
 

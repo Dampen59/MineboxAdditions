@@ -18,6 +18,8 @@ public class State {
     private String buckstarCurrentItemOffer = null;
     private String cocktailCurrentItemOffer = null;
 
+    private String shopDisplay = null;
+
     private int currentMoonPhase = -1;
 
     private List<MineboxItem> mbxItems = null;
@@ -35,6 +37,7 @@ public class State {
         this.setBakeryCurrentItemOffer(null);
         this.setBuckstarCurrentItemOffer(null);
         this.setCocktailCurrentItemOffer(null);
+        this.setShopDisplay(null);
         this.setCurrentMoonPhase(-1);
         this.setMbxItems(null);
     }
@@ -87,6 +90,9 @@ public class State {
 
     public void setCocktailCurrentItemOffer(String prmValue) { this.cocktailCurrentItemOffer = prmValue; }
     public String getCocktailCurrentItemOffer() { return this.cocktailCurrentItemOffer; }
+
+    public void setShopDisplay(String prmValue) { this.shopDisplay = prmValue; }
+    public String getShopDisplay() { return this.shopDisplay; }
 
     public void setCurrentMoonPhase(int prmValue) { this.currentMoonPhase = prmValue; }
     public int getCurrentMoonPhase() { return this.currentMoonPhase; }
