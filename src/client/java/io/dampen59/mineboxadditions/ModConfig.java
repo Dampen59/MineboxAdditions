@@ -37,10 +37,21 @@ public class ModConfig implements ConfigData {
         public boolean sendShopsAlerts = true;
     }
 
+    public static class ItemPickupSettings {
+        public boolean displayItemsPickups = false;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        public int maxPickupNotifications = 5;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 10)
+        public int pickupNotificationDuration = 2;
+        public boolean mergeLines = true;
+    }
+
     @ConfigEntry.Gui.CollapsibleObject
     public
     DisplaySettings displaySettings = new DisplaySettings();
     public static class DisplaySettings {
+        @ConfigEntry.Gui.CollapsibleObject
+        public ItemPickupSettings itemPickupSettings = new ItemPickupSettings();
         public boolean displayFullMoon = false;
     }
 

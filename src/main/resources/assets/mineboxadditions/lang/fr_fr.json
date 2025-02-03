@@ -13,8 +13,15 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Afficher une alerte lorsque les offres des shops sont connues",
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Envoyez une alerte aux autres utilisateurs de MineboxAdditions lorsque vous découvrez une offre de shop",
   "mineboxadditions.strings.full_moon": "Pleine lune",
+
   "text.autoconfig.mineboxadditions.option.displaySettings": "Paramètres d'affichage",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Afficher un logo dans le coin supérieur gauche en cas de pleine lune",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Paramètres des notifications de ramassage des objets",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Activer la fonctionnalité",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "Nombre maximum de notifications à afficher en même temps",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Durée des notifications (en secondes)",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "Fusionner les lignes avec les mêmes objets",
 
   "mineboxadditions.strings.tooltip.more_info": "[ALT GAUCHE] pour plus d'infos",
 
