@@ -45,28 +45,28 @@ public class SocketEvents {
                 switch (shopName) {
                     case "Mouse":
                         if (modState.getMouseCurrentItemOffer() == null) {
-                            modState.setMouseCurrentItemOffer(itemName);
+                            modState.setMouseCurrentItemOffer(Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title").getString() + ": " + itemName);
                             Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;
                     case "Bakery":
                         if (modState.getBakeryCurrentItemOffer() == null) {
-                            modState.setBakeryCurrentItemOffer(itemName);
+                            modState.setBakeryCurrentItemOffer(Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title").getString() + ": " + itemName);
                             Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;
                     case "Buckstar":
                         if (modState.getBuckstarCurrentItemOffer() == null) {
-                            modState.setBuckstarCurrentItemOffer(itemName);
+                            modState.setBuckstarCurrentItemOffer(Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title").getString() + ": " + itemName);
                             Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
                         break;
                     case "Cocktail":
                         if (modState.getCocktailCurrentItemOffer() == null) {
-                            modState.setCocktailCurrentItemOffer(itemName);
+                            modState.setCocktailCurrentItemOffer(Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title").getString() + ": " + itemName);
                             Utils.showToastNotification(Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title").getString(), Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", itemName).getString());
                             Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                         }
