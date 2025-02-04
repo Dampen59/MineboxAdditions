@@ -7,15 +7,13 @@ import me.shedaniel.autoconfig.AutoConfig;
 public class ShopEventManager {
 
     public ShopEventManager(State modState) {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-
         new ShopEvent(Shop.BAKERY,
                 modState,
                 modState::getBakeryAlertSent,
                 modState::setBakeryAlertSent,
                 modState::getBakeryCurrentItemOffer,
                 modState::setBakeryCurrentItemOffer,
-                () -> config.shopsAlertsSettings.getBakeryAlerts);
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getBakeryAlerts);
 
         new ShopEvent(Shop.BUCKSTAR,
                 modState,
@@ -23,7 +21,7 @@ public class ShopEventManager {
                 modState::setBuckstarAlertSent,
                 modState::getBuckstarCurrentItemOffer,
                 modState::setBuckstarCurrentItemOffer,
-                () -> config.shopsAlertsSettings.getBuckstarAlerts);
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getBuckstarAlerts);
 
         new ShopEvent(Shop.COCKTAIL,
                 modState,
@@ -31,7 +29,7 @@ public class ShopEventManager {
                 modState::setCocktailAlertSent,
                 modState::getCocktailCurrentItemOffer,
                 modState::setCocktailCurrentItemOffer,
-                () -> config.shopsAlertsSettings.getCocktailAlerts);
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getCocktailAlerts);
 
         new ShopEvent(Shop.MOUSE,
                 modState,
@@ -39,6 +37,6 @@ public class ShopEventManager {
                 modState::setMouseAlertSent,
                 modState::getMouseCurrentItemOffer,
                 modState::setMouseCurrentItemOffer,
-                () -> config.shopsAlertsSettings.getMouseAlerts);
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getMouseAlerts);
     }
 }
