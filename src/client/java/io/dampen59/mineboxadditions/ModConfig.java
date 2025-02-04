@@ -11,8 +11,7 @@ public class ModConfig implements ConfigData {
     public String socketServerAddress = "http://mbxadditions.dampen59.io:3000";
 
     @ConfigEntry.Gui.CollapsibleObject
-    public
-    ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
+    public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
     public static class ShopsAlertsSettings {
         public boolean getMouseAlerts = true;
         public boolean getBakeryAlerts = true;
@@ -21,16 +20,14 @@ public class ModConfig implements ConfigData {
     }
 
     @ConfigEntry.Gui.CollapsibleObject
-    public
-    DurabilitySettings durabilitySettings = new DurabilitySettings();
+    public DurabilitySettings durabilitySettings = new DurabilitySettings();
     public static class DurabilitySettings {
         public boolean haversackDurability = false;
         public boolean harvesterDurability = false;
     }
 
     @ConfigEntry.Gui.CollapsibleObject
-    public
-    NetworkFeatures networkFeatures = new NetworkFeatures();
+    public NetworkFeatures networkFeatures = new NetworkFeatures();
     public static class NetworkFeatures {
         public boolean enableNetworkFeatures = false;
         public boolean receiveShopsAlerts = true;
@@ -47,8 +44,7 @@ public class ModConfig implements ConfigData {
     }
 
     @ConfigEntry.Gui.CollapsibleObject
-    public
-    DisplaySettings displaySettings = new DisplaySettings();
+    public DisplaySettings displaySettings = new DisplaySettings();
     public static class DisplaySettings {
         @ConfigEntry.Gui.CollapsibleObject
         public ItemPickupSettings itemPickupSettings = new ItemPickupSettings();
@@ -56,5 +52,4 @@ public class ModConfig implements ConfigData {
     }
 
     public boolean autoIslandOnLogin = false;
-
 }
