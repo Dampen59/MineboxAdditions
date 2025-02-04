@@ -1,8 +1,8 @@
 package io.dampen59.mineboxadditions.minebox;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Map;
+import java.util.Optional;
 
 public class MineboxItem {
     @JsonProperty("id")
@@ -27,7 +27,9 @@ public class MineboxItem {
         this.mbxStats = mbxStats;
     }
 
-    public MineboxStat getStats(String statName) {
-        return mbxStats.getOrDefault(statName, null);
+    public Optional<MineboxStat> getStat(String statName) {
+        return mbxStats == null
+                ? Optional.empty()
+                : Optional.ofNullable(mbxStats.get(statName));
     }
 }
