@@ -75,12 +75,18 @@ public class TooltipEvent {
                                 if (stat != null && stat.getMin() != null && stat.getMax() != null) {
                                     int minRoll = stat.getMin();
                                     int maxRoll = stat.getMax();
+
+                                    Formatting color = (minRoll < 0 && maxRoll < 0)
+                                            ? Formatting.RED
+                                            : Formatting.DARK_GREEN;
+
                                     String numericRange = (minRoll == maxRoll)
                                             ? " [" + maxRoll + "]"
-                                            : " [" + minRoll + " - " + maxRoll + "]";
+                                            : " [" + minRoll + " to " + maxRoll + "]";
+
                                     newNestedSiblings.add(
                                             Text.literal(numericRange)
-                                                    .setStyle(Style.EMPTY.withColor(Formatting.DARK_GREEN))
+                                                    .setStyle(Style.EMPTY.withColor(color))
                                     );
                                     modified = true;
                                     continue;
