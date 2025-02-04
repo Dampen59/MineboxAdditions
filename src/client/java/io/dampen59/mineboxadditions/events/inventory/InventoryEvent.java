@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.events;
+package io.dampen59.mineboxadditions.events.inventory;
 
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.state.State;
@@ -40,13 +40,11 @@ public class InventoryEvent {
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         if (client.player == null || client.world == null || !modState.getConnectedToMinebox()) return;
 
-        // Update durability for player's inventory
         client.player.getInventory().offHand.stream().filter(stack -> !stack.isEmpty())
                 .forEach(this::handleDurability);
         client.player.getInventory().main.stream().filter(stack -> !stack.isEmpty())
                 .forEach(this::handleDurability);
 
-        // Also update durability for container screen items (e.g., chests)
         if (client.currentScreen instanceof GenericContainerScreen containerScreen) {
             containerScreen.getScreenHandler().slots.forEach(slot -> {
                 ItemStack stack = slot.getStack();
@@ -56,7 +54,6 @@ public class InventoryEvent {
             });
         }
 
-        // Process item pickup notifications if enabled
         if (config.displaySettings.itemPickupSettings.displayItemsPickups) {
             int displayDurationTicks = config.displaySettings.itemPickupSettings.pickupNotificationDuration * 20;
             int maxNotifications = config.displaySettings.itemPickupSettings.maxPickupNotifications;
@@ -71,7 +68,6 @@ public class InventoryEvent {
     }
 
     private void updateInventorySnapshot(int notificationDuration, int maxNotifications, boolean mergeNotifications) {
-        // Only update when no container screen is open (to avoid conflicting with container notifications)
         if (client.currentScreen != null || client.player == null || client.player.getInventory() == null) return;
         DefaultedList<ItemStack> currentInventory = client.player.getInventory().main;
         for (int slot = 0; slot < currentInventory.size(); slot++) {
@@ -137,13 +133,11 @@ public class InventoryEvent {
 
         for (Text lore : loreComponent.lines()) {
             if (!(lore.getContent() instanceof TranslatableTextContent translatableContent)) continue;
-            // Haversack durability handling
             if (id.contains("haversack") && translatableContent.getKey().contains("mbx.items.infinite_bag.amount_inside")) {
                 if (config.durabilitySettings.haversackDurability) {
                     handleHaversackDurability(stack, nbtData, translatableContent);
                 }
             }
-            // Harvester durability handling
             else if (id.contains("harvester_") && translatableContent.getKey().contains("mbx.durability")) {
                 if (config.durabilitySettings.harvesterDurability) {
                     handleHarvesterDurability(stack, translatableContent);
