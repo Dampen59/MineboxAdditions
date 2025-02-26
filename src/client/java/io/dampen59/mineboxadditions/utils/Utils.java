@@ -9,8 +9,12 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.util.Formatting;
 
 import java.util.List;
 
@@ -83,6 +87,21 @@ public class Utils {
         return nbtData.getString("mbitems:id");
     }
 
+    public static String getMineboxItemUid(ItemStack itemStack) {
+        if (!isMineboxItem(itemStack)) return null;
+
+        NbtComponent itemData = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+        if (itemData == null) return null;
+
+        NbtCompound nbtData = itemData.copyNbt();
+        if (nbtData == null) return null;
+
+        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent");
+        if (persistentData == null || !persistentData.contains("mbitems:uid")) return null;
+
+        return persistentData.getString("mbitems:uid");
+    }
+
     public static MineboxItem findItemByName(List<MineboxItem> items, String itemName) {
         for (MineboxItem item : items) {
             if (itemName.equals(item.getId())) {
@@ -90,5 +109,32 @@ public class Utils {
             }
         }
         return null;
+    }
+
+    public static void shinyFoundAlert(String prmPlayerName, String prmMobName) {
+
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        Text baseMessage = Text.literal("The player ")
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+
+        Text playerText = Text.literal(prmPlayerName)
+                .setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true));
+
+        Text baseMessageNext = Text.literal(" found a shiny ")
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+
+        Text mobText = Text.literal( "[" + prmMobName + "]")
+                .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
+
+        Text endMessage = Text.literal(" ! Click on this message to send a teleport request.")
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa " + prmPlayerName)));
+
+
+        Text message = baseMessage.copy().append(playerText).append(baseMessageNext).append(mobText).append(endMessage);
+        playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
+
+        client.player.sendMessage(message, false);
     }
 }

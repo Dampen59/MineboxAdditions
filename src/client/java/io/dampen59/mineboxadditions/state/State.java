@@ -2,7 +2,11 @@ package io.dampen59.mineboxadditions.state;
 
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.socket.client.Socket;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class State {
     private boolean isConnectedToMinebox = false;
@@ -22,6 +26,8 @@ public class State {
     private int currentMoonPhase = -1;
 
     private List<MineboxItem> mbxItems = null;
+
+    private Map<String, Boolean> mbxShiniesUuids = new HashMap<String, Boolean>();
 
     private Socket objSocket = null;
 
@@ -131,6 +137,10 @@ public class State {
     public List<MineboxItem> getMbxItems() {
         return this.mbxItems;
     }
+
+    public Map<String, Boolean> getMbxShiniesUuids() { return this.mbxShiniesUuids; }
+    public void resetShinyList() { this.mbxShiniesUuids.clear(); }
+    public void addShinyUuid(String prmUuid) { this.mbxShiniesUuids.put(prmUuid, false); }
 
     public void setSocket(Socket prmValue) {
         this.objSocket = prmValue;

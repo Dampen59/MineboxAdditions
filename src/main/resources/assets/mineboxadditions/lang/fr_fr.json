@@ -23,6 +23,11 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Durée des notifications (en secondes)",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "Fusionner les lignes avec les mêmes objets",
 
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings": "Paramètres d'affichage de la rareté",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayItemsRarity": "Activer la fonctionnalité",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayMode": "Mode d'affichage (FILL (remplir), CIRCLE (cercle))",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.backgroundOpacity": "Pourcentage d'opacité",
+
   "mineboxadditions.strings.tooltip.more_info": "[ALT GAUCHE] pour plus d'infos",
 
   "mineboxadditions.strings.update.title": "Mise à jour disponible",

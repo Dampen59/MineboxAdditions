@@ -1,10 +1,7 @@
 package io.dampen59.mineboxadditions;
 
-import io.dampen59.mineboxadditions.events.ServerEvents;
+import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
-import io.dampen59.mineboxadditions.events.ContainerOpenEvent;
-import io.dampen59.mineboxadditions.events.TooltipEvent;
-import io.dampen59.mineboxadditions.events.SkyEvent;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
 import io.dampen59.mineboxadditions.network.SocketManager;
 import io.dampen59.mineboxadditions.state.State;
@@ -27,5 +24,6 @@ public class MineboxAdditionsClient implements ClientModInitializer {
 		new ContainerOpenEvent(modState);
 		new TooltipEvent(modState);
 		new SkyEvent(modState);
+		new ShinyEvent(modState);
 	}
 }

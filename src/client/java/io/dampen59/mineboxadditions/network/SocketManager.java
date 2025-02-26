@@ -22,7 +22,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 2;
+    private final int protocolVersion = 3;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {
@@ -96,6 +96,13 @@ public class SocketManager {
             } catch (JsonProcessingException e) {
                 System.out.println("[SocketManager] Failed to load Minebox Items Stats JSON: " + e.getMessage());
             }
+        });
+
+        socket.on("S2CShinyEvent", args -> {
+            String playerName = (String) args[0];
+            String mobKey = (String) args[1];
+            String mobName = Text.translatable(mobKey).getString();
+            Utils.shinyFoundAlert(playerName, mobName);
         });
 
         socket.on(Socket.EVENT_CONNECT, args -> {

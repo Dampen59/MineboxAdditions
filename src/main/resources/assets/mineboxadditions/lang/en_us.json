@@ -24,6 +24,11 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Tooltip duration (in seconds)",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "Merge lines with the same item",
 
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings": "Items rarities background settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayItemsRarity": "Enable the feature",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayMode": "Display mode (FILL, CIRCLE)",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.backgroundOpacity": "Background opacity percentage",
+
   "mineboxadditions.strings.tooltip.more_info": "Press [LEFT ALT] for more infos",
 
   "mineboxadditions.strings.update.title": "Update available",
