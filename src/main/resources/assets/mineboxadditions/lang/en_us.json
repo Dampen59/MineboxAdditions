@@ -29,6 +29,23 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayMode": "Display mode (FILL, CIRCLE)",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.backgroundOpacity": "Background opacity percentage",
 
+  "text.autoconfig.mineboxadditions.option.chatSettings": "Chat settings",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings": "Multi Channel settings",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableMultiChannel": "Enable the feature",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableFrench": "French",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableEnglish": "English",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableSpanish": "Spanish",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableRussian": "Russian",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enablePortuguese": "Portuguese",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDeutsch": "German",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableChinese": "Chinese",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enablePolish": "Polish",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableItalian": "Italian",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableJapanese": "Japanese",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Dutch",
+  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turkish",
+
+
   "mineboxadditions.strings.tooltip.more_info": "Press [LEFT ALT] for more infos",
 
   "mineboxadditions.strings.update.title": "Update available",

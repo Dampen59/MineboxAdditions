@@ -1,6 +1,8 @@
 package io.dampen59.mineboxadditions.state;
 
+import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
+import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.Socket;
 
 import java.util.ArrayList;
@@ -27,9 +29,13 @@ public class State {
 
     private List<MineboxItem> mbxItems = null;
 
+    private List<MineboxChatFlag> mbxChatFlags = null;
+
     private Map<String, Boolean> mbxShiniesUuids = new HashMap<String, Boolean>();
 
     private Socket objSocket = null;
+
+    private String chatLang = null;
 
     public void reset() {
         this.setConnectedToMinebox(false);
@@ -45,6 +51,9 @@ public class State {
         this.setShopDisplay(null);
         this.setCurrentMoonPhase(-1);
         this.setMbxItems(null);
+        this.resetShinyList();
+        this.setChatLang(null);
+        this.setMbxChatFlags(null);
     }
 
     public void setConnectedToMinebox(boolean prmValue) {
@@ -138,9 +147,19 @@ public class State {
         return this.mbxItems;
     }
 
+    public void setMbxChatFlags(List<MineboxChatFlag> prmValue) {
+        this.mbxChatFlags = prmValue;
+    }
+    public List<MineboxChatFlag> getMbxChatFlags() {
+        return this.mbxChatFlags;
+    }
+
     public Map<String, Boolean> getMbxShiniesUuids() { return this.mbxShiniesUuids; }
     public void resetShinyList() { this.mbxShiniesUuids.clear(); }
     public void addShinyUuid(String prmUuid) { this.mbxShiniesUuids.put(prmUuid, false); }
+
+    public void setChatLang(String prmValue) { this.chatLang = Utils.actionBarDataToChatLang(prmValue); }
+    public String getChatLang() { return this.chatLang; }
 
     public void setSocket(Socket prmValue) {
         this.objSocket = prmValue;

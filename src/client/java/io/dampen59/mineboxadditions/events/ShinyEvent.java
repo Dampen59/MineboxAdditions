@@ -35,14 +35,18 @@ public class ShinyEvent {
 
             if (!this.modState.getMbxShiniesUuids().containsKey(shinyUuid)) return Command.SINGLE_SUCCESS;
 
-            if (!this.modState.getMbxShiniesUuids().get(shinyUuid)) {
+            if (!shinyExists()) {
+                message = Text.literal("❌ The shiny isn't near or is already dead !")
+                        .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
+            } else if (!this.modState.getMbxShiniesUuids().get(shinyUuid)) {
                 this.modState.getSocket().emit("C2SShinyEvent", this.shinyUuid, this.mobNameKey);
                 this.modState.getMbxShiniesUuids().replace(shinyUuid, true);
-                message = Text.literal("Other MineboxAdditions users have been alerted. Thank you !")
-                        .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
+                message = Text.literal("✔ Both MineboxAdditions users and current chat channel have been notified. Thank you !")
+                        .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+                MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [" + Text.translatable(this.mobNameKey).getString() + "] on me ! [tpa]");
             } else {
-                message = Text.literal("You've already alerted other MineboxAdditions users !")
-                        .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(true));
+                message = Text.literal("❌ You've already notified other MineboxAdditions users !")
+                        .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
             }
 
             MinecraftClient.getInstance().player.sendMessage(message, false);
@@ -90,19 +94,39 @@ public class ShinyEvent {
         });
     }
 
+    public boolean shinyExists() {
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        if (client.world == null) return false;
+        boolean returnValue = false;
+
+        for (Entity entity : client.world.getEntities()) {
+            if (!(entity instanceof DisplayEntity.TextDisplayEntity textDisplay)) continue;
+            if (this.shinyUuid == textDisplay.getUuidAsString()) {
+                 returnValue = true;
+                 break;
+            };
+        }
+        return returnValue;
+    }
+
     private void sendShinyAlert(MinecraftClient client, String prmMobName) {
         if (client.player == null) return;
 
-        Text baseMessage = Text.literal("You just found a Shiny ")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
+        Text baseMessage = Text.literal("★ You just found a Shiny ")
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
+                );
 
         Text mobText = Text.literal( "[" + prmMobName + "]")
-                .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
+                .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
+                );
 
-        Text endMessage = Text.literal(" ! Click on this message to alert other MineboxAdditions users.")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert")));
-
+        Text endMessage = Text.literal(" ! Click on this message to notify both MineboxAdditions users and current chat channel.")
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
+                );
 
         Text message = baseMessage.copy().append(mobText).append(endMessage);
 

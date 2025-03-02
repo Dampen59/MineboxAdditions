@@ -3,7 +3,9 @@
   "package": "io.dampen59.mineboxadditions.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "InventoryScreenMixin"
+    "InventoryScreenMixin",
+    "InGameHudMixin",
+    "ChatMessageMixin"
   ],
   "injectors": {
     "defaultRequire": 1

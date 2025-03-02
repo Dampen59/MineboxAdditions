@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions.network;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
@@ -18,11 +19,12 @@ import net.minecraft.text.Text;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 3;
+    private final int protocolVersion = 4;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {
@@ -98,11 +100,52 @@ public class SocketManager {
             }
         });
 
+        socket.on("S2CMineboxChatFlags", args -> {
+            String jsonData = (String) args[0];
+            try {
+                List<MineboxChatFlag> items = mapper.readValue(jsonData,
+                        mapper.getTypeFactory().constructCollectionType(List.class, MineboxChatFlag.class));
+                modState.setMbxChatFlags(items);
+            } catch (JsonProcessingException e) {
+                System.out.println("[SocketManager] Failed to load Minebox Chat Flags JSON: " + e.getMessage());
+            }
+        });
+
         socket.on("S2CShinyEvent", args -> {
             String playerName = (String) args[0];
             String mobKey = (String) args[1];
+            String mobUuid = (String) args[2];
+
+            modState.getMbxShiniesUuids().put(mobUuid, true);
             String mobName = Text.translatable(mobKey).getString();
             Utils.shinyFoundAlert(playerName, mobName);
+        });
+
+        socket.on("S2CChatMessage", args -> {
+
+            if (!config.chatSettings.multiChannelSettings.enableMultiChannel) return;
+
+            String sourceChatLang = (String) args[0];
+            String playerName = (String) args[1];
+            String msgContent = (String) args[2];
+
+            if (Objects.equals(modState.getChatLang(), sourceChatLang)) return;
+            if (!config.chatSettings.multiChannelSettings.enableFrench && sourceChatLang == "fr") return;
+            if (!config.chatSettings.multiChannelSettings.enableEnglish && sourceChatLang == "en") return;
+            if (!config.chatSettings.multiChannelSettings.enableSpanish && sourceChatLang == "es") return;
+            if (!config.chatSettings.multiChannelSettings.enableRussian && sourceChatLang == "ru") return;
+            if (!config.chatSettings.multiChannelSettings.enablePortuguese && sourceChatLang == "pt") return;
+            if (!config.chatSettings.multiChannelSettings.enableDeutsch && sourceChatLang == "de") return;
+            if (!config.chatSettings.multiChannelSettings.enableChinese && sourceChatLang == "cn") return;
+            if (!config.chatSettings.multiChannelSettings.enablePolish && sourceChatLang == "pl") return;
+            if (!config.chatSettings.multiChannelSettings.enableItalian && sourceChatLang == "it") return;
+            if (!config.chatSettings.multiChannelSettings.enableJapanese && sourceChatLang == "jp") return;
+            if (!config.chatSettings.multiChannelSettings.enableDutch && sourceChatLang == "nl") return;
+            if (!config.chatSettings.multiChannelSettings.enableTurkish && sourceChatLang == "re") return;
+
+            String sourceLangFlag = Utils.getChatFlagByLang(modState.getMbxChatFlags(), sourceChatLang);
+            Utils.displayChatMessage(sourceLangFlag, playerName, msgContent);
+
         });
 
         socket.on(Socket.EVENT_CONNECT, args -> {

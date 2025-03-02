@@ -1,6 +1,8 @@
 package io.dampen59.mineboxadditions.utils;
 
+import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
+import io.dampen59.mineboxadditions.minebox.ParsedMessage;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
@@ -8,6 +10,7 @@ import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.Resource;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
@@ -15,6 +18,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 import java.util.List;
 
@@ -137,4 +141,72 @@ public class Utils {
 
         client.player.sendMessage(message, false);
     }
+
+    public static String actionBarDataToChatLang(String prmActionBarData) {
+
+        String prefix = "GLOBAL";
+        String suffix = "";
+
+        int startIndex = prmActionBarData.indexOf(prefix);
+        int endIndex = prmActionBarData.indexOf(suffix, startIndex + prefix.length());
+
+        String extracted = null;
+        if (startIndex != -1 && endIndex != -1) {
+            extracted = prmActionBarData.substring(startIndex + prefix.length(), endIndex);
+        }
+
+        return switch (extracted) {
+            case "끰" -> "fr";
+            case "끮" -> "en";
+            case "끯" -> "es";
+            case "낃" -> "ru";
+            case "낁" -> "pt";
+            case "끬" -> "de";
+            case "낊" -> "cn";
+            case "낀" -> "pl";
+            case "끺" -> "it";
+            case "끻" -> "jp";
+            case "끾" -> "nl";
+            case "낈" -> "tr";
+            default -> "en";
+        };
+
+    }
+
+    public static String getChatFlagByLang(List<MineboxChatFlag> mbxChatFlags, String lang) {
+        for (MineboxChatFlag item : mbxChatFlags) {
+            if (item.getLang().equalsIgnoreCase(lang)) {
+                return item.getFlag();
+            }
+        }
+        return mbxChatFlags.getFirst().getFlag();
+    }
+
+
+    public static ParsedMessage extractPlayerNameAndMessage(String input) {
+        if (input == null || !input.contains(": ")) return null;
+        int lastSpecialCharIndex = input.lastIndexOf('', input.indexOf(": "));
+        if (lastSpecialCharIndex == -1) return null;
+        String playerName = input.substring(lastSpecialCharIndex + 1, input.indexOf(": ")).trim();
+        String message = input.substring(input.indexOf(": ") + 2).trim();
+        return new ParsedMessage(playerName, message);
+    }
+
+    public static void displayChatMessage(String prmFlag, String prmPlayerName, String prmMessageContent) {
+
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        Text baseMessage = Text.literal(prmFlag);
+
+        Text playerName = Text.literal(" " + prmPlayerName)
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+
+        Text playerMessage = Text.literal(": " + prmMessageContent)
+                .setStyle(Style.EMPTY.withColor(Formatting.GRAY).withBold(false));
+
+        Text message = baseMessage.copy().append(playerName).append(playerMessage);
+
+        client.player.sendMessage(message, false);
+    }
+
 }

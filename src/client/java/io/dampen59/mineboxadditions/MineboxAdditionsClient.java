@@ -11,7 +11,8 @@ import net.fabricmc.api.ClientModInitializer;
 
 public class MineboxAdditionsClient implements ClientModInitializer {
 
-	private final State modState = new State();
+	public final State modState = new State();
+	public static MineboxAdditionsClient INSTANCE;
 
 	@Override
 	public void onInitializeClient() {
@@ -25,5 +26,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
 		new TooltipEvent(modState);
 		new SkyEvent(modState);
 		new ShinyEvent(modState);
+
+		INSTANCE = this;
 	}
 }

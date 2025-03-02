@@ -13,6 +13,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +27,7 @@ public class ContainerOpenEvent {
             "Cocktail", List.of("mbx.items.blue_cocktail.name", "mbx.items.orange_cocktail.name", "mbx.items.red_cocktail.name", "mbx.items.yellow_cocktail.name", "mbx.items.lemon.name", "mbx.items.avocado.name", "mbx.items.pineapple.name")
     );
 
-    private final String playerMenuKey = "Player menu";
+    private final String[] playerMenuTitles = new String[]{"Player menu", "Menu joueur", "Menu gracza"};
 
     public ContainerOpenEvent(State modState) {
         this.modState = modState;
@@ -42,8 +44,6 @@ public class ContainerOpenEvent {
         Text containerTitle = containerScreen.getTitle();
         String translationKey = extractTranslationKey(containerTitle);
 
-        //int baseX = scaledWidth / 100;
-        //int baseY = scaledHeight / 100;
         int baseX = 5;
         int baseY = scaledHeight / 100;
 
@@ -57,7 +57,7 @@ public class ContainerOpenEvent {
             }
         } else {
             String containerTitleString = containerTitle.getString();
-            if (containerTitleString.contains(playerMenuKey)) {
+            if (Arrays.stream(playerMenuTitles).anyMatch(containerTitleString::contains)) {
 
                 for (int i = 0; i < 4; i++) {
 
@@ -98,7 +98,6 @@ public class ContainerOpenEvent {
             }
         }
     }
-
 
     private String extractTranslationKey(Text text) {
         if (text.getContent() instanceof TranslatableTextContent translatable) {
