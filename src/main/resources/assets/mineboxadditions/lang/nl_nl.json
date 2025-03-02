@@ -1,0 +1,49 @@
+{
+  "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuratie",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings": "Waarschuwingsinstellingen",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getMouseAlerts": "Muis",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBakeryAlerts": "Bakkerij",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBuckstarAlerts": "Buckstar",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getCocktailAlerts": "Cocktails",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings": "Duurzaamheidsinstellingen",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Schakel de duurzaamheidsbalk voor Haversacks in",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Schakel de duurzaamheidsbalk voor Harvesters in",
+  "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Ga naar het eiland bij het verbinden met de server",
+  "text.autoconfig.mineboxadditions.option.networkFeatures": "Netwerkfuncties",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Netwerkfuncties inschakelen? (Moet opnieuw verbinden om effect te hebben)",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Geef een waarschuwing weer wanneer de winkelaanbiedingen bekend zijn",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Stuur een waarschuwing naar andere MineboxAdditions gebruikers wanneer je een winkelaanbieding ontdekt",
+  "mineboxadditions.strings.full_moon": "Volle maan",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Weergave-instellingen",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Geef een logo in de linkerbovenhoek weer wanneer het volle maan is",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Instellingen voor tooltip voor het oppakken van items",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Schakel de functie in",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "Maximaal aantal tooltips dat tegelijkertijd wordt weergegeven",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Tooltip duur (in seconden)",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "Voeg regels samen met hetzelfde item",
+
+  "mineboxadditions.strings.tooltip.more_info": "Druk op [LINKER ALT] voor meer informatie",
+
+  "mineboxadditions.strings.update.title": "Update beschikbaar",
+  "mineboxadditions.strings.update.content": "Een nieuwe versie van MineboxAdditions is beschikbaar, sommige netwerkfuncties werken mogelijk niet meer in je huidige versie!",
+
+  "mineboxadditions.strings.toasts.shop.mouse.open.title": "Muis",
+  "mineboxadditions.strings.toasts.shop.mouse.open.content": "De muis is klaar om je een van zijn beste Franse kazen te verkopen! Ga het halen!",
+  "mineboxadditions.strings.toasts.shop.bakery.open.title": "Bakkerij",
+  "mineboxadditions.strings.toasts.shop.bakery.open.content": "Hmmm, wat is die geur? De bakkerij is nu open!",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.content": "Een cafeïneshot nodig? Buckstar is net opengegaan!",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.title": "Cocktail",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.content": "Verfrissing nodig? De cocktailbar is open!",
+
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.title": "Muis",
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.content": "Wil je een slechte adem hebben? De muis verkoopt %1$s!",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.title": "Bakkerij",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.content": "Ovens roken, het ruikt naar %1$s!",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Kom je %1$s halen bij de Buckstar!",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Cocktail",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "De barman staat klaar om je een %1$s te serveren!"
+}
