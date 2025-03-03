@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions.mixin.client;
 import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.minebox.ParsedMessage;
 import io.dampen59.mineboxadditions.utils.Utils;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.text.Text;
@@ -26,7 +27,9 @@ public class ChatMessageMixin {
 
         ParsedMessage result = Utils.extractPlayerNameAndMessage(message);
         if (result != null && currChatLang != null) {
-            MineboxAdditionsClient.INSTANCE.modState.getSocket().emit("C2SChatMessage", currChatLang, result.playerName, result.message);
+            if(MinecraftClient.getInstance().getLanguageManager().getLanguage().contains(currChatLang)) {
+                MineboxAdditionsClient.INSTANCE.modState.getSocket().emit("C2SChatMessage", currChatLang, result.playerName, result.message);
+            }
         }
 
     }
