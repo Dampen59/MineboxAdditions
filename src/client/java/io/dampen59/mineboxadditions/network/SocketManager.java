@@ -130,18 +130,18 @@ public class SocketManager {
             String msgContent = (String) args[2];
 
             if (Objects.equals(modState.getChatLang(), sourceChatLang)) return;
-            if (!config.chatSettings.multiChannelSettings.enableFrench && sourceChatLang == "fr") return;
-            if (!config.chatSettings.multiChannelSettings.enableEnglish && sourceChatLang == "en") return;
-            if (!config.chatSettings.multiChannelSettings.enableSpanish && sourceChatLang == "es") return;
-            if (!config.chatSettings.multiChannelSettings.enableRussian && sourceChatLang == "ru") return;
-            if (!config.chatSettings.multiChannelSettings.enablePortuguese && sourceChatLang == "pt") return;
-            if (!config.chatSettings.multiChannelSettings.enableDeutsch && sourceChatLang == "de") return;
-            if (!config.chatSettings.multiChannelSettings.enableChinese && sourceChatLang == "cn") return;
-            if (!config.chatSettings.multiChannelSettings.enablePolish && sourceChatLang == "pl") return;
-            if (!config.chatSettings.multiChannelSettings.enableItalian && sourceChatLang == "it") return;
-            if (!config.chatSettings.multiChannelSettings.enableJapanese && sourceChatLang == "jp") return;
-            if (!config.chatSettings.multiChannelSettings.enableDutch && sourceChatLang == "nl") return;
-            if (!config.chatSettings.multiChannelSettings.enableTurkish && sourceChatLang == "re") return;
+            if (!config.chatSettings.multiChannelSettings.enableFrench && Objects.equals(sourceChatLang, "fr")) return;
+            if (!config.chatSettings.multiChannelSettings.enableEnglish && Objects.equals(sourceChatLang, "en")) return;
+            if (!config.chatSettings.multiChannelSettings.enableSpanish && Objects.equals(sourceChatLang, "es")) return;
+            if (!config.chatSettings.multiChannelSettings.enableRussian && Objects.equals(sourceChatLang, "ru")) return;
+            if (!config.chatSettings.multiChannelSettings.enablePortuguese && Objects.equals(sourceChatLang, "pt")) return;
+            if (!config.chatSettings.multiChannelSettings.enableDeutsch && Objects.equals(sourceChatLang, "de")) return;
+            if (!config.chatSettings.multiChannelSettings.enableChinese && Objects.equals(sourceChatLang, "cn")) return;
+            if (!config.chatSettings.multiChannelSettings.enablePolish && Objects.equals(sourceChatLang, "pl")) return;
+            if (!config.chatSettings.multiChannelSettings.enableItalian && Objects.equals(sourceChatLang, "it")) return;
+            if (!config.chatSettings.multiChannelSettings.enableJapanese && Objects.equals(sourceChatLang, "jp")) return;
+            if (!config.chatSettings.multiChannelSettings.enableDutch && Objects.equals(sourceChatLang, "nl")) return;
+            if (!config.chatSettings.multiChannelSettings.enableTurkish && Objects.equals(sourceChatLang, "tr")) return;
 
             String sourceLangFlag = Utils.getChatFlagByLang(modState.getMbxChatFlags(), sourceChatLang);
             Utils.displayChatMessage(sourceLangFlag, playerName, msgContent);

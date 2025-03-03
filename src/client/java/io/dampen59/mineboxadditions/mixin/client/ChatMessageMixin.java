@@ -19,13 +19,13 @@ public class ChatMessageMixin {
         Text messageText = packet.content();
         String message = messageText.getString();
 
-        // Only global chat messages
-        if (!message.contains("\uF800\uF801")) return;
+        // Only global messages
+        if (!message.startsWith("\uDBC0\uDC98\uF801")) return;
 
         String currChatLang = MineboxAdditionsClient.INSTANCE.modState.getChatLang();
 
         ParsedMessage result = Utils.extractPlayerNameAndMessage(message);
-        if (result != null) {
+        if (result != null && currChatLang != null) {
             MineboxAdditionsClient.INSTANCE.modState.getSocket().emit("C2SChatMessage", currChatLang, result.playerName, result.message);
         }
 
