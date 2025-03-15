@@ -24,7 +24,7 @@ import java.util.Objects;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 4;
+    private final int protocolVersion = 5;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {
@@ -40,7 +40,6 @@ public class SocketManager {
         modState.setSocket(socket);
 
         socket.on("S2CShopOfferEvent", args -> {
-            if (!config.networkFeatures.receiveShopsAlerts) return;
             String shopName = (String) args[0];
             String itemName = (String) args[1];
             switch (shopName) {
@@ -48,7 +47,7 @@ public class SocketManager {
                     if (modState.getMouseCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title").getString();
                         modState.setMouseCurrentItemOffer(title + ": " + itemName);
-                        Utils.showToastNotification(title, Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", itemName).getString());
+                        Utils.showShopToastNotification("MOUSE", title, Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", itemName).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
@@ -56,7 +55,7 @@ public class SocketManager {
                     if (modState.getBakeryCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title").getString();
                         modState.setBakeryCurrentItemOffer(title + ": " + itemName);
-                        Utils.showToastNotification(title, Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", itemName).getString());
+                        Utils.showShopToastNotification("BAKERY", title, Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", itemName).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
@@ -64,7 +63,7 @@ public class SocketManager {
                     if (modState.getBuckstarCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title").getString();
                         modState.setBuckstarCurrentItemOffer(title + ": " + itemName);
-                        Utils.showToastNotification(title, Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", itemName).getString());
+                        Utils.showShopToastNotification("BUCKSTAR", title, Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", itemName).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
@@ -72,7 +71,7 @@ public class SocketManager {
                     if (modState.getCocktailCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title").getString();
                         modState.setCocktailCurrentItemOffer(title + ": " + itemName);
-                        Utils.showToastNotification(title, Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", itemName).getString());
+                        Utils.showShopToastNotification("COCKTAIL", title, Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", itemName).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;

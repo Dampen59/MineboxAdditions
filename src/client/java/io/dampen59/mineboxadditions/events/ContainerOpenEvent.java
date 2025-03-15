@@ -48,7 +48,7 @@ public class ContainerOpenEvent {
         int baseY = scaledHeight / 100;
 
         if (translationKey != null) {
-            if (slotsCount <= 45 && config.networkFeatures.sendShopsAlerts) {
+            if (slotsCount <= 45) {
                 shopOffers.forEach((shop, keys) -> {
                     if (keys.contains(translationKey)) {
                         modState.getSocket().emit("C2SShopOfferEvent", shop, translationKey);

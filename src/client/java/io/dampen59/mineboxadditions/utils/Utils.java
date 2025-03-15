@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
+import io.dampen59.mineboxadditions.minebox.MineboxToast;
 import io.dampen59.mineboxadditions.minebox.ParsedMessage;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
@@ -23,6 +24,22 @@ import net.minecraft.util.Identifier;
 import java.util.List;
 
 public class Utils {
+
+    public static void showShopToastNotification(String prmShopName, String prmTitle, String prmDescription) {
+
+        String texturePath = shopNameToTexture(prmShopName);
+        if (texturePath == null) return;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null) return;
+
+        client.getToastManager().add(new MineboxToast(
+                client.textRenderer,
+                Identifier.of("mineboxadditions", texturePath),
+                Text.of(prmTitle),
+                Text.of(prmDescription)
+        ));
+    }
 
     public static void showToastNotification(String prmTitle, String prmDescription) {
 
@@ -137,9 +154,10 @@ public class Utils {
 
 
         Text message = baseMessage.copy().append(playerText).append(baseMessageNext).append(mobText).append(endMessage);
-        playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
 
         client.player.sendMessage(message, false);
+
+        playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
     }
 
     public static String actionBarDataToChatLang(String prmActionBarData) {
@@ -207,6 +225,21 @@ public class Utils {
         Text message = baseMessage.copy().append(playerName).append(playerMessage);
 
         client.player.sendMessage(message, false);
+    }
+
+    public static String shopNameToTexture(String prmShopName) {
+        String sanitizedName = prmShopName.toLowerCase().trim();
+        String returnVal = "textures/toasts/shops/";
+
+        switch (sanitizedName) {
+            case "bakery" -> returnVal += "bakery.png";
+            case "mouse" -> returnVal += "mouse.png";
+            case "cocktail" -> returnVal += "cocktail.png";
+            case "buckstar" -> returnVal += "buckstar.png";
+            default -> returnVal = null;
+        }
+
+        return returnVal;
     }
 
 }

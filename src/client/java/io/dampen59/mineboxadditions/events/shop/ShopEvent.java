@@ -53,7 +53,8 @@ public class ShopEvent {
         if (currentWorldTicks >= shop.getStartTime() && currentWorldTicks <= shop.getStopTime()) {
             isShopOpen = true;
             if (isConfigEnabled.getAsBoolean() && !isAlertSent.getAsBoolean()) {
-                Utils.showToastNotification(
+                Utils.showShopToastNotification(
+                        shop.name(),
                         Text.translatable(shop.getToastTitleKey()).getString(),
                         Text.translatable(shop.getToastContentKey()).getString());
                 Utils.playSound(SoundEvents.BLOCK_BELL_USE);

@@ -42,14 +42,6 @@ public class ModConfig implements ConfigData {
         public boolean harvesterDurability = false;
     }
 
-    @ConfigEntry.Gui.CollapsibleObject
-    public NetworkFeatures networkFeatures = new NetworkFeatures();
-    public static class NetworkFeatures {
-        public boolean enableNetworkFeatures = false;
-        public boolean receiveShopsAlerts = true;
-        public boolean sendShopsAlerts = true;
-    }
-
     public static class ItemPickupSettings {
         public boolean displayItemsPickups = false;
         @ConfigEntry.BoundedDiscrete(min = 1, max = 10)

@@ -35,13 +35,8 @@ public class TooltipEvent {
     }
 
     private void onTooltip(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> texts) {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
-        if (!Utils.isMineboxItem(itemStack)
-                || !Utils.itemHaveStats(itemStack)
-                || !config.networkFeatures.enableNetworkFeatures) {
-            return;
-        }
+        if (!Utils.isMineboxItem(itemStack) || !Utils.itemHaveStats(itemStack)) return;
 
         boolean isAltPressed = InputUtil.isKeyPressed(
                 MinecraftClient.getInstance().getWindow().getHandle(), LEFT_ALT_KEY
