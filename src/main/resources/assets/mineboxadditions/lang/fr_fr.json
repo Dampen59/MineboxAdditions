@@ -44,6 +44,10 @@
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Néerlandais",
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turque",
 
+  "text.autoconfig.mineboxadditions.option.fishingSettings": "Paramètres du HUD de pêche",
+  "text.autoconfig.mineboxadditions.option.fishingSettings.showFishDrops": "Afficher les éléments pêchables",
+  "text.autoconfig.mineboxadditions.option.fishingSettings.fishDropRadius": "Rayon d'affichage des éléments pêchables",
+
   "mineboxadditions.strings.tooltip.more_info": "[ALT GAUCHE] pour plus d'infos",
 
   "mineboxadditions.strings.update.title": "Mise à jour disponible",
