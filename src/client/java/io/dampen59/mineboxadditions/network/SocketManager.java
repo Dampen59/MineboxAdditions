@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
+import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
@@ -107,6 +108,17 @@ public class SocketManager {
                 modState.setMbxChatFlags(items);
             } catch (JsonProcessingException e) {
                 System.out.println("[SocketManager] Failed to load Minebox Chat Flags JSON: " + e.getMessage());
+            }
+        });
+
+        socket.on("S2CMineboxFishables", args -> {
+            String jsonData = (String) args[0];
+            try {
+                List<MineboxFishingShoal.FishingShoalFish> items = mapper.readValue(jsonData,
+                        mapper.getTypeFactory().constructCollectionType(List.class, MineboxFishingShoal.FishingShoalFish.class));
+                modState.setMbxFishables(items);
+            } catch (JsonProcessingException e) {
+                System.out.println("[SocketManager] Failed to load Minebox Fishables JSON: " + e.getMessage());
             }
         });
 
