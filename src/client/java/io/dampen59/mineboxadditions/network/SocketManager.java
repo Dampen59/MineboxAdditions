@@ -170,7 +170,6 @@ public class SocketManager {
         });
     }
 
-
     // manual control over when to open or close the socket connection, not used rn
     public void connect() {
         Socket socket = modState.getSocket();

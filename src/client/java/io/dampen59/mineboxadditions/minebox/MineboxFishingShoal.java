@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MineboxFishingShoal {
