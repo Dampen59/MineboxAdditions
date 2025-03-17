@@ -25,7 +25,7 @@ import java.util.Objects;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 5;
+    private final int protocolVersion = 6;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {

@@ -1,6 +1,8 @@
 package io.dampen59.mineboxadditions.minebox;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +20,9 @@ public class MineboxFishingShoal {
         private String shoal;
         private FishingShoalConditions conditions;
         @JsonProperty("time_range") private List<Integer> timeRange;
+        private String texture;
+        @JsonIgnore
+        private Identifier resource;
 
         public FishingShoalFish() {}
 
@@ -31,6 +36,14 @@ public class MineboxFishingShoal {
         // Getters and setters
         public String getName() {
             return name;
+        }
+
+        public String getTexture() {
+            return texture;
+        }
+
+        public Identifier getResource() {
+            return Identifier.of("mineboxadditions", "textures/fish/" + name + ".png");
         }
 
         public void setName(String name) {
@@ -61,6 +74,10 @@ public class MineboxFishingShoal {
         @JsonProperty("time_range")
         public void setTimeRange(List<Integer> timeRange) {
             this.timeRange = timeRange;
+        }
+
+        public void setTexture(String texture) {
+            this.texture = texture;
         }
 
         @Override
