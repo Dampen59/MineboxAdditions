@@ -16,6 +16,14 @@
   "mineboxadditions.strings.full_moon": "Pełnia księżyca",
   "text.autoconfig.mineboxadditions.option.displaySettings": "Ustawienia wyświetlania",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca",
+  
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Ustawienia powiadomień dotyczącej podnoszenia przedmiotów",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Włącz funkcję",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "Maksymalna liczba powiadomień wyświetlanych jednocześnie",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Czas trwania powiadomienia (w sekundach)",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "Połącz wiersze z tym samym elementem",
+
+  "mineboxadditions.strings.tooltip.more_info": "Wciśnij [LEWY ALT] po więcej",
 
   "mineboxadditions.strings.update.title": "Aktualizacja dostępna",
   "mineboxadditions.strings.update.content": "Dostępna jest nowa wersja MineboxAdditions, niektóre funkcje sieciowe mogą już nie działać w bieżącej wersji!",
