@@ -4,67 +4,53 @@ import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.state.State;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
-
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ServerEvents {
+    private static final List<String> MINEBOX_HOSTNAMES = List.of("minebox.fr", "minebox.co");
+    private final State modState;
 
-    private List<String> mineboxHostnames = Arrays.asList("minebox.fr", "minebox.co");
-    private State modState = null;
-
-    public ServerEvents(State prmModState) {
-        this.modState = prmModState;
-        onServerJoinEvent();
-        onServerLeaveEvent();
+    public ServerEvents(State modState) {
+        this.modState = modState;
+        registerServerJoinEvent();
+        registerServerLeaveEvent();
     }
 
-    public void onServerJoinEvent() {
+    private void registerServerJoinEvent() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            if (MinecraftClient.getInstance().getCurrentServerEntry() != null) {
-                String serverAddress = MinecraftClient.getInstance().getCurrentServerEntry().address;
-                if (isMinebox(serverAddress)) {
-                    ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-
-                    this.modState.setConnectedToMinebox(true);
-
-                    if (config.networkFeatures.enableNetworkFeatures) {
-                        this.modState.getSocket().connect();
-                    }
-
-                    if (config.autoIslandOnLogin == true) {
-                        if (this.modState.getLoginCommandSent() == false) {
-                            MinecraftClient.getInstance().getNetworkHandler().sendPacket(new CommandExecutionC2SPacket("is"));
-                            this.modState.setLoginCommandSent(true);
-                        }
+            var serverEntry = client.getCurrentServerEntry();
+            ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+            if (serverEntry != null) {
+                String serverAddress = serverEntry.address;
+                if (isMineboxServer(serverAddress)) {
+                    modState.setConnectedToMinebox(true);
+                    modState.getSocket().connect();
+                    if (config.autoIslandOnLogin && !modState.getLoginCommandSent()) {
+                        Objects.requireNonNull(client.getNetworkHandler()).sendPacket(new CommandExecutionC2SPacket("is"));
+                        modState.setLoginCommandSent(true);
                     }
                 } else {
-                    this.modState.setConnectedToMinebox(false);
+                    modState.setConnectedToMinebox(false);
                 }
             } else {
-                // Single player
-                this.modState.setConnectedToMinebox(false);
+                modState.setConnectedToMinebox(false);
             }
         });
-
     }
 
-    public void onServerLeaveEvent() {
+    private void registerServerLeaveEvent() {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-
-            if (this.modState.getSocket().connected()) {
-                this.modState.getSocket().disconnect();
+            if (modState.getSocket().connected()) {
+                modState.getSocket().disconnect();
             }
-
-            this.modState.reset();
-
+            modState.reset();
         });
     }
 
-    public boolean isMinebox(String hostname) {
-        return mineboxHostnames.stream().anyMatch(hostname.toLowerCase()::contains);
+    private boolean isMineboxServer(String hostname) {
+        String lowerHostname = hostname.toLowerCase();
+        return MINEBOX_HOSTNAMES.stream().anyMatch(lowerHostname::contains);
     }
-
 }

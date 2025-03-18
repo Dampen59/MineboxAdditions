@@ -1,8 +1,9 @@
 package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.ModConfig;
-import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
+import io.dampen59.mineboxadditions.minebox.MineboxStat;
+import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
@@ -11,42 +12,41 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.Style;
+import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TooltipEvent {
-    private State modState = null;
+    private final State modState;
     private static final int LEFT_ALT_KEY = InputUtil.GLFW_KEY_LEFT_ALT;
 
-    public TooltipEvent(State prmModState) {
-        this.modState = prmModState;
+    public TooltipEvent(State modState) {
+        this.modState = modState;
         initializeTooltips();
     }
 
-    public void initializeTooltips() {
+    private void initializeTooltips() {
         ItemTooltipCallback.EVENT.register(this::onTooltip);
     }
 
     private void onTooltip(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> texts) {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
-        if (!Utils.isMineboxItem(itemStack)) return;
-        if (!Utils.itemHaveStats(itemStack)) return;
-        if (!config.networkFeatures.enableNetworkFeatures) return;
+        if (!Utils.isMineboxItem(itemStack) || !Utils.itemHaveStats(itemStack)) return;
 
         boolean isAltPressed = InputUtil.isKeyPressed(
                 MinecraftClient.getInstance().getWindow().getHandle(), LEFT_ALT_KEY
         );
 
         if (isAltPressed) {
-
             String itemId = Utils.getMineboxItemId(itemStack);
 
             if (modState.getMbxItems() == null) {
-                System.out.println("[MineboxAdditions] Can't display more infos because State mbxItems is null :o");
+                System.out.println("[MineboxAdditions] Cannot display more info because modState.getMbxItems() is null");
                 return;
             }
 
@@ -54,51 +54,66 @@ public class TooltipEvent {
             if (mbxItem == null) return;
 
             for (int i = 0; i < texts.size(); i++) {
-                Text text = texts.get(i);
-                boolean hasBeenModified = false;
-
+                Text originalText = texts.get(i);
+                boolean modified = false;
                 List<Text> updatedSiblings = new ArrayList<>();
 
-                for (Text sibling : text.getSiblings()) {
-                    updatedSiblings.add(sibling);
-                    List<Text> nestedSiblings = sibling.getSiblings();
-                    for (Text nestedSibling : nestedSiblings) {
-                        if (nestedSibling.getContent() instanceof TranslatableTextContent) {
-                            TranslatableTextContent translatableContent = (TranslatableTextContent) nestedSibling.getContent();
+                for (Text sibling : originalText.getSiblings()) {
+                    List<Text> newNestedSiblings = new ArrayList<>();
+
+                    for (Text nestedSibling : sibling.getSiblings()) {
+                        if (nestedSibling.getContent() instanceof TranslatableTextContent translatableContent) {
                             String translationKey = translatableContent.getKey();
-                            if (translationKey.contains("mbx.stats.")) {
+                            if (translationKey.startsWith("mbx.stats.")) {
                                 String jsonKey = translationKey.replace(".", "_");
+                                MineboxStat stat = mbxItem.getStat(jsonKey).orElse(null);
+                                if (stat != null && stat.getMin() != null && stat.getMax() != null) {
+                                    int minRoll = stat.getMin();
+                                    int maxRoll = stat.getMax();
 
-                                if (mbxItem.getStats(jsonKey) == null) break; // Ignore null stats (non-migrated items)
+                                    Formatting color = (minRoll < 0 && maxRoll < 0)
+                                            ? Formatting.RED
+                                            : Formatting.DARK_GREEN;
 
-                                int minRoll = mbxItem.getStats(jsonKey).getMin();
-                                int maxRoll = mbxItem.getStats(jsonKey).getMax();
-                                String baseStats = null;
-                                if (minRoll == maxRoll) {
-                                    baseStats = " [" + maxRoll + "]";
-                                } else {
-                                    baseStats = " [" + minRoll + " - " +  maxRoll + "]";
+                                    String numericRange = (minRoll == maxRoll)
+                                            ? " [" + maxRoll + "]"
+                                            : " [" + minRoll + " to " + maxRoll + "]";
+
+                                    newNestedSiblings.add(
+                                            Text.literal(numericRange)
+                                                    .setStyle(Style.EMPTY.withColor(color))
+                                    );
+                                    modified = true;
+                                    continue;
                                 }
-                                Text baseStatsSibling = Text.literal(baseStats).setStyle(sibling.getStyle());
-                                updatedSiblings.add(baseStatsSibling);
-                                hasBeenModified = true;
-                                break;
                             }
                         }
+                        newNestedSiblings.add(nestedSibling);
                     }
+
+                    MutableText updatedSibling;
+                    if (sibling.getContent() instanceof TranslatableTextContent translatableContent
+                            && translatableContent.getKey().startsWith("mbx.stats.")) {
+                        updatedSibling = Text.literal("");
+                    } else {
+                        updatedSibling = sibling.copy();
+                    }
+                    for (Text nested : newNestedSiblings) {
+                        updatedSibling = updatedSibling.append(nested);
+                    }
+                    updatedSiblings.add(updatedSibling);
                 }
 
-                if (hasBeenModified) {
-                    Text updatedText = Text.literal("");
-                    for (Text updatedSibling : updatedSiblings) {
-                        updatedText = updatedText.copy().append(updatedSibling);
+                if (modified) {
+                    MutableText updatedText = Text.literal("");
+                    for (Text sib : updatedSiblings) {
+                        updatedText = updatedText.append(sib);
                     }
                     texts.set(i, updatedText);
                 }
             }
-
         } else {
-            texts.add(Text.of(""));
+            texts.add(Text.literal(""));
             texts.add(Text.translatable("mineboxadditions.strings.tooltip.more_info"));
         }
     }

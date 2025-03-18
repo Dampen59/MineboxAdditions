@@ -1,0 +1,49 @@
+{
+  "text.autoconfig.mineboxadditions.title": "MineboxAdditions 配置",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings": "警报设置",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getMouseAlerts": "老鼠",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBakeryAlerts": "面包店",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBuckstarAlerts": "星巴克",
+  "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getCocktailAlerts": "鸡尾酒",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings": "耐久度设置",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "启用背包耐久度条",
+  "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "启用收割器耐久度条",
+  "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "连接服务器时自动进入岛屿",
+  "text.autoconfig.mineboxadditions.option.networkFeatures": "网络功能",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "启用网络功能？（必须重新连接才能生效）",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "当商店有新优惠时显示警报",
+  "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "当您发现商店优惠时，向其他MineboxAdditions用户发送警报",
+  "mineboxadditions.strings.full_moon": "满月",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings": "显示设置",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "在满月时在左上角显示徽标",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "物品拾取提示设置",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "启用此功能",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "最大同时显示的提示数量",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "提示持续时间（秒）",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "合并相同物品的行",
+
+  "mineboxadditions.strings.tooltip.more_info": "按 [LEFT ALT] 获取更多信息",
+
+  "mineboxadditions.strings.update.title": "更新可用",
+  "mineboxadditions.strings.update.content": "MineboxAdditions 有新版本发布，您当前版本的一些网络功能可能不再有效！",
+
+  "mineboxadditions.strings.toasts.shop.mouse.open.title": "老鼠",
+  "mineboxadditions.strings.toasts.shop.mouse.open.content": "老鼠准备好出售它的顶级法国奶酪！快去买吧！",
+  "mineboxadditions.strings.toasts.shop.bakery.open.title": "面包店",
+  "mineboxadditions.strings.toasts.shop.bakery.open.content": "嗯，那是什么味道？面包店现在开门了！",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.title": "星巴克",
+  "mineboxadditions.strings.toasts.shop.buckstar.open.content": "需要一杯咖啡因吗？星巴克刚刚开门！",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.title": "鸡尾酒",
+  "mineboxadditions.strings.toasts.shop.cocktail.open.content": "需要一杯清凉饮品吗？鸡尾酒吧开门了！",
+
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.title": "老鼠",
+  "mineboxadditions.strings.toasts.shop.mouse.iteminfo.content": "想要芝士吗？老鼠正在出售 %1$s！",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.title": "面包店",
+  "mineboxadditions.strings.toasts.shop.bakery.iteminfo.content": "烤箱冒烟了，闻起来像 %1$s！",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "星巴克",
+  "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "来星巴克拿你的 %1$s 吧！",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "鸡尾酒",
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "酒吧老板准备好为你提供 %1$s 了！"
+}

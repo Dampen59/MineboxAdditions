@@ -18,6 +18,7 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca",
   
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Ustawienia powiadomień dotyczącej podnoszenia przedmiotów",
+
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Włącz tę funkcję",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "Maksymalna liczba powiadomień wyświetlanych jednocześnie",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Czas trwania powiadomienia (w sekundach)",
