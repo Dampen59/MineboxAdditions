@@ -20,16 +20,15 @@ public class MineboxFishingShoal {
         private FishingShoalConditions conditions;
         @JsonProperty("time_range") private List<Integer> timeRange;
         private String texture;
-        @JsonIgnore
-        private Identifier resource;
 
         public FishingShoalFish() {}
 
-        public FishingShoalFish(String name, String shoal, FishingShoalConditions conditions, List<Integer> timeRange) {
+        public FishingShoalFish(String name, String shoal, FishingShoalConditions conditions, List<Integer> timeRange, String texture) {
             this.name = name;
             this.shoal = shoal;
             this.conditions = conditions;
             this.timeRange = timeRange;
+            this.texture = texture;
         }
 
         // Getters and setters
@@ -43,6 +42,10 @@ public class MineboxFishingShoal {
 
         public Identifier getResource() {
             return Identifier.of("mineboxadditions", "textures/fish/" + name + ".png");
+        }
+
+        public void setResource(Identifier resource) {
+            this.texture = resource.toString();
         }
 
         public void setName(String name) {

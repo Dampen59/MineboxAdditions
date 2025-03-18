@@ -1,9 +1,11 @@
 package io.dampen59.mineboxadditions.events;
 
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.ImageUtils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -15,6 +17,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
@@ -25,6 +29,9 @@ import org.joml.Quaternionf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static io.dampen59.mineboxadditions.utils.ImageUtils.textureExists;
 
 public class WorldRendererEvent {
 
@@ -96,7 +103,29 @@ public class WorldRendererEvent {
                 // 1. No specific weather is required (all conditions are false), OR
                 // 2. A specific weather is required and the condition is met
                 if (!weatherConditionRequired || weatherConditionMet) {
-                    textures.add(fish.getResource());
+                    // Check if texture is already loaded
+                    // If not, load it from base64 and register it
+                    // If texture is null, skip this fish
+                    // If texture is already loaded, add it to the list
+                    ResourceManager resource = MinecraftClient.getInstance().getResourceManager();
+                    Identifier resourceID = fish.getResource();
+                    if(textureExists(resource, resourceID)) {
+                        textures.add(resourceID);
+                    } else {
+                        if(fish.getTexture() != null) {
+                            String base64 = fish.getTexture();
+                            Identifier identifier = ImageUtils.createTextureFromBase64(base64, "textures/fish/" + fish.getName() + ".png");
+                            if(identifier == null) {
+                                // MineboxAdditions.LOGGER.error("Couldn't load texture for fish {} because its null", fish.getName());
+                            } else {
+                                fish.setResource(identifier);
+                                textures.add(identifier);
+                                // MineboxAdditions.LOGGER.info("Loaded texture for fish {}", fish.getName());
+                            }
+                        } else {
+                            // MineboxAdditions.LOGGER.error("Texture for fish {} is null", fish.getName());
+                        }
+                    }
                 }
             }
         });

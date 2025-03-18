@@ -5,6 +5,7 @@ import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Optional;
 
 public class ImageUtils {
     public static Identifier createTextureFromBufferedImage(BufferedImage image, String identifierName) {
@@ -96,6 +98,17 @@ public class ImageUtils {
         } catch (IOException e) {
             MineboxAdditions.LOGGER.error(e.toString());
             return null; // Handle the error appropriately
+        }
+    }
+
+    public static boolean textureExists(ResourceManager resourceManager, Identifier textureId) {
+        try {
+            Optional<Resource> resource = resourceManager.getResource(textureId);
+            if (resource.isEmpty()) return false; // Resource doesn't exist
+            resource.get().getInputStream().close(); // Attempt to open and close the stream
+            return true; // If we got here without an exception, the texture exists
+        } catch (Exception e) {
+            return false; // Texture doesn't exist or couldn't be accessed
         }
     }
 }
