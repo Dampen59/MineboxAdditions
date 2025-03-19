@@ -29,9 +29,9 @@ import java.util.List;
 import static io.dampen59.mineboxadditions.utils.ImageUtils.textureExists;
 
 public class WorldRendererEvent {
-
     public WorldRendererEvent() {
         WorldRenderEvents.AFTER_ENTITIES.register(WorldRendererEvent::onRender);
+
     }
 
     public static void onRender(WorldRenderContext context) {

@@ -1,9 +1,7 @@
 package io.dampen59.mineboxadditions.events;
 
-import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.ExtraInventoryUtils;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
 import net.minecraft.client.MinecraftClient;
