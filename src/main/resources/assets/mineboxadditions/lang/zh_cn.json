@@ -24,6 +24,10 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "提示持续时间（秒）",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.mergeLines": "合并相同物品的行",
 
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "钓鱼 HUD 设置",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "显示鱼滴 HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "“在您周围搜索鱼群的块数",
+
   "mineboxadditions.strings.tooltip.more_info": "按 [LEFT ALT] 获取更多信息",
 
   "mineboxadditions.strings.update.title": "更新可用",
