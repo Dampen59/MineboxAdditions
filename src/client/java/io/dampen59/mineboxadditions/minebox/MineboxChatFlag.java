@@ -4,6 +4,8 @@ public class MineboxChatFlag {
     private String lang;
     private String flag;
 
+    public MineboxChatFlag() {}
+
     public MineboxChatFlag(String lang, String flag) {
         this.lang = lang;
         this.flag = flag;
