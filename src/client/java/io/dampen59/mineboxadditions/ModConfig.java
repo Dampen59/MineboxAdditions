@@ -70,6 +70,14 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.CollapsibleObject
         public ItemRaritySettings itemRaritySettings = new ItemRaritySettings();
 
+        @ConfigEntry.Gui.CollapsibleObject
+        public FishingSettings fishingSettings = new FishingSettings();
+        public static class FishingSettings {
+            public boolean showFishDrops = true;
+            @ConfigEntry.BoundedDiscrete(min = 1, max = 50)
+            public int fishDropRadius = 25;
+        }
+
         public boolean displayFullMoon = false;
     }
 
@@ -97,14 +105,6 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.CollapsibleObject
         public MultiChannelSettings multiChannelSettings = new MultiChannelSettings();
 
-    }
-
-    @ConfigEntry.Gui.CollapsibleObject
-    public FishingSettings fishingSettings = new FishingSettings();
-    public static class FishingSettings {
-        public boolean showFishDrops = true;
-        @ConfigEntry.BoundedDiscrete(min = 1, max = 50)
-        public int fishDropRadius = 25;
     }
 
     public boolean autoIslandOnLogin = false;

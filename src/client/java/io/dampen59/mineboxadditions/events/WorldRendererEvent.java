@@ -38,14 +38,14 @@ public class WorldRendererEvent {
         State state = MineboxAdditionsClient.INSTANCE.modState;
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         if(!state.getConnectedToMinebox()) return;
-        if(!config.fishingSettings.showFishDrops) return;
+        if(!config.displaySettings.fishingSettings.showFishDrops) return;
         MinecraftClient mc = MinecraftClient.getInstance();
         World world = mc.world;
         if(mc.player == null) return;
         if(world == null) return;
         String worldID = world.getRegistryKey().getValue().toString();
         if(worldID.equals("minecraft:overworld") || worldID.equals("minecraft:island_tropical")) {
-            Box searchBox = mc.player.getBoundingBox().expand(config.fishingSettings.fishDropRadius);
+            Box searchBox = mc.player.getBoundingBox().expand(config.displaySettings.fishingSettings.fishDropRadius);
             List<Entity> entities = mc.world.getOtherEntities(mc.player, searchBox)
                     .stream()
                     .filter(WorldRendererEvent::isFishingShoal)

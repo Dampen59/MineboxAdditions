@@ -45,9 +45,9 @@
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Dutch",
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turkish",
 
-  "text.autoconfig.mineboxadditions.option.fishingSettings": "Fishing HUD settings",
-  "text.autoconfig.mineboxadditions.option.fishingSettings.showFishDrops": "Display Fish Drops HUD",
-    "text.autoconfig.mineboxadditions.option.fishingSettings.fishDropRadius": "The amount of blocks to search around you for fishing shoals",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Fishing HUD settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Display Fish Drops HUD",
+    "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "The amount of blocks to search around you for fishing shoals",
 
   "mineboxadditions.strings.tooltip.more_info": "Press [LEFT ALT] for more info",
 
