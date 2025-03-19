@@ -101,9 +101,9 @@ public class WorldRendererEvent {
                     // Check if texture is already loaded
                     // If not, load it from base64 and register it
                     // If texture is null, skip this fish
-                    TextureManager resource = MinecraftClient.getInstance().getTextureManager();
+                    TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
                     Identifier resourceID = fish.getResource();
-                    if(textureExists(resource, resourceID)) {
+                    if(textureExists(textureManager, resourceID)) {
                         textures.add(resourceID);
                     }
                 }
