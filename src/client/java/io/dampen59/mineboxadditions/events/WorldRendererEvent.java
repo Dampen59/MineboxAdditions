@@ -44,15 +44,13 @@ public class WorldRendererEvent {
         if(mc.player == null) return;
         if(world == null) return;
         String worldID = world.getRegistryKey().getValue().toString();
-        if(worldID.equals("minecraft:overworld") || worldID.equals("minecraft:island_tropical")) {
-            Box searchBox = mc.player.getBoundingBox().expand(config.displaySettings.fishingSettings.fishDropRadius);
-            List<Entity> entities = mc.world.getOtherEntities(mc.player, searchBox)
-                    .stream()
-                    .filter(WorldRendererEvent::isFishingShoal)
-                    .toList();
-            if(entities.isEmpty()) return;
-            entities.forEach((entity) -> doRender(entity, context, state));
-        }
+        Box searchBox = mc.player.getBoundingBox().expand(config.displaySettings.fishingSettings.fishDropRadius);
+        List<Entity> entities = mc.world.getOtherEntities(mc.player, searchBox)
+                .stream()
+                .filter(WorldRendererEvent::isFishingShoal)
+                .toList();
+        if(entities.isEmpty()) return;
+        entities.forEach((entity) -> doRender(entity, context, state));
     }
 
     private static List<Identifier> getTexture(String shoal, World world, State state) {
