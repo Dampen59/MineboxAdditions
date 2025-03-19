@@ -11,7 +11,6 @@ import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.resource.Resource;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.ClickEvent;
@@ -76,8 +75,7 @@ public class Utils {
             for (Text sibling : lore.getSiblings()) {
                 List<Text> nestedSiblings = sibling.getSiblings();
                 for (Text nestedSibling : nestedSiblings) {
-                    if (!(nestedSibling.getContent() instanceof TranslatableTextContent)) continue;
-                    TranslatableTextContent translatableContent = (TranslatableTextContent) nestedSibling.getContent();
+                    if (!(nestedSibling.getContent() instanceof TranslatableTextContent translatableContent)) continue;
                     String translationKey = translatableContent.getKey();
                     if (translationKey.contains("mbx.stats.")) return true;
                 }
@@ -91,9 +89,7 @@ public class Utils {
         if (itemData == null) return false;
 
         NbtCompound nbtData = itemData.copyNbt();
-        if (nbtData == null || !nbtData.contains("mbitems:id")) return false;
-
-        return true;
+        return nbtData != null && nbtData.contains("mbitems:id");
     }
 
     public static String getMineboxItemId(ItemStack itemStack) {

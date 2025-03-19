@@ -1,3 +1,4 @@
+{
   "text.autoconfig.mineboxadditions.title": "Konfiguracja MineboxAdditions",
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings": "Ustawienia alertów",
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getMouseAlerts": "Mysz",
@@ -45,9 +46,9 @@
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Niderlandzki",
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turecki",
   
-  "text.autoconfig.mineboxadditions.option.fishingSettings": "Ustawienia HUD-a wędkarza",
-  "text.autoconfig.mineboxadditions.option.fishingSettings.showFishDrops": "Wyświetl HUD z wypadanymi przedmiotami",
-  "text.autoconfig.mineboxadditions.option.fishingSettings.fishDropRadius": "Ilość bloków, w których można przeszukać okolicę w poszukiwaniu ławic ryb",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Ustawienia HUD-a wędkarza",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Wyświetl HUD z wypadanymi przedmiotami",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "Ilość bloków, w których można przeszukać okolicę w poszukiwaniu ławic ryb",
 
   "mineboxadditions.strings.tooltip.more_info": "Wciśnij [LEWY ALT] po więcej",
 

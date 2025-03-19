@@ -5,8 +5,7 @@ public class ExtraInventoryItem {
     public String itemName;
     public String itemUid;
 
-    public ExtraInventoryItem() {
-    }
+    public ExtraInventoryItem() {}
 
     public ExtraInventoryItem(String prmItemId, String prmItemName, String prmItemUid) {
         this.itemId = prmItemId;

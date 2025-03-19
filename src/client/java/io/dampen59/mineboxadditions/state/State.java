@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.state;
 
 import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
+import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.Socket;
@@ -31,7 +32,9 @@ public class State {
 
     private List<MineboxChatFlag> mbxChatFlags = null;
 
-    private Map<String, Boolean> mbxShiniesUuids = new HashMap<String, Boolean>();
+    private List<MineboxFishingShoal.FishingShoalFish> mbxFishables = new ArrayList<>();
+
+    private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
 
     private Socket objSocket = null;
 
@@ -152,6 +155,13 @@ public class State {
     }
     public List<MineboxChatFlag> getMbxChatFlags() {
         return this.mbxChatFlags;
+    }
+
+    public void setMbxFishables(List<MineboxFishingShoal.FishingShoalFish> prmValue) {
+        this.mbxFishables = prmValue;
+    }
+    public List<MineboxFishingShoal.FishingShoalFish> getMbxFishables() {
+        return this.mbxFishables;
     }
 
     public Map<String, Boolean> getMbxShiniesUuids() { return this.mbxShiniesUuids; }

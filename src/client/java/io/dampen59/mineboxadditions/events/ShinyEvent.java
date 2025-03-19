@@ -31,7 +31,7 @@ public class ShinyEvent {
     private void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommandManager.literal("mbaSendShinyAlert").executes(context -> {
 
-            Text message = null;
+            Text message;
 
             if (!this.modState.getMbxShiniesUuids().containsKey(shinyUuid)) return Command.SINGLE_SUCCESS;
 
@@ -43,7 +43,7 @@ public class ShinyEvent {
                 this.modState.getMbxShiniesUuids().replace(shinyUuid, true);
                 message = Text.literal("✔ Both MineboxAdditions users and current chat channel have been notified. Thank you !")
                         .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-                MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [" + Text.translatable(this.mobNameKey).getString() + "] on me ! [tpa]");
+                if(MinecraftClient.getInstance().player != null) MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [" + Text.translatable(this.mobNameKey).getString() + "] on me ! [tpa]");
             } else {
                 message = Text.literal("❌ You've already notified other MineboxAdditions users !")
                         .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
@@ -105,7 +105,7 @@ public class ShinyEvent {
             if (this.shinyUuid == textDisplay.getUuidAsString()) {
                  returnValue = true;
                  break;
-            };
+            }
         }
         return returnValue;
     }

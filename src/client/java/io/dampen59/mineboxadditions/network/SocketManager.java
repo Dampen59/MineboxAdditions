@@ -2,10 +2,13 @@ package io.dampen59.mineboxadditions.network;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
+import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -15,6 +18,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 import java.net.URI;
 import java.util.Arrays;
@@ -24,7 +28,7 @@ import java.util.Objects;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 5;
+    private final int protocolVersion = 6;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {
@@ -110,6 +114,48 @@ public class SocketManager {
             }
         });
 
+        socket.on("S2CMineboxFishables", args -> {
+            String jsonData = (String) args[0];
+            MineboxAdditions.LOGGER.info("Received fishables data, length: {}", jsonData.length());
+
+            try {
+                List<MineboxFishingShoal.FishingShoalFish> items = mapper.readValue(jsonData,
+                        mapper.getTypeFactory().constructCollectionType(List.class, MineboxFishingShoal.FishingShoalFish.class));
+
+                MineboxAdditions.LOGGER.info("Parsed {} fishable items", items.size());
+
+                int successCount = 0;
+                int failCount = 0;
+
+                for (MineboxFishingShoal.FishingShoalFish fish : items) {
+                    if (fish.getTexture() == null) {
+                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", fish.getName());
+                        continue;
+                    }
+
+                    MineboxAdditions.LOGGER.info("Processing texture for fish: {}", fish.getName());
+                    String textureName = "textures/fish/" + fish.getName() + ".png";
+
+                    Identifier resource = ImageUtils.createTextureFromBase64(fish.getTexture(), textureName);
+
+                    if (resource != null) {
+                        fish.setResource(resource);
+                        successCount++;
+                        MineboxAdditions.LOGGER.info("Successfully created texture for: {}", fish.getName());
+                    } else {
+                        failCount++;
+                        MineboxAdditions.LOGGER.error("Failed to create texture for fish: {}", fish.getName());
+                    }
+                }
+
+                MineboxAdditions.LOGGER.info("Texture processing complete. Success: {}, Failed: {}", successCount, failCount);
+                modState.setMbxFishables(items);
+            } catch (JsonProcessingException e) {
+                MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}", e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            }
+        });
+
+
         socket.on("S2CShinyEvent", args -> {
             String playerName = (String) args[0];
             String mobKey = (String) args[1];
@@ -157,7 +203,6 @@ public class SocketManager {
             }
         });
     }
-
 
     // manual control over when to open or close the socket connection, not used rn
     public void connect() {

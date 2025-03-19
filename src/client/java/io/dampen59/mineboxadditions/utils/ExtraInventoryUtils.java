@@ -60,7 +60,7 @@ public class ExtraInventoryUtils {
         MinecraftClient client = MinecraftClient.getInstance();
 
         String setName = getSetName(setIndex);
-        List<String> missingItems = new ArrayList<String>();
+        List<String> missingItems = new ArrayList<>();
         boolean foundCurrentItem = false;
 
         for (Map.Entry<Integer, ExtraInventoryItem> entry : AutoConfig.getConfigHolder(ModConfig.class).getConfig().getSet(setIndex).entrySet()) {
@@ -112,7 +112,7 @@ public class ExtraInventoryUtils {
              returnMessage = Text.literal("✔ You have equipped your " + setName + " set successfully ! ")
                     .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
         } else {
-            returnMessage = Text.literal("❌ You have equipped your " + setName + " set but the following items were missing : " + missingItems.stream().map(Object::toString).collect(Collectors.joining(", ")).toString())
+            returnMessage = Text.literal("❌ You have equipped your " + setName + " set but the following items were missing : " + missingItems.stream().map(Object::toString).collect(Collectors.joining(", ")))
                     .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(true));
         }
 

@@ -26,6 +26,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
 		new TooltipEvent(modState);
 		new SkyEvent(modState);
 		new ShinyEvent(modState);
+		new WorldRendererEvent();
 
 		INSTANCE = this;
 	}
