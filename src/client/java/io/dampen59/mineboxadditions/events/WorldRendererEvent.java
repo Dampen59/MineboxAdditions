@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -106,25 +107,10 @@ public class WorldRendererEvent {
                     // Check if texture is already loaded
                     // If not, load it from base64 and register it
                     // If texture is null, skip this fish
-                    // If texture is already loaded, add it to the list
-                    ResourceManager resource = MinecraftClient.getInstance().getResourceManager();
+                    TextureManager resource = MinecraftClient.getInstance().getTextureManager();
                     Identifier resourceID = fish.getResource();
                     if(textureExists(resource, resourceID)) {
                         textures.add(resourceID);
-                    } else {
-                        if(fish.getTexture() != null) {
-                            String base64 = fish.getTexture();
-                            Identifier identifier = ImageUtils.createTextureFromBase64(base64, "textures/fish/" + fish.getName() + ".png");
-                            if(identifier == null) {
-                                // MineboxAdditions.LOGGER.error("Couldn't load texture for fish {} because its null", fish.getName());
-                            } else {
-                                fish.setResource(identifier);
-                                textures.add(identifier);
-                                // MineboxAdditions.LOGGER.info("Loaded texture for fish {}", fish.getName());
-                            }
-                        } else {
-                            // MineboxAdditions.LOGGER.error("Texture for fish {} is null", fish.getName());
-                        }
                     }
                 }
             }
