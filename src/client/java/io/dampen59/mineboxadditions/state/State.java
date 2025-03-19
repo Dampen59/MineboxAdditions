@@ -34,7 +34,7 @@ public class State {
 
     private List<MineboxFishingShoal.FishingShoalFish> mbxFishables = new ArrayList<>();
 
-    private Map<String, Boolean> mbxShiniesUuids = new HashMap<String, Boolean>();
+    private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
 
     private Socket objSocket = null;
 

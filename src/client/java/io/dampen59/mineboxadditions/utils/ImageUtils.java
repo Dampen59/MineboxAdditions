@@ -1,24 +1,15 @@
 package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.*;
-import net.minecraft.resource.Resource;
-import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Base64;
-import java.util.Optional;
 
 public class ImageUtils {
     public static Identifier createTextureFromBufferedImage(BufferedImage image, String identifierName) {
@@ -29,6 +20,7 @@ public class ImageUtils {
 
         try {
             // Convert BufferedImage to NativeImage
+            @SuppressWarnings("resource")
             NativeImage nativeImage = new NativeImage(image.getWidth(), image.getHeight(), false);
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
@@ -71,16 +63,6 @@ public class ImageUtils {
         }
     }
 
-    public static String encodeImageToBase64(String filePath) {
-        try {
-            byte[] fileContent = Files.readAllBytes(Paths.get(filePath));
-            return Base64.getEncoder().encodeToString(fileContent);
-        } catch (IOException e) {
-            MineboxAdditions.LOGGER.error(e.toString());
-            return null;
-        }
-    }
-
     public static BufferedImage decodeBase64ToImage(String base64Image) {
         if (base64Image == null || base64Image.isEmpty()) {
             MineboxAdditions.LOGGER.error("Base64 image string is null or empty");
@@ -97,15 +79,15 @@ public class ImageUtils {
             // Log a small sample of the base64 for debugging (first 50 chars)
             String sampleBase64 = base64Image.length() > 50 ?
                     base64Image.substring(0, 50) + "..." : base64Image;
-            MineboxAdditions.LOGGER.info("Decoding base64 image (sample): " + sampleBase64);
+            MineboxAdditions.LOGGER.info("Decoding base64 image (sample): {}", sampleBase64);
 
             // Decode the Base64 string
             byte[] imageBytes;
             try {
                 imageBytes = Base64.getDecoder().decode(base64Image);
-                MineboxAdditions.LOGGER.info("Successfully decoded " + imageBytes.length + " bytes");
+                MineboxAdditions.LOGGER.info("Successfully decoded {} bytes", imageBytes.length);
             } catch (IllegalArgumentException e) {
-                MineboxAdditions.LOGGER.error("Failed to decode base64: " + e.getMessage());
+                MineboxAdditions.LOGGER.error("Failed to decode base64: {}", e.getMessage());
                 return null;
             }
 
@@ -116,7 +98,7 @@ public class ImageUtils {
 
             // Try to determine image format from the bytes
             String format = determineImageFormat(imageBytes);
-            MineboxAdditions.LOGGER.info("Detected image format: " + (format != null ? format : "unknown"));
+            MineboxAdditions.LOGGER.info("Detected image format: {}", format != null ? format : "unknown");
 
             // Convert the byte array to a BufferedImage
             ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
@@ -127,11 +109,10 @@ public class ImageUtils {
                 return null;
             }
 
-            MineboxAdditions.LOGGER.info("Successfully created image: " + image.getWidth() + "x" + image.getHeight());
+            MineboxAdditions.LOGGER.info("Successfully created image: {}x{}", image.getWidth(), image.getHeight());
             return image;
         } catch (Exception e) {
-            MineboxAdditions.LOGGER.error("Error decoding base64 to image: " + e.getMessage());
-            e.printStackTrace();
+            MineboxAdditions.LOGGER.error("Error decoding base64 to image: {}\n{}", e.getMessage(), e.getStackTrace());
             return null;
         }
     }
@@ -159,23 +140,6 @@ public class ImageUtils {
         }
 
         return null; // Unknown format
-    }
-
-
-    public static BufferedImage getTextureAsBufferedImage(ResourceManager resourceManager, String texturePath) {
-        // Create the Identifier for the texture
-        Identifier textureId = Identifier.of("mineboxaddons", texturePath);
-        if(resourceManager.getResource(textureId).isEmpty()) {
-            MineboxAdditions.LOGGER.error("Resource not found: {}", textureId);
-            return null;
-        }
-        try (InputStream inputStream = resourceManager.getResource(textureId).get().getInputStream()) {
-            // Read the file into a BufferedImage
-            return ImageIO.read(inputStream);
-        } catch (IOException e) {
-            MineboxAdditions.LOGGER.error(e.toString());
-            return null; // Handle the error appropriately
-        }
     }
 
     public static boolean textureExists(TextureManager textureManager, Identifier textureId) {

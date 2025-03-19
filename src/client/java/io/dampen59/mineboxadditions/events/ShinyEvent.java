@@ -105,7 +105,7 @@ public class ShinyEvent {
             if (this.shinyUuid == textDisplay.getUuidAsString()) {
                  returnValue = true;
                  break;
-            };
+            }
         }
         return returnValue;
     }

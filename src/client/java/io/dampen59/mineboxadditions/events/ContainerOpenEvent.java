@@ -39,7 +39,6 @@ public class ContainerOpenEvent {
             return;
         }
 
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         int slotsCount = containerScreen.getScreenHandler().slots.size();
         Text containerTitle = containerScreen.getTitle();
         String translationKey = extractTranslationKey(containerTitle);
@@ -63,11 +62,11 @@ public class ContainerOpenEvent {
 
                     final int setId = i;
                     int yOffset = baseY * 30 + (55 * i); // 30
-                    int textBoxX = baseX * 1 + 16 + 5; // 25
+                    int textBoxX = baseX + 16 + 5; // 25
                     int textBoxY = baseY * 30 + 22 + 2 + (55 * i); // 30
                     TextFieldWidget setNameTextbox = new TextFieldWidget(client.textRenderer, textBoxX, textBoxY, 96, 22, Text.empty());
 
-                    int renameButtonX = baseX * 1; // 25
+                    int renameButtonX = baseX; // 25
                     int renameButtonY = baseY * 30 + 12 + (55 * i); // 30
                     int equipButtonX = textBoxX;
                     int equipButtonY = baseY * 30 + (55 * i); // 30
@@ -84,9 +83,7 @@ public class ContainerOpenEvent {
                         ExtraInventoryUtils.saveCurrentSetToSlotId(containerScreen.getScreenHandler().slots, setId);
                     }).dimensions(renameButtonX, renameButtonY, 16, 24).build();
 
-                    ButtonWidget equipButton = ButtonWidget.builder(Text.literal("Equip [" + ExtraInventoryUtils.getSetName(setId) + "]"), buttonWidget -> {
-                        ExtraInventoryUtils.equipSet(containerScreen.getScreenHandler().slots, setId);
-                    }).dimensions(equipButtonX, equipButtonY, 96, 22).build();
+                    ButtonWidget equipButton = ButtonWidget.builder(Text.literal("Equip [" + ExtraInventoryUtils.getSetName(setId) + "]"), buttonWidget -> ExtraInventoryUtils.equipSet(containerScreen.getScreenHandler().slots, setId)).dimensions(equipButtonX, equipButtonY, 96, 22).build();
 
                     // Store the equip button reference for later update
                     equipButtonRef[0] = equipButton;
