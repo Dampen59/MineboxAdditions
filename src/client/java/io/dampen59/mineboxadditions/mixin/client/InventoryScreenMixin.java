@@ -21,6 +21,7 @@ import java.awt.Color;
 @Mixin(HandledScreen.class)
 public abstract class InventoryScreenMixin extends Screen {
 
+    @Unique
     private ModConfig config = null;
 
     protected InventoryScreenMixin() {

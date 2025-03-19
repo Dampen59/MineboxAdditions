@@ -2,8 +2,6 @@ package io.dampen59.mineboxadditions.minebox;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dampen59.mineboxadditions.utils.ImageUtils;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
