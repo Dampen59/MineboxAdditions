@@ -61,6 +61,12 @@ public class ModConfig implements ConfigData {
         public int backgroundOpacity = 50;
     }
 
+    public static class FishingSettings {
+        public boolean showFishDrops = true;
+        @ConfigEntry.BoundedDiscrete(min = 1, max = 50)
+        public int fishDropRadius = 25;
+    }
+
     @ConfigEntry.Gui.CollapsibleObject
     public DisplaySettings displaySettings = new DisplaySettings();
     public static class DisplaySettings {
@@ -72,11 +78,6 @@ public class ModConfig implements ConfigData {
 
         @ConfigEntry.Gui.CollapsibleObject
         public FishingSettings fishingSettings = new FishingSettings();
-        public static class FishingSettings {
-            public boolean showFishDrops = true;
-            @ConfigEntry.BoundedDiscrete(min = 1, max = 50)
-            public int fishDropRadius = 25;
-        }
 
         public boolean displayFullMoon = false;
     }

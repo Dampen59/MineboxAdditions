@@ -76,16 +76,10 @@ public class ImageUtils {
                 base64Image = base64Image.split(",")[1];
             }
 
-            // Log a small sample of the base64 for debugging (first 50 chars)
-            String sampleBase64 = base64Image.length() > 50 ?
-                    base64Image.substring(0, 50) + "..." : base64Image;
-            MineboxAdditions.LOGGER.info("Decoding base64 image (sample): {}", sampleBase64);
-
             // Decode the Base64 string
             byte[] imageBytes;
             try {
                 imageBytes = Base64.getDecoder().decode(base64Image);
-                MineboxAdditions.LOGGER.info("Successfully decoded {} bytes", imageBytes.length);
             } catch (IllegalArgumentException e) {
                 MineboxAdditions.LOGGER.error("Failed to decode base64: {}", e.getMessage());
                 return null;
@@ -95,10 +89,6 @@ public class ImageUtils {
                 MineboxAdditions.LOGGER.error("Decoded base64 resulted in empty byte array");
                 return null;
             }
-
-            // Try to determine image format from the bytes
-            String format = determineImageFormat(imageBytes);
-            MineboxAdditions.LOGGER.info("Detected image format: {}", format != null ? format : "unknown");
 
             // Convert the byte array to a BufferedImage
             ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
@@ -115,31 +105,6 @@ public class ImageUtils {
             MineboxAdditions.LOGGER.error("Error decoding base64 to image: {}\n{}", e.getMessage(), e.getStackTrace());
             return null;
         }
-    }
-
-    // Helper method to try to determine image format from byte array
-    private static String determineImageFormat(byte[] imageData) {
-        if (imageData.length < 12) return null;
-
-        // Check for PNG signature
-        if (imageData[0] == (byte)0x89 && imageData[1] == (byte)0x50 &&
-                imageData[2] == (byte)0x4E && imageData[3] == (byte)0x47) {
-            return "PNG";
-        }
-
-        // Check for JPEG signature (there are multiple possible signatures)
-        if (imageData[0] == (byte)0xFF && imageData[1] == (byte)0xD8 &&
-                imageData[2] == (byte)0xFF) {
-            return "JPEG";
-        }
-
-        // Check for GIF signature
-        if (imageData[0] == (byte)0x47 && imageData[1] == (byte)0x49 &&
-                imageData[2] == (byte)0x46 && imageData[3] == (byte)0x38) {
-            return "GIF";
-        }
-
-        return null; // Unknown format
     }
 
     public static boolean textureExists(TextureManager textureManager, Identifier textureId) {
