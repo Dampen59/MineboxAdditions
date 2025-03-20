@@ -9,6 +9,7 @@
   "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "启用背包耐久度条",
   "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "启用收割器耐久度条",
   "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "连接服务器时自动进入岛屿",
+  "text.autoconfig.mineboxadditions.option.bankMacro": "启用 k/m/b 银行宏",
   "text.autoconfig.mineboxadditions.option.networkFeatures": "网络功能",
   "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "启用网络功能？（必须重新连接才能生效）",
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "当商店有新优惠时显示警报",
@@ -49,5 +50,8 @@
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "星巴克",
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "来星巴克拿你的 %1$s 吧！",
   "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "鸡尾酒",
-  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "酒吧老板准备好为你提供 %1$s 了！"
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "酒吧老板准备好为你提供 %1$s 了！",
+
+  "text.bank.deposit": "存款",
+  "text.bank.withdraw": "取款"
 }

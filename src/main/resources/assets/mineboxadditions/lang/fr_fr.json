@@ -8,6 +8,7 @@
   "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Activer la barre de durabilité des besaces",
   "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Activer la barre de durabilité des récolteuses",
   "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Aller sur l'île lors de la connexion au serveur",
+  "text.autoconfig.mineboxadditions.option.bankMacro": "Activer la macro bancaire k/m/b",
   "text.autoconfig.mineboxadditions.option.networkFeatures": "Fonctionnalités réseau",
   "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Activer les fonctionnalités réseau ? (Il faut se reconnecter)",
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Afficher une alerte lorsque les offres des shops sont connues",
@@ -69,6 +70,9 @@
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Venez chercher votre %1$s au Buckstar !",
   "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Cocktail",
-  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Le barman est prêt à vous servir un %1$s !"
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Le barman est prêt à vous servir un %1$s !",
+
+  "text.bank.withdraw": "Retirer",
+  "text.bank.deposit": "Déposer"
 }
 

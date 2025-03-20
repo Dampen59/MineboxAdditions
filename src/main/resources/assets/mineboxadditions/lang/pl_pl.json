@@ -9,6 +9,7 @@
   "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Włącz pasek zapełnienia sakw",
   "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Włącz pasek wytrzymałości narzędzi żniwiarki",
   "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Przejdź na wyspę po połączeniu z serwerem",
+  "text.autoconfig.mineboxadditions.option.bankMacro": "Włącz makro bankowe k/m/b",
   "text.autoconfig.mineboxadditions.option.networkFeatures": "Funkcje sieciowe",
   "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Włączyć funkcje sieciowe? (Wymaga ponownego połączenia)",
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Wyświetl alert, gdy dostępne są oferty sklepowe",
