@@ -111,8 +111,8 @@ public class ImageUtils {
         try {
             AbstractTexture texture = textureManager.getTexture(textureId);
 
-            // If the texture is null, or it's the missing texture, it doesn't exist
-            if (texture == null || texture == MissingSprite.getMissingSpriteTexture()) {
+            // If the texture is null it doesn't exist
+            if (texture == null) {
                 return false;
             }
 
