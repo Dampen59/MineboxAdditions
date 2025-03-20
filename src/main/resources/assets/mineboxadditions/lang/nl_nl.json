@@ -9,6 +9,7 @@
   "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Schakel de duurzaamheidsbalk voor Haversacks in",
   "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Schakel de duurzaamheidsbalk voor Harvesters in",
   "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Ga naar het eiland bij het verbinden met de server",
+  "text.autoconfig.mineboxadditions.option.bankMacro": "Schakel k/m/b bankmacro in",
   "text.autoconfig.mineboxadditions.option.networkFeatures": "Netwerkfuncties",
   "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Netwerkfuncties inschakelen? (Moet opnieuw verbinden om effect te hebben)",
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Geef een waarschuwing weer wanneer de winkelaanbiedingen bekend zijn",
@@ -45,6 +46,9 @@
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Nederlands",
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turks",
 
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Instellingen voor vissen HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Toon vissen-drops HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "Het aantal blokken om je heen om naar visbanken te zoeken",
 
   "mineboxadditions.strings.tooltip.more_info": "Druk op [LINKER ALT] voor meer informatie",
 
@@ -67,5 +71,8 @@
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Kom je %1$s halen bij de Buckstar!",
   "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Cocktail",
-  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "De barman staat klaar om je een %1$s te serveren!"
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "De barman staat klaar om je een %1$s te serveren!",
+
+  "text.bank.withdraw": "Geld opnemen",
+  "text.bank.deposit": "Geld storten"
 }
