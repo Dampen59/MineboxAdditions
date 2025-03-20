@@ -109,6 +109,7 @@ public class ModConfig implements ConfigData {
     }
 
     public boolean autoIslandOnLogin = false;
+    public boolean bankMacro = true;
 
     // Extra inventory related things
     @ConfigEntry.Gui.Excluded
