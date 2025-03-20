@@ -116,16 +116,10 @@ public class SocketManager {
 
         socket.on("S2CMineboxFishables", args -> {
             String jsonData = (String) args[0];
-            MineboxAdditions.LOGGER.info("Received fishables data, length: {}", jsonData.length());
 
             try {
                 List<MineboxFishingShoal.FishingShoalFish> items = mapper.readValue(jsonData,
                         mapper.getTypeFactory().constructCollectionType(List.class, MineboxFishingShoal.FishingShoalFish.class));
-
-                MineboxAdditions.LOGGER.info("Parsed {} fishable items", items.size());
-
-                int successCount = 0;
-                int failCount = 0;
 
                 for (MineboxFishingShoal.FishingShoalFish fish : items) {
                     if (fish.getTexture() == null) {
@@ -133,22 +127,12 @@ public class SocketManager {
                         continue;
                     }
 
-                    MineboxAdditions.LOGGER.info("Processing texture for fish: {}", fish.getName());
                     String textureName = "textures/fish/" + fish.getName() + ".png";
-
                     Identifier resource = ImageUtils.createTextureFromBase64(fish.getTexture(), textureName);
+                    if (resource != null) fish.setResource(resource);
 
-                    if (resource != null) {
-                        fish.setResource(resource);
-                        successCount++;
-                        MineboxAdditions.LOGGER.info("Successfully created texture for: {}", fish.getName());
-                    } else {
-                        failCount++;
-                        MineboxAdditions.LOGGER.error("Failed to create texture for fish: {}", fish.getName());
-                    }
                 }
 
-                MineboxAdditions.LOGGER.info("Texture processing complete. Success: {}, Failed: {}", successCount, failCount);
                 modState.setMbxFishables(items);
             } catch (JsonProcessingException e) {
                 MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}", e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
