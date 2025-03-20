@@ -180,28 +180,28 @@ public class WorldRendererEvent {
                 // Billboard quad
                 buffer.vertex(matrix, -half, -half, 0)
                         .color(255, 255, 255, 255)
-                        .texture(0, 1)
+                        .texture(1, 1)
                         .overlay(OverlayTexture.DEFAULT_UV)
                         .light(15728880)
                         .normal(0, 0, 1);
 
                 buffer.vertex(matrix, -half, half, 0)
                         .color(255, 255, 255, 255)
-                        .texture(0, 0)
+                        .texture(1, 0)
                         .overlay(OverlayTexture.DEFAULT_UV)
                         .light(15728880)
                         .normal(0, 0, 1);
 
                 buffer.vertex(matrix, half, half, 0)
                         .color(255, 255, 255, 255)
-                        .texture(1, 0)
+                        .texture(0, 0)
                         .overlay(OverlayTexture.DEFAULT_UV)
                         .light(15728880)
                         .normal(0, 0, 1);
 
                 buffer.vertex(matrix, half, -half, 0)
                         .color(255, 255, 255, 255)
-                        .texture(1, 1)
+                        .texture(0, 1)
                         .overlay(OverlayTexture.DEFAULT_UV)
                         .light(15728880)
                         .normal(0, 0, 1);
