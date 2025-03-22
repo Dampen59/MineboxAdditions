@@ -110,19 +110,10 @@ public class WorldRendererEvent {
     }
 
     private static boolean isTimeInRange(MineboxFishingShoal.FishingShoalFish fish, long currentWorldTicks) {
-        boolean timeInRange;
         int minTime = fish.getTimeRange().get(0);
         int maxTime = fish.getTimeRange().get(1);
 
-        // Handle time ranges that don't cross midnight
-        if (minTime <= maxTime) {
-            timeInRange = currentWorldTicks >= minTime && currentWorldTicks <= maxTime;
-        }
-        // Handle time ranges that cross midnight (e.g., [18000, 6000])
-        else {
-            timeInRange = currentWorldTicks >= minTime || currentWorldTicks <= maxTime;
-        }
-        return timeInRange;
+        return currentWorldTicks >= minTime && currentWorldTicks <= maxTime;
     }
 
     private static void doRender(Entity entity, WorldRenderContext context, State state) {
