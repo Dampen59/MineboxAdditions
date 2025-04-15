@@ -43,7 +43,8 @@ public class ShinyEvent {
                 this.modState.getMbxShiniesUuids().replace(shinyUuid, true);
                 message = Text.literal("✔ Both MineboxAdditions users and current chat channel have been notified. Thank you !")
                         .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-                if(MinecraftClient.getInstance().player != null) MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [" + Text.translatable(this.mobNameKey).getString() + "] on me ! [tpa]");
+                if (MinecraftClient.getInstance().player != null)
+                    MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [" + Text.translatable(this.mobNameKey).getString() + "] on me ! [tpa]");
             } else {
                 message = Text.literal("❌ You've already notified other MineboxAdditions users !")
                         .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
@@ -103,8 +104,8 @@ public class ShinyEvent {
         for (Entity entity : client.world.getEntities()) {
             if (!(entity instanceof DisplayEntity.TextDisplayEntity textDisplay)) continue;
             if (this.shinyUuid == textDisplay.getUuidAsString()) {
-                 returnValue = true;
-                 break;
+                returnValue = true;
+                break;
             }
         }
         return returnValue;
@@ -118,7 +119,7 @@ public class ShinyEvent {
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
                 );
 
-        Text mobText = Text.literal( "[" + prmMobName + "]")
+        Text mobText = Text.literal("[" + prmMobName + "]")
                 .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true)
                         .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
                 );

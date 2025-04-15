@@ -27,7 +27,7 @@ public class ChatMessageMixin {
 
         ParsedMessage result = Utils.extractPlayerNameAndMessage(message);
         if (result != null && currChatLang != null) {
-            if(MinecraftClient.getInstance().getLanguageManager().getLanguage().contains(currChatLang)) {
+            if (MinecraftClient.getInstance().getLanguageManager().getLanguage().contains(currChatLang)) {
                 MineboxAdditionsClient.INSTANCE.modState.getSocket().emit("C2SChatMessage", currChatLang, result.playerName, result.message);
             }
         }

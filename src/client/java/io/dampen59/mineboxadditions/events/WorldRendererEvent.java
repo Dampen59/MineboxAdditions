@@ -23,6 +23,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,18 +38,18 @@ public class WorldRendererEvent {
     public static void onRender(WorldRenderContext context) {
         State state = MineboxAdditionsClient.INSTANCE.modState;
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        if(!state.getConnectedToMinebox()) return;
-        if(!config.displaySettings.fishingSettings.showFishDrops) return;
+        if (!state.getConnectedToMinebox()) return;
+        if (!config.displaySettings.fishingSettings.showFishDrops) return;
         MinecraftClient mc = MinecraftClient.getInstance();
         World world = mc.world;
-        if(mc.player == null) return;
-        if(world == null) return;
+        if (mc.player == null) return;
+        if (world == null) return;
         Box searchBox = mc.player.getBoundingBox().expand(config.displaySettings.fishingSettings.fishDropRadius);
         List<Entity> entities = mc.world.getOtherEntities(mc.player, searchBox)
                 .stream()
                 .filter(WorldRendererEvent::isFishingShoal)
                 .toList();
-        if(entities.isEmpty()) return;
+        if (entities.isEmpty()) return;
         entities.forEach((entity) -> doRender(entity, context, state));
     }
 
@@ -100,7 +101,7 @@ public class WorldRendererEvent {
                     // If texture is null, skip this fish
                     TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
                     Identifier resourceID = fish.getResource();
-                    if(textureExists(textureManager, resourceID)) {
+                    if (textureExists(textureManager, resourceID)) {
                         textures.add(resourceID);
                     }
                 }
@@ -128,8 +129,8 @@ public class WorldRendererEvent {
     private static void doRender(Entity entity, WorldRenderContext context, State state) {
         if (WorldRendererEvent.isBillboardEntity(entity)) {
             String billboardTextTranslationKey = getEntityTextKey(entity);
-            if(billboardTextTranslationKey == null) return;
-            if(!billboardTextTranslationKey.contains("shoal")) return;
+            if (billboardTextTranslationKey == null) return;
+            if (!billboardTextTranslationKey.contains("shoal")) return;
             String shoalName = billboardTextTranslationKey.split("harvestables.")[1].split(".name")[0];
 
             MatrixStack matrices = context.matrixStack();
@@ -152,7 +153,7 @@ public class WorldRendererEvent {
             float spacing = 0.2f;
             int count = textures.size();
             float totalWidth = (textureSize * count) + (spacing * (count - 1));
-            float startOffset = -totalWidth / 2 + textureSize/2;
+            float startOffset = -totalWidth / 2 + textureSize / 2;
 
             for (int i = 0; i < textures.size(); i++) {
                 Identifier texture = textures.get(i);

@@ -13,12 +13,12 @@ import java.util.Map;
 
 public class RaritiesUtils {
     public static final Map<String, Color> BASE_RARITY_COLORS = Map.of(
-            "common",    new Color(0x66, 0x54, 0x66),
-            "uncommon",  new Color(0x00, 0xC0, 0x6F),
-            "rare",      new Color(0x00, 0xA5, 0xFC),
-            "epic",      new Color(0xF8, 0x16, 0xFC),
+            "common", new Color(0x66, 0x54, 0x66),
+            "uncommon", new Color(0x00, 0xC0, 0x6F),
+            "rare", new Color(0x00, 0xA5, 0xFC),
+            "epic", new Color(0xF8, 0x16, 0xFC),
             "legendary", new Color(0xFF, 0xBE, 0x35),
-            "mythic",    new Color(0xA0, 0x06, 0x0A)
+            "mythic", new Color(0xA0, 0x06, 0x0A)
     );
 
     public static int percentToAlpha(double p) {

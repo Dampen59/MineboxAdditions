@@ -13,7 +13,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ExtraInventoryUtils {
@@ -109,7 +112,7 @@ public class ExtraInventoryUtils {
         Text returnMessage = null;
 
         if (missingItems.isEmpty()) {
-             returnMessage = Text.literal("✔ You have equipped your " + setName + " set successfully ! ")
+            returnMessage = Text.literal("✔ You have equipped your " + setName + " set successfully ! ")
                     .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
         } else {
             returnMessage = Text.literal("❌ You have equipped your " + setName + " set but the following items were missing : " + missingItems.stream().map(Object::toString).collect(Collectors.joining(", ")))

@@ -1,11 +1,16 @@
 package io.dampen59.mineboxadditions.state;
 
+import de.maxhenkel.opus4j.OpusDecoder;
+import de.maxhenkel.opus4j.OpusEncoder;
+import io.dampen59.mineboxadditions.audio.AudioManager;
 import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.Socket;
 
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +45,15 @@ public class State {
 
     private String chatLang = null;
 
+    private final TargetDataLine microphone = null;
+    private final SourceDataLine speaker = null;
+    private final OpusEncoder encoder = null;
+    private final OpusDecoder decoder = null;
+
+    private final boolean isInVocalRoom = false;
+
+    private AudioManager audioManager = null;
+
     public void reset() {
         this.setConnectedToMinebox(false);
         this.setLoginCommandSent(false);
@@ -62,6 +76,7 @@ public class State {
     public void setConnectedToMinebox(boolean prmValue) {
         this.isConnectedToMinebox = prmValue;
     }
+
     public boolean getConnectedToMinebox() {
         return this.isConnectedToMinebox;
     }
@@ -69,6 +84,7 @@ public class State {
     public void setLoginCommandSent(boolean prmValue) {
         this.loginCommandSent = prmValue;
     }
+
     public boolean getLoginCommandSent() {
         return this.loginCommandSent;
     }
@@ -76,6 +92,7 @@ public class State {
     public void setMouseAlertSent(boolean prmValue) {
         this.mouseAlertSent = prmValue;
     }
+
     public boolean getMouseAlertSent() {
         return this.mouseAlertSent;
     }
@@ -83,6 +100,7 @@ public class State {
     public void setBakeryAlertSent(boolean prmValue) {
         this.bakeryAlertSent = prmValue;
     }
+
     public boolean getBakeryAlertSent() {
         return this.bakeryAlertSent;
     }
@@ -90,6 +108,7 @@ public class State {
     public void setBuckstarAlertSent(boolean prmValue) {
         this.buckstarAlertSent = prmValue;
     }
+
     public boolean getBuckstarAlertSent() {
         return this.buckstarAlertSent;
     }
@@ -97,6 +116,7 @@ public class State {
     public void setCocktailAlertSent(boolean prmValue) {
         this.cocktailAlertSent = prmValue;
     }
+
     public boolean getCocktailAlertSent() {
         return this.cocktailAlertSent;
     }
@@ -104,6 +124,7 @@ public class State {
     public void setMouseCurrentItemOffer(String prmValue) {
         this.mouseCurrentItemOffer = prmValue;
     }
+
     public String getMouseCurrentItemOffer() {
         return this.mouseCurrentItemOffer;
     }
@@ -111,6 +132,7 @@ public class State {
     public void setBakeryCurrentItemOffer(String prmValue) {
         this.bakeryCurrentItemOffer = prmValue;
     }
+
     public String getBakeryCurrentItemOffer() {
         return this.bakeryCurrentItemOffer;
     }
@@ -118,6 +140,7 @@ public class State {
     public void setBuckstarCurrentItemOffer(String prmValue) {
         this.buckstarCurrentItemOffer = prmValue;
     }
+
     public String getBuckstarCurrentItemOffer() {
         return this.buckstarCurrentItemOffer;
     }
@@ -125,6 +148,7 @@ public class State {
     public void setCocktailCurrentItemOffer(String prmValue) {
         this.cocktailCurrentItemOffer = prmValue;
     }
+
     public String getCocktailCurrentItemOffer() {
         return this.cocktailCurrentItemOffer;
     }
@@ -132,6 +156,7 @@ public class State {
     public void setShopDisplay(String prmValue) {
         this.shopDisplay = prmValue;
     }
+
     public String getShopDisplay() {
         return this.shopDisplay;
     }
@@ -139,6 +164,7 @@ public class State {
     public void setCurrentMoonPhase(int prmValue) {
         this.currentMoonPhase = prmValue;
     }
+
     public int getCurrentMoonPhase() {
         return this.currentMoonPhase;
     }
@@ -146,6 +172,7 @@ public class State {
     public void setMbxItems(List<MineboxItem> prmValue) {
         this.mbxItems = prmValue;
     }
+
     public List<MineboxItem> getMbxItems() {
         return this.mbxItems;
     }
@@ -153,6 +180,7 @@ public class State {
     public void setMbxChatFlags(List<MineboxChatFlag> prmValue) {
         this.mbxChatFlags = prmValue;
     }
+
     public List<MineboxChatFlag> getMbxChatFlags() {
         return this.mbxChatFlags;
     }
@@ -160,21 +188,44 @@ public class State {
     public void setMbxFishables(List<MineboxFishingShoal.FishingShoalFish> prmValue) {
         this.mbxFishables = prmValue;
     }
+
     public List<MineboxFishingShoal.FishingShoalFish> getMbxFishables() {
         return this.mbxFishables;
     }
 
-    public Map<String, Boolean> getMbxShiniesUuids() { return this.mbxShiniesUuids; }
-    public void resetShinyList() { this.mbxShiniesUuids.clear(); }
-    public void addShinyUuid(String prmUuid) { this.mbxShiniesUuids.put(prmUuid, false); }
+    public Map<String, Boolean> getMbxShiniesUuids() {
+        return this.mbxShiniesUuids;
+    }
 
-    public void setChatLang(String prmValue) { this.chatLang = Utils.actionBarDataToChatLang(prmValue); }
-    public String getChatLang() { return this.chatLang; }
+    public void resetShinyList() {
+        this.mbxShiniesUuids.clear();
+    }
+
+    public void addShinyUuid(String prmUuid) {
+        this.mbxShiniesUuids.put(prmUuid, false);
+    }
+
+    public void setChatLang(String prmValue) {
+        this.chatLang = Utils.actionBarDataToChatLang(prmValue);
+    }
+
+    public String getChatLang() {
+        return this.chatLang;
+    }
 
     public void setSocket(Socket prmValue) {
         this.objSocket = prmValue;
     }
+
     public Socket getSocket() {
         return this.objSocket;
+    }
+
+    public void setAudioManager(AudioManager prmValue) {
+        this.audioManager = prmValue;
+    }
+
+    public AudioManager getAudioManager() {
+        return this.audioManager;
     }
 }

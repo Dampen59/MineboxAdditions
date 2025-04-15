@@ -2,9 +2,13 @@ package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.*;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.texture.TextureManager;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

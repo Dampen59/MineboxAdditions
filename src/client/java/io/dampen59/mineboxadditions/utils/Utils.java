@@ -141,7 +141,7 @@ public class Utils {
         Text baseMessageNext = Text.literal(" found a shiny ")
                 .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
 
-        Text mobText = Text.literal( "[" + prmMobName + "]")
+        Text mobText = Text.literal("[" + prmMobName + "]")
                 .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
 
         Text endMessage = Text.literal(" ! Click on this message to send a teleport request.")
@@ -238,4 +238,21 @@ public class Utils {
         return returnVal;
     }
 
+    public static void displayChatErrorMessage(String prmMessage) {
+        Text message = Text.literal("❌ " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
+        MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
+
+    public static void displayChatSuccessMessage(String prmMessage) {
+        Text message = Text.literal("✔ " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+        MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
+
+    public static void displayChatInfoMessage(String prmMessage) {
+        Text message = Text.literal("\uD83D\uDEC8 " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(Formatting.BLUE).withBold(false));
+        MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
 }
