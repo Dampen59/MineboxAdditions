@@ -83,5 +83,7 @@
   "mineboxadditions.strings.audiochannel.leave.success": "You left voice channel %1$s.",
   "mineboxadditions.strings.audiochannel.proximity.enabled": "The proximity chat is now enabled.",
   "mineboxadditions.strings.audiochannel.proximity.disabled": "The proximity chat is now disabled.",
-  "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "You can't enable Proximity Chat while being in a voice channel. Leave it first!"
+  "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "You can't enable Proximity Chat while being in a voice channel. Leave it first!",
+
+  "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen"
 }

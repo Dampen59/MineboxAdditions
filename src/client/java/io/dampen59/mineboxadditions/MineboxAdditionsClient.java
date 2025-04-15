@@ -53,10 +53,10 @@ public class MineboxAdditionsClient implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
 
         keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.examplemod.spook",
+                "mineboxadditions.strings.keybinds.audioSettings.open",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_L,
-                "category.examplemod.test"
+                "MineboxAdditions"
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
