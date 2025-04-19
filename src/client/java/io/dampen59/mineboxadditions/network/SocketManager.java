@@ -175,6 +175,7 @@ public class SocketManager {
             String playerName = (String) args[1];
             String msgContent = (String) args[2];
 
+            if (modState.getChatLang() == null) return;
             if (Objects.equals(modState.getChatLang(), sourceChatLang)) return;
             if (!config.chatSettings.multiChannelSettings.enableFrench && Objects.equals(sourceChatLang, "fr")) return;
             if (!config.chatSettings.multiChannelSettings.enableEnglish && Objects.equals(sourceChatLang, "en")) return;
