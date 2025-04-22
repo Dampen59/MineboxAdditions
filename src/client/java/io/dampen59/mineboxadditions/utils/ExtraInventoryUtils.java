@@ -22,15 +22,15 @@ public class ExtraInventoryUtils {
 
     static {
 
-        SLOT_CATEGORY_MAP = Map.of(10, "Helmet",
-                19, "Chestplate",
-                28, "Leggings",
-                37, "Boots",
-                9, "Necklace",
-                11, "Ring1",
-                20, "Ring2",
-                27, "Belt",
-                18, "Backpack"
+        SLOT_CATEGORY_MAP = Map.of(2, "Helmet",
+                11, "Chestplate",
+                20, "Leggings",
+                29, "Boots",
+                1, "Necklace",
+                3, "Ring1",
+                12, "Ring2",
+                19, "Belt",
+                10, "Backpack"
         );
     }
 
