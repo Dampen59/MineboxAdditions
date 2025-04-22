@@ -141,7 +141,7 @@ public class Utils {
         Text baseMessageNext = Text.literal(" found a shiny ")
                 .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
 
-        Text mobText = Text.literal( "[" + prmMobName + "]")
+        Text mobText = Text.literal("[" + prmMobName + "]")
                 .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
 
         Text endMessage = Text.literal(" ! Click on this message to send a teleport request.")
@@ -157,34 +157,24 @@ public class Utils {
     }
 
     public static String actionBarDataToChatLang(String prmActionBarData) {
-
-        String prefix = "GLOBAL";
-        String suffix = "";
-
-        int startIndex = prmActionBarData.indexOf(prefix);
-        int endIndex = prmActionBarData.indexOf(suffix, startIndex + prefix.length());
-
-        String extracted = null;
-        if (startIndex != -1 && endIndex != -1) {
-            extracted = prmActionBarData.substring(startIndex + prefix.length(), endIndex);
+        if (prmActionBarData == null || prmActionBarData.isEmpty()) {
+            return "en";
         }
 
-        return switch (extracted) {
-            case "끰" -> "fr";
-            case "끮" -> "en";
-            case "끯" -> "es";
-            case "낃" -> "ru";
-            case "낁" -> "pt";
-            case "끬" -> "de";
-            case "낊" -> "cn";
-            case "낀" -> "pl";
-            case "끺" -> "it";
-            case "끻" -> "jp";
-            case "끾" -> "nl";
-            case "낈" -> "tr";
-            default -> "en";
-        };
+        if (prmActionBarData.contains("끰")) return "fr";
+        if (prmActionBarData.contains("끮")) return "en";
+        if (prmActionBarData.contains("끯")) return "es";
+        if (prmActionBarData.contains("낃")) return "ru";
+        if (prmActionBarData.contains("낁")) return "pt";
+        if (prmActionBarData.contains("끬")) return "de";
+        if (prmActionBarData.contains("낊")) return "cn";
+        if (prmActionBarData.contains("낀")) return "pl";
+        if (prmActionBarData.contains("끺")) return "it";
+        if (prmActionBarData.contains("끻")) return "jp";
+        if (prmActionBarData.contains("끾")) return "nl";
+        if (prmActionBarData.contains("낈")) return "tr";
 
+        return "en";
     }
 
     public static String getChatFlagByLang(List<MineboxChatFlag> mbxChatFlags, String lang) {
@@ -238,4 +228,21 @@ public class Utils {
         return returnVal;
     }
 
+    public static void displayChatErrorMessage(String prmMessage) {
+        Text message = Text.literal("❌ " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
+        MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
+
+    public static void displayChatSuccessMessage(String prmMessage) {
+        Text message = Text.literal("✔ " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+        MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
+
+    public static void displayChatInfoMessage(String prmMessage) {
+        Text message = Text.literal("\uD83D\uDEC8 " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(Formatting.BLUE).withBold(false));
+        MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
 }

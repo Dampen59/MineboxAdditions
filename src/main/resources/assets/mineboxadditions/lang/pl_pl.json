@@ -71,5 +71,20 @@
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title": "Buckstar",
   "mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content": "Wpadaj po swoje %1$s do kawiarni Buckstara!",
   "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Bar koktajlowy",
-  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Barman jest gotowy, by podać ci %1$s!"
+  "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Barman jest gotowy, by podać ci %1$s!",
+
+  "mineboxadditions.strings.audiochannel.create.failed": "Creation failed! You are already in a voice channel, leave it first!",
+  "mineboxadditions.strings.audiochannel.create.success": "You have created and joined the voice channel: %1$s. Share this code to other players so they can join your room!",
+  "mineboxadditions.strings.audiochannel.join.failed": "There was an error joining voice channel %1$s, it may have expired or does not exist.",
+  "mineboxadditions.strings.audiochannel.join.fail.leavefirst": "You can't create OR join a voice channel with proximity chat enabled, disable it first!",
+  "mineboxadditions.strings.audiochannel.join.success": "You've joined voice channel %1$s!",
+  "mineboxadditions.strings.audiochannel.user.disconnected": "The player %1$s left the voice channel!",
+  "mineboxadditions.strings.audiochannel.user.connected": "The player %1$s joined the voice channel!",
+  "mineboxadditions.strings.audiochannel.leave.failed": "You are not in a voice channel!",
+  "mineboxadditions.strings.audiochannel.leave.success": "You left voice channel %1$s.",
+  "mineboxadditions.strings.audiochannel.proximity.enabled": "The proximity chat is now enabled.",
+  "mineboxadditions.strings.audiochannel.proximity.disabled": "The proximity chat is now disabled.",
+  "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "You can't enable Proximity Chat while being in a voice channel. Leave it first!",
+
+  "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen"
 }

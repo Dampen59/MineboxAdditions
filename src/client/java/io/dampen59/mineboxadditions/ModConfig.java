@@ -26,8 +26,21 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public String socketServerAddress = "http://mbxadditions.dampen59.io:3000";
 
+    @ConfigEntry.Gui.Excluded
+    public String selectedMicName = "";
+
+    @ConfigEntry.Gui.Excluded
+    public String selectedSpeakerName = "";
+
+    @ConfigEntry.Gui.Excluded
+    public float micGainDb = 0.0f;
+
+    @ConfigEntry.Gui.Excluded
+    public float speakerVolumeMultiplier = 1.0f;
+
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
+
     public static class ShopsAlertsSettings {
         public boolean getMouseAlerts = true;
         public boolean getBakeryAlerts = true;
@@ -37,6 +50,7 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Gui.CollapsibleObject
     public DurabilitySettings durabilitySettings = new DurabilitySettings();
+
     public static class DurabilitySettings {
         public boolean haversackDurability = false;
         public boolean harvesterDurability = false;
@@ -69,6 +83,7 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Gui.CollapsibleObject
     public DisplaySettings displaySettings = new DisplaySettings();
+
     public static class DisplaySettings {
         @ConfigEntry.Gui.CollapsibleObject
         public ItemPickupSettings itemPickupSettings = new ItemPickupSettings();
@@ -101,6 +116,7 @@ public class ModConfig implements ConfigData {
 
     @ConfigEntry.Gui.CollapsibleObject
     public ChatSettings chatSettings = new ChatSettings();
+
     public static class ChatSettings {
 
         @ConfigEntry.Gui.CollapsibleObject

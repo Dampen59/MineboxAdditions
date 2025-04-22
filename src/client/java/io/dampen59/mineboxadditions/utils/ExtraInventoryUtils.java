@@ -13,7 +13,10 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.collection.DefaultedList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ExtraInventoryUtils {
@@ -23,14 +26,14 @@ public class ExtraInventoryUtils {
     static {
 
         SLOT_CATEGORY_MAP = Map.of(2, "Helmet",
-                11, "Chestplate", //
+                11, "Chestplate",
                 20, "Leggings",
-                29, "Boots", //
-                1, "Necklace", //
+                29, "Boots",
+                1, "Necklace",
                 3, "Ring1",
                 12, "Ring2",
                 19, "Belt",
-                10, "Backpack" //
+                10, "Backpack"
         );
     }
 
@@ -109,7 +112,7 @@ public class ExtraInventoryUtils {
         Text returnMessage = null;
 
         if (missingItems.isEmpty()) {
-             returnMessage = Text.literal("✔ You have equipped your " + setName + " set successfully ! ")
+            returnMessage = Text.literal("✔ You have equipped your " + setName + " set successfully ! ")
                     .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
         } else {
             returnMessage = Text.literal("❌ You have equipped your " + setName + " set but the following items were missing : " + missingItems.stream().map(Object::toString).collect(Collectors.joining(", ")))

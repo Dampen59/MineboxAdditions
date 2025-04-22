@@ -5,6 +5,7 @@ import io.dampen59.mineboxadditions.state.State;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -44,6 +45,7 @@ public class ServerEvents {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             if (modState.getSocket().connected()) {
                 modState.getSocket().disconnect();
+                this.modState.getAudioManager().closeMicrophoneAndSpeaker();
             }
             modState.reset();
         });

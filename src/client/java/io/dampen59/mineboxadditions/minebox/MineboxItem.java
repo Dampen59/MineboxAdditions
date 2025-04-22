@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.minebox;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.Map;
 import java.util.Optional;
 

@@ -18,11 +18,14 @@ public class MineboxFishingShoal {
         private String name;
         private String shoal;
         private FishingShoalConditions conditions;
-        @JsonProperty("time_range") private List<Integer> timeRange;
+        @JsonProperty("time_range")
+        private List<Integer> timeRange;
         private String texture;
-        @JsonIgnore private Identifier textureId;
+        @JsonIgnore
+        private Identifier textureId;
 
-        public FishingShoalFish() {}
+        public FishingShoalFish() {
+        }
 
         public FishingShoalFish(String name, String shoal, FishingShoalConditions conditions, List<Integer> timeRange, String texture) {
             this.name = name;
@@ -99,9 +102,11 @@ public class MineboxFishingShoal {
     public static class FishingShoalConditions {
         private Boolean rain;
         private Boolean storm;
-        @JsonProperty("full_moon") private Boolean fullMoon;
+        @JsonProperty("full_moon")
+        private Boolean fullMoon;
 
-        public FishingShoalConditions() {}
+        public FishingShoalConditions() {
+        }
 
         public FishingShoalConditions(Boolean rain, Boolean storm, Boolean fullMoon) {
             this.rain = rain;

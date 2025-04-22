@@ -21,8 +21,8 @@ import net.minecraft.util.collection.DefaultedList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 
 public class InventoryEvent {
     private final State modState;
@@ -137,8 +137,7 @@ public class InventoryEvent {
                 if (config.durabilitySettings.haversackDurability) {
                     handleHaversackDurability(stack, nbtData, translatableContent);
                 }
-            }
-            else if (id.contains("harvester_") && translatableContent.getKey().contains("mbx.durability")) {
+            } else if (id.contains("harvester_") && translatableContent.getKey().contains("mbx.durability")) {
                 if (config.durabilitySettings.harvesterDurability) {
                     handleHarvesterDurability(stack, translatableContent);
                 }
