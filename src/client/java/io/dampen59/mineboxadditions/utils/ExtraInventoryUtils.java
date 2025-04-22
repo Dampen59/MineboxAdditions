@@ -124,19 +124,20 @@ public class ExtraInventoryUtils {
     }
 
     public static void saveCurrentSetToSlotId(DefaultedList<Slot> inventorySlots, int setId) {
+        AutoConfig.getConfigHolder(ModConfig.class).getConfig().clearSet(setId);
         for (Map.Entry<Integer, String> entry : SLOT_CATEGORY_MAP.entrySet()) {
             int slotId = entry.getKey();
 
             Slot slot = findSlotById(inventorySlots, slotId);
-            if (slot != null) {
-                if (slot.hasStack() && Utils.isMineboxItem(slot.getStack())) {
-                    if (Utils.getMineboxItemUid(slot.getStack()) != null) {
-                        storeItemInSlot(setId, slotId, slot.getStack(), Utils.getMineboxItemUid(slot.getStack()));
-                    }
+            if (slot != null && slot.hasStack() && Utils.isMineboxItem(slot.getStack())) {
+                String itemUid = Utils.getMineboxItemUid(slot.getStack());
+                if (itemUid != null) {
+                    storeItemInSlot(setId, slotId, slot.getStack(), itemUid);
                 }
             }
-
         }
+
+        AutoConfig.getConfigHolder(ModConfig.class).save();
     }
 
     private static Slot findSlotById(DefaultedList<Slot> inventorySlots, int slotId) {
