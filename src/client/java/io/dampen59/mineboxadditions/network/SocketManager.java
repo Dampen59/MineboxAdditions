@@ -382,6 +382,22 @@ public class SocketManager {
             this.modState.getAudioManager().getSpeaker().flush();
             Utils.displayChatInfoMessage(Text.translatable("mineboxadditions.strings.audiochannel.user.disconnected", playerName).getString());
         });
+
+        socket.on("S2CWeatherData", args -> {
+            String weather = (String) args[0];
+            int timestamp = (int) args[1];
+
+            switch (weather) {
+                case "RAIN" -> this.modState.addRainTimestamp(timestamp);
+                case "STORM" -> {
+                    this.modState.addRainTimestamp(timestamp); // Storms also equals rain :)
+                    this.modState.addStormTimestamp(timestamp);
+                }
+                default -> System.out.println("Received unknown weather data : " + weather);
+            }
+
+        });
+
     }
 
     // manual control over when to open or close the socket connection, not used rn
