@@ -45,13 +45,6 @@ public class State {
 
     private String chatLang = null;
 
-    private final TargetDataLine microphone = null;
-    private final SourceDataLine speaker = null;
-    private final OpusEncoder encoder = null;
-    private final OpusDecoder decoder = null;
-
-    private final boolean isInVocalRoom = false;
-
     private AudioManager audioManager = null;
 
     private final List<Integer> rainTimestamps = new ArrayList<>();
