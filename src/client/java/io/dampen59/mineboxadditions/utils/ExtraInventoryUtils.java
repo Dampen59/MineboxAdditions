@@ -25,15 +25,15 @@ public class ExtraInventoryUtils {
 
     static {
 
-        SLOT_CATEGORY_MAP = Map.of(10, "Helmet",
-                19, "Chestplate",
-                28, "Leggings",
-                37, "Boots",
-                9, "Necklace",
-                11, "Ring1",
-                20, "Ring2",
-                27, "Belt",
-                18, "Backpack"
+        SLOT_CATEGORY_MAP = Map.of(2, "Helmet",
+                11, "Chestplate",
+                20, "Leggings",
+                29, "Boots",
+                1, "Necklace",
+                3, "Ring1",
+                12, "Ring2",
+                19, "Belt",
+                10, "Backpack"
         );
     }
 
@@ -124,19 +124,20 @@ public class ExtraInventoryUtils {
     }
 
     public static void saveCurrentSetToSlotId(DefaultedList<Slot> inventorySlots, int setId) {
+        AutoConfig.getConfigHolder(ModConfig.class).getConfig().clearSet(setId);
         for (Map.Entry<Integer, String> entry : SLOT_CATEGORY_MAP.entrySet()) {
             int slotId = entry.getKey();
 
             Slot slot = findSlotById(inventorySlots, slotId);
-            if (slot != null) {
-                if (slot.hasStack() && Utils.isMineboxItem(slot.getStack())) {
-                    if (Utils.getMineboxItemUid(slot.getStack()) != null) {
-                        storeItemInSlot(setId, slotId, slot.getStack(), Utils.getMineboxItemUid(slot.getStack()));
-                    }
+            if (slot != null && slot.hasStack() && Utils.isMineboxItem(slot.getStack())) {
+                String itemUid = Utils.getMineboxItemUid(slot.getStack());
+                if (itemUid != null) {
+                    storeItemInSlot(setId, slotId, slot.getStack(), itemUid);
                 }
             }
-
         }
+
+        AutoConfig.getConfigHolder(ModConfig.class).save();
     }
 
     private static Slot findSlotById(DefaultedList<Slot> inventorySlots, int slotId) {

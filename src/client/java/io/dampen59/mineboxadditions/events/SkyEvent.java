@@ -12,8 +12,10 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import java.util.Comparator;
+import java.util.List;
 public class SkyEvent {
-    private State modState = null;
+    private final State modState;
 
     public SkyEvent(State prmModState) {
         this.modState = prmModState;
@@ -28,7 +30,6 @@ public class SkyEvent {
 
                 if (this.modState.getCurrentMoonPhase() != 0) {
                     // TODO : if config.enableFullMoonAlerts
-                    // Then: display Toast alert
                 }
 
                 this.modState.setCurrentMoonPhase(moonPhase);
@@ -41,15 +42,13 @@ public class SkyEvent {
     }
 
     private void onRenderHud(DrawContext drawContext, RenderTickCounter renderTickCounter) {
-
-        if (MinecraftClient.getInstance().options.hudHidden) {
-            return;
-        }
-
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null || client.player == null) return;
+        if (client == null || client.player == null || client.options.hudHidden) return;
 
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+
+        int x = 5;
+        int y = 60;
 
         if (isFullMoon() && config.displaySettings.displayFullMoon) {
             Identifier texture = Identifier.of("mineboxadditions", "textures/gui/moon_phases/full_moon.png");
@@ -57,6 +56,26 @@ public class SkyEvent {
             drawContext.drawText(client.textRenderer, Text.translatable("mineboxadditions.strings.full_moon"), 5, 32, 0xFFFFFF, true);
         }
 
+        String rainText = "Next Rain: " + formatNextEventCountdown(modState.getRainTimestamps());
+        String stormText = "Next Storm: " + formatNextEventCountdown(modState.getStormTimestamps());
+
+        drawContext.drawText(client.textRenderer, Text.literal(rainText), x, y, 0xFFFFFF, true);
+        drawContext.drawText(client.textRenderer, Text.literal(stormText), x, y + 12, 0xFFFFFF, true);
     }
 
+    private String formatNextEventCountdown(List<Integer> timestamps) {
+        int currentTime = (int) (System.currentTimeMillis() / 1000);
+
+        return timestamps.stream()
+                .filter(ts -> ts > currentTime)
+                .min(Comparator.naturalOrder())
+                .map(next -> {
+                    int secondsLeft = next - currentTime;
+                    int hours = secondsLeft / 3600;
+                    int minutes = (secondsLeft % 3600) / 60;
+                    int seconds = secondsLeft % 60;
+                    return String.format("in %02d:%02d:%02d", hours, minutes, seconds);
+                })
+                .orElse("Unknown");
+    }
 }

@@ -54,6 +54,9 @@ public class State {
 
     private AudioManager audioManager = null;
 
+    private final List<Integer> rainTimestamps = new ArrayList<>();
+    private final List<Integer> stormTimestamps = new ArrayList<>();
+
     public void reset() {
         this.setConnectedToMinebox(false);
         this.setLoginCommandSent(false);
@@ -71,6 +74,7 @@ public class State {
         this.resetShinyList();
         this.setChatLang(null);
         this.setMbxChatFlags(null);
+        this.clearWeatherTimestamps();
     }
 
     public void setConnectedToMinebox(boolean prmValue) {
@@ -227,5 +231,26 @@ public class State {
 
     public AudioManager getAudioManager() {
         return this.audioManager;
+    }
+
+    public void addRainTimestamp(int prmValue) {
+        if (!this.rainTimestamps.contains(prmValue)) this.rainTimestamps.add(prmValue);
+    }
+
+    public void addStormTimestamp(int prmValue) {
+        if (!this.stormTimestamps.contains(prmValue)) this.stormTimestamps.add(prmValue);
+    }
+
+    public List<Integer> getRainTimestamps() {
+        return rainTimestamps;
+    }
+
+    public List<Integer> getStormTimestamps() {
+        return stormTimestamps;
+    }
+
+    public void clearWeatherTimestamps() {
+        this.rainTimestamps.clear();
+        this.stormTimestamps.clear();
     }
 }

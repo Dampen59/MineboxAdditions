@@ -150,6 +150,18 @@ public class ModConfig implements ConfigData {
         return storedItemSets.getOrDefault(setIndex, new HashMap<>());
     }
 
+    public void clearSet(int setIndex) {
+        if (setIndex >= 0 && setIndex < 4) {
+            Map<Integer, ExtraInventoryItem> set = storedItemSets.get(setIndex);
+            if (set != null) {
+                set.clear();
+            } else {
+                storedItemSets.put(setIndex, new HashMap<>());
+            }
+        }
+    }
+
+
     public void setSetName(int setIndex, String name) {
         if (setIndex >= 0 && setIndex < 4) {
             setNames.put(setIndex, name);
