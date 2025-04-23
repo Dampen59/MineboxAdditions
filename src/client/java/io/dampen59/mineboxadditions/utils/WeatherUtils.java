@@ -18,25 +18,25 @@ public class WeatherUtils {
 
     private static final Map<Integer, List<String>> DAY_IDENTIFIERS = new LinkedHashMap<>() {{
         put(1, List.of(
-                "the weather today", "today's weather", "the forecast for today"
+                "The weather today", "Today's weather", "The forecast for today"
         ));
         put(2, List.of(
-                "the weather tomorrow", "tomorrow's weather will", "the forecast for tomorrow"
+                "The weather tomorrow", "Tomorrow's weather will", "The forecast for tomorrow"
         ));
         put(3, List.of(
-                "the forecast for the day after tomorrow", "the day after tomorrow's"
+                "The forecast for the day after tomorrow", "The day after tomorrow's"
         ));
         put(4, List.of(
-                "three days"
+                "Three days", "three days from now"
         ));
     }};
 
     public static ForecastResult parseWeatherForecast(String dialog) {
-        dialog = dialog.toLowerCase(Locale.ROOT);
+        String dialogLower = dialog.toLowerCase(Locale.ROOT);
         int day = detectDay(dialog);
         if (day == -1) return null;
 
-        List<String> glyphs = extractWeatherGlyphs(dialog);
+        List<String> glyphs = extractWeatherGlyphs(dialogLower);
         if (glyphs.size() < 4) return null;
 
         Map<String, WeatherType> forecast = new LinkedHashMap<>();
@@ -57,7 +57,7 @@ public class WeatherUtils {
     private static int detectDay(String dialog) {
         for (Map.Entry<Integer, List<String>> entry : DAY_IDENTIFIERS.entrySet()) {
             for (String keyword : entry.getValue()) {
-                if (dialog.contains(keyword.toLowerCase(Locale.ROOT))) {
+                if (dialog.contains(keyword)) {
                     return entry.getKey();
                 }
             }
