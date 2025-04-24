@@ -19,7 +19,6 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca",
   
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Ustawienia powiadomień dotyczącej podnoszenia przedmiotów",
-
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Włącz tę funkcję",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.maxPickupNotifications": "Maksymalna liczba powiadomień wyświetlanych jednocześnie",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.pickupNotificationDuration": "Czas trwania powiadomienia (w sekundach)",
@@ -46,7 +45,7 @@
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Niderlandzki",
   "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turecki",
   
-  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Ustawienia HUD-a wędkarza",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Ustawienia HUD-a wędkarskiego",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Wyświetl HUD z wypadanymi przedmiotami",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "Ilość bloków, w których można przeszukać okolicę w poszukiwaniu ławic ryb",
 
@@ -73,18 +72,18 @@
   "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title": "Bar koktajlowy",
   "mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content": "Barman jest gotowy, by podać ci %1$s!",
 
-  "mineboxadditions.strings.audiochannel.create.failed": "Creation failed! You are already in a voice channel, leave it first!",
-  "mineboxadditions.strings.audiochannel.create.success": "You have created and joined the voice channel: %1$s. Share this code to other players so they can join your room!",
-  "mineboxadditions.strings.audiochannel.join.failed": "There was an error joining voice channel %1$s, it may have expired or does not exist.",
-  "mineboxadditions.strings.audiochannel.join.fail.leavefirst": "You can't create OR join a voice channel with proximity chat enabled, disable it first!",
-  "mineboxadditions.strings.audiochannel.join.success": "You've joined voice channel %1$s!",
-  "mineboxadditions.strings.audiochannel.user.disconnected": "The player %1$s left the voice channel!",
-  "mineboxadditions.strings.audiochannel.user.connected": "The player %1$s joined the voice channel!",
-  "mineboxadditions.strings.audiochannel.leave.failed": "You are not in a voice channel!",
-  "mineboxadditions.strings.audiochannel.leave.success": "You left voice channel %1$s.",
-  "mineboxadditions.strings.audiochannel.proximity.enabled": "The proximity chat is now enabled.",
-  "mineboxadditions.strings.audiochannel.proximity.disabled": "The proximity chat is now disabled.",
-  "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "You can't enable Proximity Chat while being in a voice channel. Leave it first!",
+  "mineboxadditions.strings.audiochannel.create.failed": "Tworzenie nie powiodło się! Jesteś już na kanale głosowym, opuść go najpierw!",
+  "mineboxadditions.strings.audiochannel.create.success": "Utworzyłeś i dołączyłeś do kanału głosowego: %1$s. Udostępnij ten kod innym graczom, aby mogli dołączyć do Twojego pokoju!",
+  "mineboxadditions.strings.audiochannel.join.failed": "Wystąpił błąd podczas dołączania do kanału głosowego %1$s. Kanał mógł wygasnąć lub nie istnieje.",
+  "mineboxadditions.strings.audiochannel.join.fail.leavefirst": "Nie możesz utworzyć ani dołączyć do kanału głosowego, gdy włączony jest czat zbliżeniowy. Najpierw go wyłącz!",
+  "mineboxadditions.strings.audiochannel.join.success": "Dołączyłeś do kanału głosowego %1$s!",
+  "mineboxadditions.strings.audiochannel.user.disconnected": "Gracz %1$s opuścił kanał głosowy!",
+  "mineboxadditions.strings.audiochannel.user.connected": "Gracz %1$s dołączył do kanału głosowego!",
+  "mineboxadditions.strings.audiochannel.leave.failed": "Nie jesteś na kanale głosowym!",
+  "mineboxadditions.strings.audiochannel.leave.success": "Opuściłeś kanał głosowy %1$s.",
+  "mineboxadditions.strings.audiochannel.proximity.enabled": "Czat zbliżeniowy jest teraz włączony.",
+  "mineboxadditions.strings.audiochannel.proximity.disabled": "Czat zbliżeniowy jest teraz wyłączony.",
+  "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "Nie możesz włączyć czatu zbliżeniowego będąc na kanale głosowym. Najpierw opuść kanał głosowy!",
 
-  "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen"
+  "mineboxadditions.strings.keybinds.audioSettings.open": "Otwórz ekran ustawień audio"
 }
