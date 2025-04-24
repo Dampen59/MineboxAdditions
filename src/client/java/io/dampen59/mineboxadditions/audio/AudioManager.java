@@ -161,6 +161,9 @@ public class AudioManager {
 
                 float linearGain = (float) Math.pow(10, AudioDeviceState.micGainDb / 20.0);
 
+                long frameDurationNs = 20_000_000L;
+                long nextSendTime = System.nanoTime();
+
                 while (isRecording) {
                     int bytesRead = microphone.read(inputBuffer, 0, inputBuffer.length);
                     int consumed = 0;
@@ -174,7 +177,6 @@ public class AudioManager {
                         consumed += toCopy;
 
                         if (pcmOffset == 1920) {
-
                             short[] rawAudio = new short[960];
                             for (int i = 0; i < 960; i++) {
                                 short sample = (short) ((pcmBuffer[2 * i + 1] << 8) | (pcmBuffer[2 * i] & 0xFF));
@@ -186,6 +188,14 @@ public class AudioManager {
                             modState.getSocket().emit("C2SAudioData", encoded);
 
                             pcmOffset = 0;
+
+                            long now = System.nanoTime();
+                            long sleepNs = nextSendTime - now;
+                            if (sleepNs > 0) {
+                                Thread.sleep(sleepNs / 1_000_000, (int) (sleepNs % 1_000_000));
+                            }
+
+                            nextSendTime += frameDurationNs;
                         }
                     }
                 }
@@ -200,5 +210,6 @@ public class AudioManager {
             }
         }).start();
     }
+
 
 }
