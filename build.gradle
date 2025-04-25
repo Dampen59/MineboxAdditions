@@ -61,6 +61,9 @@ dependencies {
 		exclude(group: "net.fabricmc.fabric-api")
 	}
 
+	implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+	include "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+
 	implementation 'io.socket:socket.io-client:2.1.1'
 	include 'io.socket:socket.io-client:2.1.1'
 	include "io.socket:engine.io-client:2.1.0"

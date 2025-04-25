@@ -339,6 +339,7 @@ public class SocketManager {
                 }
 
             } else {
+                this.modState.getAudioManager().closeMicrophoneAndSpeaker();
                 Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.audiochannel.proximity.disabled").getString());
             }
         });
@@ -378,14 +379,12 @@ public class SocketManager {
 
         socket.on("S2CAudioClientDisconnected", args -> {
             String playerName = (String) args[0];
-            this.modState.getAudioManager().getSpeaker().drain();
-            this.modState.getAudioManager().getSpeaker().flush();
             Utils.displayChatInfoMessage(Text.translatable("mineboxadditions.strings.audiochannel.user.disconnected", playerName).getString());
         });
 
         socket.on("S2CWeatherData", args -> {
             String weather = (String) args[0];
-            int timestamp = (int) args[1];
+            Integer timestamp = Integer.parseInt(args[1].toString());
 
             switch (weather) {
                 case "RAIN" -> this.modState.addRainTimestamp(timestamp);

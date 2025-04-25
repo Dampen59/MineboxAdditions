@@ -85,6 +85,7 @@
   "mineboxadditions.strings.audiochannel.proximity.disabled": "Czat zbliżeniowy jest teraz wyłączony.",
   "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "Nie możesz włączyć czatu zbliżeniowego będąc na kanale głosowym. Najpierw opuść kanał głosowy!",
 
+
   "mineboxadditions.strings.keybinds.audioSettings.open": "Otwórz ekran ustawień audio"
   "mineboxadditions.strings.keybinds.hudEditor.open": "Otwórz ekran edycji HUD-u"
 }

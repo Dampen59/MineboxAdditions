@@ -226,11 +226,11 @@ public class State {
         return this.audioManager;
     }
 
-    public void addRainTimestamp(int prmValue) {
+    public void addRainTimestamp(Integer prmValue) {
         if (!this.rainTimestamps.contains(prmValue)) this.rainTimestamps.add(prmValue);
     }
 
-    public void addStormTimestamp(int prmValue) {
+    public void addStormTimestamp(Integer prmValue) {
         if (!this.stormTimestamps.contains(prmValue)) this.stormTimestamps.add(prmValue);
     }
 

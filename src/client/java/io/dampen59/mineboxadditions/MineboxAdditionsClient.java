@@ -8,6 +8,7 @@ import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
 import io.dampen59.mineboxadditions.gui.AudioDeviceScreen;
+import io.dampen59.mineboxadditions.gui.HudEditorScreen;
 import io.dampen59.mineboxadditions.network.SocketManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
@@ -31,6 +32,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
     public static MineboxAdditionsClient INSTANCE;
 
     private static KeyBinding keyBinding;
+    public static KeyBinding openEditMode;
 
     public ModConfig config = null;
 
@@ -59,9 +61,19 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                 "MineboxAdditions"
         ));
 
+        openEditMode = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "mineboxadditions.strings.keybinds.hudEditor.open",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_I,
+                "MineboxAdditions"
+        ));
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
                 MinecraftClient.getInstance().setScreen(new AudioDeviceScreen());
+            }
+            if (openEditMode.wasPressed()) {
+                client.setScreen(new HudEditorScreen(AutoConfig.getConfigHolder(ModConfig.class).getConfig()));
             }
         });
 

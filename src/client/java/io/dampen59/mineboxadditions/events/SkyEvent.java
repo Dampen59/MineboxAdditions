@@ -47,20 +47,18 @@ public class SkyEvent {
 
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
 
-        int x = 5;
-        int y = 60;
-
         if (isFullMoon() && config.displaySettings.displayFullMoon) {
             Identifier texture = Identifier.of("mineboxadditions", "textures/gui/moon_phases/full_moon.png");
-            drawContext.drawTexture(RenderLayer::getGuiTextured, texture, 14, 5, 0, 0, 24, 24, 24, 24);
-            drawContext.drawText(client.textRenderer, Text.translatable("mineboxadditions.strings.full_moon"), 5, 32, 0xFFFFFF, true);
+            drawContext.drawTexture(RenderLayer::getGuiTextured, texture, config.fullMoonHudX, config.fullMoonHudY, 0, 0, 24, 24, 24, 24);
+            //drawContext.drawText(client.textRenderer, Text.translatable("mineboxadditions.strings.full_moon"), 5, 32, 0xFFFFFF, true);
         }
 
         String rainText = "Next Rain: " + formatNextEventCountdown(modState.getRainTimestamps());
         String stormText = "Next Storm: " + formatNextEventCountdown(modState.getStormTimestamps());
 
-        drawContext.drawText(client.textRenderer, Text.literal(rainText), x, y, 0xFFFFFF, true);
-        drawContext.drawText(client.textRenderer, Text.literal(stormText), x, y + 12, 0xFFFFFF, true);
+        drawContext.drawText(client.textRenderer, Text.literal(rainText), config.rainHudX, config.rainHudY, 0xFFFFFF, true);
+        drawContext.drawText(client.textRenderer, Text.literal(stormText), config.stormHudX, config.stormHudY, 0xFFFFFF, true);
+
     }
 
     private String formatNextEventCountdown(List<Integer> timestamps) {
