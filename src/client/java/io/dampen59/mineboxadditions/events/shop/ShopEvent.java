@@ -1,5 +1,6 @@
 package io.dampen59.mineboxadditions.events.shop;
 
+import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -78,9 +79,9 @@ public class ShopEvent {
 
         String displayOffer = getCurrentItemOffer.get();
         if (displayOffer != null) {
-            drawContext.drawText(client.textRenderer, Text.of(displayOffer), 5, 40, 0xFFFFFF, true);
+            drawContext.drawText(client.textRenderer, Text.of(displayOffer), MineboxAdditionsClient.INSTANCE.config.shopHudX, MineboxAdditionsClient.INSTANCE.config.shopHudY, 0xFFFFFF, true);
         } else if (isShopOpen) {
-            drawContext.drawText(client.textRenderer, Text.translatable(shop.getToastTitleKey()), 5, 40, 0xFFFFFF, true);
+            drawContext.drawText(client.textRenderer, Text.translatable(shop.getToastTitleKey()), MineboxAdditionsClient.INSTANCE.config.shopHudX, MineboxAdditionsClient.INSTANCE.config.shopHudY, 0xFFFFFF, true);
         }
     }
 }
