@@ -33,8 +33,6 @@ Fabric Loader 0.16.10
 
 [Cloth Config API](https://cdn.modrinth.com/data/9s6osm5g/versions/JbVSQUVw/cloth-config-16.0.141-fabric.jar)
 
-[Fabric Langage Kotlin](https://modrinth.com/mod/fabric-language-kotlin)
-
 ### Optional but highly recommended
 [Mod Menu](https://cdn.modrinth.com/data/mOgUt4GM/versions/4xPSbh0l/modmenu-12.0.0.jar)
 
