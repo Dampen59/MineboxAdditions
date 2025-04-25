@@ -38,6 +38,30 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public float speakerVolumeMultiplier = 1.0f;
 
+    @ConfigEntry.Gui.Excluded
+    public int rainHudX = 5;
+
+    @ConfigEntry.Gui.Excluded
+    public int rainHudY = 60;
+
+    @ConfigEntry.Gui.Excluded
+    public int stormHudX = 5;
+
+    @ConfigEntry.Gui.Excluded
+    public int stormHudY = 72;
+
+    @ConfigEntry.Gui.Excluded
+    public int shopHudX = 5;
+
+    @ConfigEntry.Gui.Excluded
+    public int shopHudY = 40;
+
+    @ConfigEntry.Gui.Excluded
+    public int fullMoonHudX = 14;
+
+    @ConfigEntry.Gui.Excluded
+    public int fullMoonHudY = 5;
+
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
 
