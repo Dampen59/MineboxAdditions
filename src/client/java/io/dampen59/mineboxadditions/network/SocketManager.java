@@ -394,7 +394,11 @@ public class SocketManager {
                 }
                 default -> System.out.println("Received unknown weather data : " + weather);
             }
+        });
 
+        socket.on("S2CMotd", args -> {
+            String message = (String) args[0];
+            Utils.displayChatInfoMessage("[MineboxAdditions MOTD] " + message);
         });
 
     }

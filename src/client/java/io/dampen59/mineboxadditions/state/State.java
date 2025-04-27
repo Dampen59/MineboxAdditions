@@ -8,13 +8,13 @@ import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.Socket;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
+import net.minecraft.entity.decoration.DisplayEntity;
 
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class State {
     private boolean isConnectedToMinebox = false;
@@ -49,6 +49,10 @@ public class State {
 
     private final List<Integer> rainTimestamps = new ArrayList<>();
     private final List<Integer> stormTimestamps = new ArrayList<>();
+
+    private boolean performanceMode = false;
+    private Map<DisplayEntity.TextDisplayEntity, ArmorStandEntity> performanceModeDebugArmorstands = new HashMap<>();
+    private Set<Entity> unrenderedEntities = new HashSet<>();
 
     public void reset() {
         this.setConnectedToMinebox(false);
@@ -246,4 +250,10 @@ public class State {
         this.rainTimestamps.clear();
         this.stormTimestamps.clear();
     }
+
+    public void setPerformanceMode(boolean prmValue) { this.performanceMode = prmValue; }
+    public boolean getPerformanceMode() { return this.performanceMode; }
+
+    public Map<DisplayEntity.TextDisplayEntity, ArmorStandEntity> getPerformanceModeDebugArmorstands() { return this.performanceModeDebugArmorstands; }
+    public Set<Entity> getUnrenderedEntities() { return this.unrenderedEntities; }
 }
