@@ -9,6 +9,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
@@ -244,5 +245,14 @@ public class Utils {
         Text message = Text.literal("\uD83D\uDEC8 " + prmMessage)
                 .setStyle(Style.EMPTY.withColor(Formatting.BLUE).withBold(false));
         MinecraftClient.getInstance().player.sendMessage(message, false);
+    }
+
+    public boolean isHarvestableTextDisplay(DisplayEntity.TextDisplayEntity entity) {
+        Text text = entity.getText();
+        if (text.getContent() instanceof TranslatableTextContent translatable) {
+            String key = translatable.getKey();
+            return key.contains("mbx.harvestable");
+        }
+        return false;
     }
 }
