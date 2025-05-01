@@ -396,6 +396,10 @@ public class SocketManager {
             }
         });
 
+        socket.on("S2ClearWeatherData", args -> {
+            this.modState.clearWeatherTimestamps();
+        });
+
         socket.on("S2CMotd", args -> {
             String message = (String) args[0];
             Utils.displayChatInfoMessage("[MineboxAdditions MOTD] " + message);
