@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.events.inventory;
 
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -30,6 +31,10 @@ public class InventoryEvent {
     private final Map<Integer, Integer> previousInventoryCounts = new HashMap<>();
     private final List<ItemPickupNotification> itemPickupNotifications = new ArrayList<>();
 
+    private int lastAmountInside = -1;
+    private long lastCheckTime = System.currentTimeMillis();
+    private double fillRatePerSecond = 0.0;
+    private String timeUntilFull = "";
     public InventoryEvent(State modState) {
         this.modState = modState;
         HudRenderCallback.EVENT.register(this::renderItemsPickups);
@@ -119,6 +124,15 @@ public class InventoryEvent {
             String text = "+ " + notif.count + " ";
             drawContext.drawTextWithShadow(client.textRenderer, Text.literal(text).append(notif.itemStack.getName()), x + 20, y + 4, 0xFFFFFF);
         }
+
+        if (fillRatePerSecond != 0) {
+            String rateText = String.format("Haversack Fill Rate: %.2f/s", fillRatePerSecond);
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), 10, 10, 0xFFFFFF);
+
+            String timeText = "Full in: " + timeUntilFull;
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(timeText), 10, 25, 0xFFFFFF);
+        }
+
     }
 
     private void handleDurability(ItemStack stack) {
@@ -152,6 +166,32 @@ public class InventoryEvent {
         int maxQuantity = Integer.parseInt(parts[1]);
         NbtCompound persistentData = nbtData.getCompound("mbitems:persistent");
         int amountInside = persistentData.getInt("mbitems:amount_inside");
+
+        long currentTime = System.currentTimeMillis();
+        if (lastAmountInside >= 0) {
+            long deltaTime = currentTime - lastCheckTime;
+            if (deltaTime >= 1000) {
+                int deltaAmount = amountInside - lastAmountInside;
+                fillRatePerSecond = deltaAmount / (deltaTime / 1000.0);
+                lastCheckTime = currentTime;
+                lastAmountInside = amountInside;
+
+                // Estimate time to full
+                int remaining = maxQuantity - amountInside;
+                if (fillRatePerSecond > 0) {
+                    long secondsLeft = (long) (remaining / fillRatePerSecond);
+                    timeUntilFull = Utils.formatTime(secondsLeft);
+                } else {
+                    timeUntilFull = "∞";
+                }
+            }
+        } else {
+            lastAmountInside = amountInside;
+            lastCheckTime = currentTime;
+            timeUntilFull = "";
+        }
+
+
         ComponentChanges changes = ComponentChanges.builder()
                 .add(DataComponentTypes.DAMAGE, maxQuantity - amountInside)
                 .add(DataComponentTypes.MAX_DAMAGE, maxQuantity)
@@ -160,6 +200,7 @@ public class InventoryEvent {
         stack.setDamage(amountInside);
         stack.applyChanges(changes);
     }
+
 
     private void handleHarvesterDurability(ItemStack stack, TranslatableTextContent content) {
         StringVisitable durabilityArg = content.getArg(0);
