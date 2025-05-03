@@ -127,10 +127,10 @@ public class InventoryEvent {
 
         if (fillRatePerSecond != 0) {
             String rateText = String.format("Haversack Fill Rate: %.2f/s", fillRatePerSecond);
-            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), 10, 10, 0xFFFFFF);
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), config.haverSackFillRateX, config.haverSackFillRateY, 0xFFFFFF);
 
-            String timeText = "Full in: " + timeUntilFull;
-            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(timeText), 10, 25, 0xFFFFFF);
+            String timeText = "Haversack Full in: " + timeUntilFull;
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(timeText), config.haversackFullInX, config.haversackFullInY, 0xFFFFFF);
         }
 
     }

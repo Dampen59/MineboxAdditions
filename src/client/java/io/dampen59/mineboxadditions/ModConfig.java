@@ -62,6 +62,18 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public int fullMoonHudY = 5;
 
+    @ConfigEntry.Gui.Excluded
+    public int haverSackFillRateX = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int haverSackFillRateY = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int haversackFullInX = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int haversackFullInY = 25;
+
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
 
