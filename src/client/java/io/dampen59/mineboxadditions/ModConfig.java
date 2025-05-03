@@ -133,33 +133,6 @@ public class ModConfig implements ConfigData {
         public boolean displayFullMoon = false;
     }
 
-    public static class MultiChannelSettings {
-        public boolean enableMultiChannel = true;
-
-        public boolean enableFrench = true;
-        public boolean enableEnglish = true;
-        public boolean enableSpanish = false;
-        public boolean enableRussian = false;
-        public boolean enablePortuguese = false;
-        public boolean enableDeutsch = false;
-        public boolean enableChinese = false;
-        public boolean enablePolish = false;
-        public boolean enableItalian = false;
-        public boolean enableJapanese = false;
-        public boolean enableDutch = false;
-        public boolean enableTurkish = false;
-    }
-
-    @ConfigEntry.Gui.CollapsibleObject
-    public ChatSettings chatSettings = new ChatSettings();
-
-    public static class ChatSettings {
-
-        @ConfigEntry.Gui.CollapsibleObject
-        public MultiChannelSettings multiChannelSettings = new MultiChannelSettings();
-
-    }
-
     public boolean autoIslandOnLogin = false;
 
     // Extra inventory related things

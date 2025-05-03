@@ -27,13 +27,6 @@ public class InGameHudMixin {
 
             this.currentMessage = message.getString();
 
-            // 끳 = Luxs
-            // 끱 = Gems
-            if (this.currentMessage.contains("끳") && this.currentMessage.contains("끱")) {
-                MineboxAdditionsClient.INSTANCE.modState.setChatLang(this.currentMessage);
-                return;
-            }
-
             if(WeatherUtils.isFullWeatherMessage(this.currentMessage)) {
                 WeatherUtils.ForecastResult parsedData = WeatherUtils.parseWeatherForecast(this.currentMessage);
                 if (parsedData != null) {

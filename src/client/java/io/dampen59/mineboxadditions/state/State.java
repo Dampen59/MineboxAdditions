@@ -1,19 +1,13 @@
 package io.dampen59.mineboxadditions.state;
 
-import de.maxhenkel.opus4j.OpusDecoder;
-import de.maxhenkel.opus4j.OpusEncoder;
 import io.dampen59.mineboxadditions.audio.AudioManager;
-import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
-import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.Socket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.DisplayEntity;
 
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
 import java.util.*;
 
 public class State {
@@ -35,15 +29,11 @@ public class State {
 
     private List<MineboxItem> mbxItems = null;
 
-    private List<MineboxChatFlag> mbxChatFlags = null;
-
     private List<MineboxFishingShoal.FishingShoalFish> mbxFishables = new ArrayList<>();
 
     private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
 
     private Socket objSocket = null;
-
-    private String chatLang = null;
 
     private AudioManager audioManager = null;
 
@@ -69,8 +59,6 @@ public class State {
         this.setCurrentMoonPhase(-1);
         this.setMbxItems(null);
         this.resetShinyList();
-        this.setChatLang(null);
-        this.setMbxChatFlags(null);
         this.clearWeatherTimestamps();
     }
 
@@ -178,14 +166,6 @@ public class State {
         return this.mbxItems;
     }
 
-    public void setMbxChatFlags(List<MineboxChatFlag> prmValue) {
-        this.mbxChatFlags = prmValue;
-    }
-
-    public List<MineboxChatFlag> getMbxChatFlags() {
-        return this.mbxChatFlags;
-    }
-
     public void setMbxFishables(List<MineboxFishingShoal.FishingShoalFish> prmValue) {
         this.mbxFishables = prmValue;
     }
@@ -204,14 +184,6 @@ public class State {
 
     public void addShinyUuid(String prmUuid) {
         this.mbxShiniesUuids.put(prmUuid, false);
-    }
-
-    public void setChatLang(String prmValue) {
-        this.chatLang = Utils.actionBarDataToChatLang(prmValue);
-    }
-
-    public String getChatLang() {
-        return this.chatLang;
     }
 
     public void setSocket(Socket prmValue) {

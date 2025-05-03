@@ -1,6 +1,5 @@
 package io.dampen59.mineboxadditions.utils;
 
-import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.minebox.MineboxToast;
 import io.dampen59.mineboxadditions.minebox.ParsedMessage;
@@ -176,15 +175,6 @@ public class Utils {
         if (prmActionBarData.contains("낈")) return "tr";
 
         return "en";
-    }
-
-    public static String getChatFlagByLang(List<MineboxChatFlag> mbxChatFlags, String lang) {
-        for (MineboxChatFlag item : mbxChatFlags) {
-            if (item.getLang().equalsIgnoreCase(lang)) {
-                return item.getFlag();
-            }
-        }
-        return mbxChatFlags.getFirst().getFlag();
     }
 
 
