@@ -8,6 +8,8 @@ import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.gui.screen.ingame.RecipeBookScreen;
+import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import org.spongepowered.asm.mixin.Mixin;

@@ -65,32 +65,32 @@ public class SocketManager {
                 case "Mouse":
                     if (modState.getMouseCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title").getString();
-                        modState.setMouseCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("MOUSE", title, Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", itemName).getString());
+                        modState.setMouseCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("MOUSE", title, Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
                 case "Bakery":
                     if (modState.getBakeryCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title").getString();
-                        modState.setBakeryCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("BAKERY", title, Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", itemName).getString());
+                        modState.setBakeryCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("BAKERY", title, Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
                 case "Buckstar":
                     if (modState.getBuckstarCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title").getString();
-                        modState.setBuckstarCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("BUCKSTAR", title, Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", itemName).getString());
+                        modState.setBuckstarCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("BUCKSTAR", title, Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
                 case "Cocktail":
                     if (modState.getCocktailCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title").getString();
-                        modState.setCocktailCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("COCKTAIL", title, Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", itemName).getString());
+                        modState.setCocktailCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("COCKTAIL", title, Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
