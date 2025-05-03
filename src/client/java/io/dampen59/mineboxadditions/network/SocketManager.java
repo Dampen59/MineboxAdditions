@@ -33,7 +33,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 7;
+    private final int protocolVersion = 8;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {
