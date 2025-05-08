@@ -9,6 +9,7 @@ import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
 import io.dampen59.mineboxadditions.gui.AudioDeviceScreen;
 import io.dampen59.mineboxadditions.gui.HudEditorScreen;
+import io.dampen59.mineboxadditions.hud.HudRenderer;
 import io.dampen59.mineboxadditions.minebox.EntitiesOptimizer;
 import io.dampen59.mineboxadditions.network.SocketManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
@@ -57,6 +58,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
         new WorldRendererEvent();
         new AudioManager(modState);
         new EntitiesOptimizer(modState);
+        new HudRenderer(modState);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
         this.registerKeybinds();

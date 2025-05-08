@@ -44,6 +44,9 @@ public class State {
     private Map<DisplayEntity.TextDisplayEntity, ArmorStandEntity> performanceModeDebugArmorstands = new HashMap<>();
     private Set<Entity> unrenderedEntities = new HashSet<>();
 
+    private String mermaidCurrentItem = null;
+    private int mermaidCurrentItemQty = 0;
+
     public void reset() {
         this.setConnectedToMinebox(false);
         this.setLoginCommandSent(false);
@@ -228,4 +231,10 @@ public class State {
 
     public Map<DisplayEntity.TextDisplayEntity, ArmorStandEntity> getPerformanceModeDebugArmorstands() { return this.performanceModeDebugArmorstands; }
     public Set<Entity> getUnrenderedEntities() { return this.unrenderedEntities; }
+
+    public void setMermaidCurrentItem(String prmValue) {this.mermaidCurrentItem = prmValue;}
+    public String getMermaidCurrentItem() {return this.mermaidCurrentItem;}
+
+    public void setMermaidCurrentItemQty(int prmValue) {this.mermaidCurrentItemQty = prmValue;}
+    public int getMermaidCurrentItemQty() {return this.mermaidCurrentItemQty;}
 }

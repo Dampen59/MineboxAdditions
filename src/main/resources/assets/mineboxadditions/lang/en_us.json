@@ -16,7 +16,12 @@
   "mineboxadditions.strings.full_moon": "Full moon",
 
   "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Display a logo in the top-left corner when it's a full moon",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Enable Full Moon HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Enable Next Rain HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Enable Next Storm HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Items pickup tooltip settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Enable the feature",

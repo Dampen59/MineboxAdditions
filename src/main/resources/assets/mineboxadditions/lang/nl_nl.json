@@ -15,8 +15,13 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Stuur een waarschuwing naar andere MineboxAdditions-gebruikers wanneer je een winkelaanbieding ontdekt",
   "mineboxadditions.strings.full_moon": "Volle maan",
 
-  "text.autoconfig.mineboxadditions.option.displaySettings": "Weergave-instellingen",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Geef een logo in de linkerbovenhoek weer wanneer het volle maan is",
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Enable Full Moon HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Enable Next Rain HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Enable Next Storm HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Instellingen voor item-opraaptooltips",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Schakel de functie in",

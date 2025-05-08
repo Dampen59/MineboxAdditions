@@ -74,6 +74,12 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public int haversackFullInY = 25;
 
+    @ConfigEntry.Gui.Excluded
+    public int mermaidRequestHudX = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int getMermaidRequestHudY = 40;
+
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
 
@@ -131,6 +137,11 @@ public class ModConfig implements ConfigData {
         public FishingSettings fishingSettings = new FishingSettings();
 
         public boolean displayFullMoon = false;
+        public boolean displayNextRain = true;
+        public boolean displayNextStorm= true;
+        public boolean displayHaversackFillRate = true;
+        public boolean displayHaversackFullIn = true;
+         public boolean displayMermaidRequest = true;
     }
 
     public boolean autoIslandOnLogin = false;

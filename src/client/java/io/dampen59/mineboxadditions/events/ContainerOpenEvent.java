@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
@@ -18,6 +19,8 @@ public class ContainerOpenEvent {
     private final State modState;
 
     private final String[] playerMenuTitles = new String[]{"Player menu", "Menu joueur", "Menu gracza"};
+
+    private final String[] mermaidMenuTitles = new String[]{"Mermaid", "Sirène"};
 
     public ContainerOpenEvent(State modState) {
         this.modState = modState;
@@ -42,6 +45,7 @@ public class ContainerOpenEvent {
             }
         } else {
             String containerTitleString = containerTitle.getString();
+
             if (Arrays.stream(playerMenuTitles).anyMatch(containerTitleString::contains)) {
 
                 for (int i = 0; i < 4; i++) {
@@ -78,6 +82,13 @@ public class ContainerOpenEvent {
                     Screens.getButtons(containerScreen).add(renameSaveButton);
                     Screens.getButtons(containerScreen).add(equipButton);
                 }
+            } else if (Arrays.stream(mermaidMenuTitles).anyMatch(containerTitleString::contains)) {
+                client.execute(() -> {
+                    ItemStack mermaidRequest = containerScreen.getScreenHandler().getInventory().getStack(22);
+                    String requestedItemTranslationKey = extractTranslationKey(mermaidRequest.getFormattedName());
+                    int requestedItemQuantity = mermaidRequest.getCount();
+                    this.modState.getSocket().emit("C2SMermaidRequest", requestedItemTranslationKey, requestedItemQuantity);
+                });
             }
         }
     }

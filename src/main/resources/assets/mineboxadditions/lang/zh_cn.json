@@ -15,8 +15,13 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "当您发现商店优惠时，向其他MineboxAdditions用户发送警报",
   "mineboxadditions.strings.full_moon": "满月",
 
-  "text.autoconfig.mineboxadditions.option.displaySettings": "显示设置",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "在满月时在左上角显示徽标",
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Enable Full Moon HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Enable Next Rain HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Enable Next Storm HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "物品拾取提示设置",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "启用此功能",

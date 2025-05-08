@@ -362,6 +362,13 @@ public class SocketManager {
             Utils.displayChatInfoMessage("[MineboxAdditions MOTD] " + message);
         });
 
+        socket.on("S2CMermaidRequest", args -> {
+            String itemTranslationKey = (String) args[0];
+            int itemQuantity = (int) args[1];
+            this.modState.setMermaidCurrentItem(itemTranslationKey);
+            this.modState.setMermaidCurrentItemQty(itemQuantity);
+        });
+
     }
 
     // manual control over when to open or close the socket connection, not used rn

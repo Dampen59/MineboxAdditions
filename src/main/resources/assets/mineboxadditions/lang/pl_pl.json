@@ -14,9 +14,14 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Wyświetl alert, gdy dostępne są oferty sklepowe",
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Wyślij alert do innych użytkowników MineboxAdditions, gdy odkryjesz ofertę sklepową",
   "mineboxadditions.strings.full_moon": "Pełnia księżyca",
-  
-  "text.autoconfig.mineboxadditions.option.displaySettings": "Ustawienia wyświetlania",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Wyświetl ikonę w lewym górnym rogu, gdy jest pełnia księżyca",
+
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Enable Full Moon HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Enable Next Rain HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Enable Next Storm HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
   
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Ustawienia powiadomień dotyczącej podnoszenia przedmiotów",
 
