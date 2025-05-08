@@ -7,7 +7,6 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.audio.AudioManager;
-import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.state.State;
@@ -30,12 +29,11 @@ import javax.sound.sampled.Mixer;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private final State modState;
-    private final int protocolVersion = 7;
+    private final int protocolVersion = 8;
     private final ObjectMapper mapper = new ObjectMapper();
 
     public SocketManager(State modState) {
@@ -67,32 +65,32 @@ public class SocketManager {
                 case "Mouse":
                     if (modState.getMouseCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title").getString();
-                        modState.setMouseCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("MOUSE", title, Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", itemName).getString());
+                        modState.setMouseCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("MOUSE", title, Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
                 case "Bakery":
                     if (modState.getBakeryCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title").getString();
-                        modState.setBakeryCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("BAKERY", title, Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", itemName).getString());
+                        modState.setBakeryCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("BAKERY", title, Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
                 case "Buckstar":
                     if (modState.getBuckstarCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title").getString();
-                        modState.setBuckstarCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("BUCKSTAR", title, Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", itemName).getString());
+                        modState.setBuckstarCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("BUCKSTAR", title, Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
                 case "Cocktail":
                     if (modState.getCocktailCurrentItemOffer() == null) {
                         String title = Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title").getString();
-                        modState.setCocktailCurrentItemOffer(title + ": " + itemName);
-                        Utils.showShopToastNotification("COCKTAIL", title, Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", itemName).getString());
+                        modState.setCocktailCurrentItemOffer(title + ": " + Text.translatable(itemName).getString());
+                        Utils.showShopToastNotification("COCKTAIL", title, Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content", Text.translatable(itemName).getString()).getString());
                         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
                     }
                     break;
@@ -117,17 +115,6 @@ public class SocketManager {
                 modState.setMbxItems(items);
             } catch (JsonProcessingException e) {
                 System.out.println("[SocketManager] Failed to load Minebox Items Stats JSON: " + e.getMessage());
-            }
-        });
-
-        socket.on("S2CMineboxChatFlags", args -> {
-            String jsonData = (String) args[0];
-            try {
-                List<MineboxChatFlag> items = mapper.readValue(jsonData,
-                        mapper.getTypeFactory().constructCollectionType(List.class, MineboxChatFlag.class));
-                modState.setMbxChatFlags(items);
-            } catch (JsonProcessingException e) {
-                System.out.println("[SocketManager] Failed to load Minebox Chat Flags JSON: " + e.getMessage());
             }
         });
 
@@ -165,36 +152,6 @@ public class SocketManager {
             modState.getMbxShiniesUuids().put(mobUuid, true);
             String mobName = Text.translatable(mobKey).getString();
             Utils.shinyFoundAlert(playerName, mobName);
-        });
-
-        socket.on("S2CChatMessage", args -> {
-
-            if (!config.chatSettings.multiChannelSettings.enableMultiChannel) return;
-
-            String sourceChatLang = (String) args[0];
-            String playerName = (String) args[1];
-            String msgContent = (String) args[2];
-
-            if (modState.getChatLang() == null) return;
-            if (Objects.equals(modState.getChatLang(), sourceChatLang)) return;
-            if (!config.chatSettings.multiChannelSettings.enableFrench && Objects.equals(sourceChatLang, "fr")) return;
-            if (!config.chatSettings.multiChannelSettings.enableEnglish && Objects.equals(sourceChatLang, "en")) return;
-            if (!config.chatSettings.multiChannelSettings.enableSpanish && Objects.equals(sourceChatLang, "es")) return;
-            if (!config.chatSettings.multiChannelSettings.enableRussian && Objects.equals(sourceChatLang, "ru")) return;
-            if (!config.chatSettings.multiChannelSettings.enablePortuguese && Objects.equals(sourceChatLang, "pt"))
-                return;
-            if (!config.chatSettings.multiChannelSettings.enableDeutsch && Objects.equals(sourceChatLang, "de")) return;
-            if (!config.chatSettings.multiChannelSettings.enableChinese && Objects.equals(sourceChatLang, "cn")) return;
-            if (!config.chatSettings.multiChannelSettings.enablePolish && Objects.equals(sourceChatLang, "pl")) return;
-            if (!config.chatSettings.multiChannelSettings.enableItalian && Objects.equals(sourceChatLang, "it")) return;
-            if (!config.chatSettings.multiChannelSettings.enableJapanese && Objects.equals(sourceChatLang, "jp"))
-                return;
-            if (!config.chatSettings.multiChannelSettings.enableDutch && Objects.equals(sourceChatLang, "nl")) return;
-            if (!config.chatSettings.multiChannelSettings.enableTurkish && Objects.equals(sourceChatLang, "tr")) return;
-
-            String sourceLangFlag = Utils.getChatFlagByLang(modState.getMbxChatFlags(), sourceChatLang);
-            Utils.displayChatMessage(sourceLangFlag, playerName, msgContent);
-
         });
 
         socket.on("S2CAudioData", args -> {
@@ -394,7 +351,22 @@ public class SocketManager {
                 }
                 default -> System.out.println("Received unknown weather data : " + weather);
             }
+        });
 
+        socket.on("S2ClearWeatherData", args -> {
+            this.modState.clearWeatherTimestamps();
+        });
+
+        socket.on("S2CMotd", args -> {
+            String message = (String) args[0];
+            Utils.displayChatInfoMessage("[MineboxAdditions MOTD] " + message);
+        });
+
+        socket.on("S2CMermaidRequest", args -> {
+            String itemTranslationKey = (String) args[0];
+            int itemQuantity = (int) args[1];
+            this.modState.setMermaidCurrentItem(itemTranslationKey);
+            this.modState.setMermaidCurrentItemQty(itemQuantity);
         });
 
     }

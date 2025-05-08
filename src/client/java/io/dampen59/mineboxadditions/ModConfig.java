@@ -62,6 +62,24 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public int fullMoonHudY = 5;
 
+    @ConfigEntry.Gui.Excluded
+    public int haverSackFillRateX = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int haverSackFillRateY = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int haversackFullInX = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int haversackFullInY = 25;
+
+    @ConfigEntry.Gui.Excluded
+    public int mermaidRequestHudX = 10;
+
+    @ConfigEntry.Gui.Excluded
+    public int getMermaidRequestHudY = 40;
+
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
 
@@ -119,33 +137,11 @@ public class ModConfig implements ConfigData {
         public FishingSettings fishingSettings = new FishingSettings();
 
         public boolean displayFullMoon = false;
-    }
-
-    public static class MultiChannelSettings {
-        public boolean enableMultiChannel = true;
-
-        public boolean enableFrench = true;
-        public boolean enableEnglish = true;
-        public boolean enableSpanish = false;
-        public boolean enableRussian = false;
-        public boolean enablePortuguese = false;
-        public boolean enableDeutsch = false;
-        public boolean enableChinese = false;
-        public boolean enablePolish = false;
-        public boolean enableItalian = false;
-        public boolean enableJapanese = false;
-        public boolean enableDutch = false;
-        public boolean enableTurkish = false;
-    }
-
-    @ConfigEntry.Gui.CollapsibleObject
-    public ChatSettings chatSettings = new ChatSettings();
-
-    public static class ChatSettings {
-
-        @ConfigEntry.Gui.CollapsibleObject
-        public MultiChannelSettings multiChannelSettings = new MultiChannelSettings();
-
+        public boolean displayNextRain = true;
+        public boolean displayNextStorm= true;
+        public boolean displayHaversackFillRate = true;
+        public boolean displayHaversackFullIn = true;
+         public boolean displayMermaidRequest = true;
     }
 
     public boolean autoIslandOnLogin = false;

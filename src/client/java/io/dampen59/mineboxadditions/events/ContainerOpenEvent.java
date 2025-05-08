@@ -9,23 +9,18 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 public class ContainerOpenEvent {
     private final State modState;
-    private final Map<String, List<String>> shopOffers = Map.of(
-            "Mouse", List.of("mbx.items.emmental_cheese.name", "mbx.items.cheddar_cheese.name"),
-            "Buckstar", List.of("mbx.items.coffee_gray.name", "mbx.items.coffee_green.name", "mbx.items.coffee_white.name", "mbx.items.coffee_yellow.name"),
-            "Bakery", List.of("mbx.items.flour.name", "mbx.items.baking_powder.name", "mbx.items.baguette.name", "mbx.items.croissant.name", "mbx.items.blue_macaron.name", "mbx.items.green_macaron.name", "mbx.items.orange_macaron.name", "mbx.items.yellow_macaron.name"),
-            "Cocktail", List.of("mbx.items.blue_cocktail.name", "mbx.items.orange_cocktail.name", "mbx.items.red_cocktail.name", "mbx.items.yellow_cocktail.name", "mbx.items.lemon.name", "mbx.items.avocado.name", "mbx.items.pineapple.name")
-    );
 
     private final String[] playerMenuTitles = new String[]{"Player menu", "Menu joueur", "Menu gracza"};
+
+    private final String[] mermaidMenuTitles = new String[]{"Mermaid", "Sirène"};
 
     public ContainerOpenEvent(State modState) {
         this.modState = modState;
@@ -46,14 +41,11 @@ public class ContainerOpenEvent {
 
         if (translationKey != null) {
             if (slotsCount <= 45) {
-                shopOffers.forEach((shop, keys) -> {
-                    if (keys.contains(translationKey)) {
-                        modState.getSocket().emit("C2SShopOfferEvent", shop, translationKey);
-                    }
-                });
+                modState.getSocket().emit("C2SShopOfferEvent", translationKey);
             }
         } else {
             String containerTitleString = containerTitle.getString();
+
             if (Arrays.stream(playerMenuTitles).anyMatch(containerTitleString::contains)) {
 
                 for (int i = 0; i < 4; i++) {
@@ -90,6 +82,13 @@ public class ContainerOpenEvent {
                     Screens.getButtons(containerScreen).add(renameSaveButton);
                     Screens.getButtons(containerScreen).add(equipButton);
                 }
+            } else if (Arrays.stream(mermaidMenuTitles).anyMatch(containerTitleString::contains)) {
+                client.execute(() -> {
+                    ItemStack mermaidRequest = containerScreen.getScreenHandler().getInventory().getStack(22);
+                    String requestedItemTranslationKey = extractTranslationKey(mermaidRequest.getFormattedName());
+                    int requestedItemQuantity = mermaidRequest.getCount();
+                    this.modState.getSocket().emit("C2SMermaidRequest", requestedItemTranslationKey, requestedItemQuantity);
+                });
             }
         }
     }

@@ -14,8 +14,13 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Envoyez une alerte aux autres utilisateurs de MineboxAdditions lorsque vous découvrez une offre de shop",
   "mineboxadditions.strings.full_moon": "Pleine lune",
 
-  "text.autoconfig.mineboxadditions.option.displaySettings": "Paramètres d'affichage",
-  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Afficher un logo dans le coin supérieur gauche en cas de pleine lune",
+  "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Enable Full Moon HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Enable Next Rain HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Enable Next Storm HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Paramètres des notifications de ramassage des objets",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Activer la fonctionnalité",
@@ -84,7 +89,9 @@
   "mineboxadditions.strings.audiochannel.proximity.disabled": "The proximity chat is now disabled.",
   "mineboxadditions.strings.audiochannel.proximity.enable.fail.leavefirst": "You can't enable Proximity Chat while being in a voice channel. Leave it first!",
 
+  "mineboxadditions.strings.keybinds.modSettings.open": "Open mod settings",
   "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen",
-  "mineboxadditions.strings.keybinds.hudEditor.open": "Open HUD Edit screen"
+  "mineboxadditions.strings.keybinds.hudEditor.open": "Open HUD Edit screen",
+  "mineboxadditions.strings.keybinds.performanceMode.toggle": "Toggle performance mode"
 }
 

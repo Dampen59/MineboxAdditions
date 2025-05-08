@@ -71,19 +71,10 @@ public class ExtraInventoryUtils {
             ExtraInventoryItem storedItem = entry.getValue();
             String storedItemUuid = storedItem.itemUid;
 
-
-            for (ItemStack itemStack : client.player.getInventory().main) {
-                if (itemStack == null) continue;
-                if (!Utils.isMineboxItem(itemStack)) continue;
-                if (Utils.getMineboxItemUid(itemStack) == storedItemUuid) {
-
-                }
-            }
-
             for (Slot slot : inventorySlots) {
 
                 // Only loop in the player inventory slots
-                if (slot.id < 54 || slot.id > 89) continue;
+                if (slot.id < 46 || slot.id > 89) continue;
 
                 if (!slot.hasStack()) continue;
 

@@ -1,6 +1,5 @@
 package io.dampen59.mineboxadditions.utils;
 
-import io.dampen59.mineboxadditions.minebox.MineboxChatFlag;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.minebox.MineboxToast;
 import io.dampen59.mineboxadditions.minebox.ParsedMessage;
@@ -9,6 +8,7 @@ import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.component.type.NbtComponent;
+import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
@@ -177,15 +177,6 @@ public class Utils {
         return "en";
     }
 
-    public static String getChatFlagByLang(List<MineboxChatFlag> mbxChatFlags, String lang) {
-        for (MineboxChatFlag item : mbxChatFlags) {
-            if (item.getLang().equalsIgnoreCase(lang)) {
-                return item.getFlag();
-            }
-        }
-        return mbxChatFlags.getFirst().getFlag();
-    }
-
 
     public static ParsedMessage extractPlayerNameAndMessage(String input) {
         if (input == null || !input.contains(": ")) return null;
@@ -245,4 +236,21 @@ public class Utils {
                 .setStyle(Style.EMPTY.withColor(Formatting.BLUE).withBold(false));
         MinecraftClient.getInstance().player.sendMessage(message, false);
     }
+
+    public boolean isHarvestableTextDisplay(DisplayEntity.TextDisplayEntity entity) {
+        Text text = entity.getText();
+        if (text.getContent() instanceof TranslatableTextContent translatable) {
+            String key = translatable.getKey();
+            return key.contains("mbx.harvestable");
+        }
+        return false;
+    }
+
+    public static String formatTime(long totalSeconds) {
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
 }

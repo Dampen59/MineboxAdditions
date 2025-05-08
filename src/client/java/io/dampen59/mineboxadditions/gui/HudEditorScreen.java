@@ -15,7 +15,7 @@ public class HudEditorScreen extends Screen {
     private int offsetX, offsetY;
 
     enum DragTarget {
-        RAIN, STORM, SHOP, FULL_MOON
+        RAIN, STORM, SHOP, FULL_MOON, HS_FILL_RATE, HS_FULL_IN, MERMAID_OFFER
     }
 
     public HudEditorScreen(ModConfig config) {
@@ -46,6 +46,21 @@ public class HudEditorScreen extends Screen {
                 offsetX = (int) mouseX - config.fullMoonHudX;
                 offsetY = (int) mouseY - config.fullMoonHudY;
                 return true;
+            } else if (isInBounds(mouseX, mouseY, config.haverSackFillRateX, config.haverSackFillRateY)) {
+                dragging = DragTarget.HS_FILL_RATE;
+                offsetX = (int) mouseX - config.haverSackFillRateX;
+                offsetY = (int) mouseY - config.haverSackFillRateY;
+                return true;
+            } else if (isInBounds(mouseX, mouseY, config.haversackFullInX, config.haversackFullInY)) {
+                dragging = DragTarget.HS_FULL_IN;
+                offsetX = (int) mouseX - config.haversackFullInX;
+                offsetY = (int) mouseY - config.haversackFullInY;
+                return true;
+            } else if (isInBounds(mouseX, mouseY, config.mermaidRequestHudX, config.getMermaidRequestHudY)) {
+                dragging = DragTarget.MERMAID_OFFER;
+                offsetX = (int) mouseX - config.mermaidRequestHudX;
+                offsetY = (int) mouseY - config.getMermaidRequestHudY;
+                return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -73,6 +88,15 @@ public class HudEditorScreen extends Screen {
             } else if (dragging == DragTarget.FULL_MOON) {
                 config.fullMoonHudX = (int) mouseX - offsetX;
                 config.fullMoonHudY = (int) mouseY - offsetY;
+            } else if (dragging == DragTarget.HS_FILL_RATE) {
+                config.haverSackFillRateX = (int) mouseX - offsetX;
+                config.haverSackFillRateY = (int) mouseY - offsetY;
+            } else if (dragging == DragTarget.HS_FULL_IN) {
+                config.haversackFullInX = (int) mouseX - offsetX;
+                config.haversackFullInY = (int) mouseY - offsetY;
+            } else if (dragging == DragTarget.MERMAID_OFFER) {
+                config.mermaidRequestHudX = (int) mouseX - offsetX;
+                config.getMermaidRequestHudY = (int) mouseY - offsetY;
             }
             return true;
         }
@@ -83,12 +107,23 @@ public class HudEditorScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
+        // Weather HUD
         drawLabel(context, config.rainHudX, config.rainHudY, "Next Rain: 00:00:00");
         drawLabel(context, config.stormHudX, config.stormHudY, "Next Storm: 00:00:00");
+
+        // Shops HUD
         drawLabel(context, config.shopHudX, config.shopHudY, "Shop name: Shop offer");
 
+        // Moon Phase HUD
         Identifier texture = Identifier.of("mineboxadditions", "textures/gui/moon_phases/full_moon.png");
         context.drawTexture(RenderLayer::getGuiTextured, texture, config.fullMoonHudX, config.fullMoonHudY, 0, 0, 24, 24, 24, 24);
+
+        // Haversack HUD
+        drawLabel(context, config.haverSackFillRateX, config.haverSackFillRateY, "Haversack Fill Rate: 0.0/s");
+        drawLabel(context, config.haversackFullInX, config.haversackFullInY, "Haversack Full in: 00:00:00");
+
+        // Mermaid
+        drawLabel(context, config.mermaidRequestHudX, config.getMermaidRequestHudY, "Mermaid request: 1x Bedrock");
     }
 
     private void drawLabel(DrawContext context, int x, int y, String text) {

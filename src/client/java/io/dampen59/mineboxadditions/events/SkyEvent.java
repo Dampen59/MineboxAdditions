@@ -53,11 +53,27 @@ public class SkyEvent {
             //drawContext.drawText(client.textRenderer, Text.translatable("mineboxadditions.strings.full_moon"), 5, 32, 0xFFFFFF, true);
         }
 
-        String rainText = "Next Rain: " + formatNextEventCountdown(modState.getRainTimestamps());
-        String stormText = "Next Storm: " + formatNextEventCountdown(modState.getStormTimestamps());
 
-        drawContext.drawText(client.textRenderer, Text.literal(rainText), config.rainHudX, config.rainHudY, 0xFFFFFF, true);
-        drawContext.drawText(client.textRenderer, Text.literal(stormText), config.stormHudX, config.stormHudY, 0xFFFFFF, true);
+        String rainText = null;
+        String stormText = null;
+
+        if (client.world.isRaining()) {
+            rainText = "Next Rain: Now !";
+        } else {
+            rainText = "Next Rain: " + formatNextEventCountdown(modState.getRainTimestamps());
+        }
+
+        if (client.world.isThundering()) {
+            stormText = "Next Storm: Now !";
+        } else {
+            stormText = "Next Storm: " + formatNextEventCountdown(modState.getStormTimestamps());
+        }
+
+        if (config.displaySettings.displayNextRain)
+            drawContext.drawText(client.textRenderer, Text.literal(rainText), config.rainHudX, config.rainHudY, 0xFFFFFF, true);
+
+        if (config.displaySettings.displayNextStorm)
+            drawContext.drawText(client.textRenderer, Text.literal(stormText), config.stormHudX, config.stormHudY, 0xFFFFFF, true);
 
     }
 
