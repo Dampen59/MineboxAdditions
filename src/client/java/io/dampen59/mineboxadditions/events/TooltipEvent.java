@@ -10,10 +10,8 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.*;
+import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -112,7 +110,13 @@ public class TooltipEvent {
             }
         } else {
             texts.add(Text.literal(""));
-            texts.add(Text.translatable("mineboxadditions.strings.tooltip.more_info"));
+
+            Text firstPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.press").withColor(0x4497CE);
+            Text midPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.key").withColor(0x1D4159);
+            Text endPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.desc").withColor(0x4497CE);
+
+            Text moreInfos = firstPart.copy().append(midPart).append(endPart);
+            texts.add(moreInfos);
         }
     }
 }
