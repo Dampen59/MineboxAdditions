@@ -11,7 +11,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
 import net.minecraft.text.*;
-import net.minecraft.util.Colors;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -32,7 +31,8 @@ public class TooltipEvent {
 
     private void onTooltip(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> texts) {
 
-        if (!Utils.isMineboxItem(itemStack) || !Utils.itemHaveStats(itemStack)) return;
+        //if (!Utils.isMineboxItem(itemStack) || !Utils.itemHaveStats(itemStack)) return;
+        if (!Utils.isMineboxItem(itemStack)) return;
 
         boolean isAltPressed = InputUtil.isKeyPressed(
                 MinecraftClient.getInstance().getWindow().getHandle(), LEFT_ALT_KEY
@@ -47,7 +47,7 @@ public class TooltipEvent {
             }
 
             MineboxItem mbxItem = Utils.findItemByName(modState.getMbxItems(), itemId);
-            if (mbxItem == null) return;
+            //if (mbxItem == null) return;
 
             for (int i = 0; i < texts.size(); i++) {
                 Text originalText = texts.get(i);
@@ -108,6 +108,14 @@ public class TooltipEvent {
                     texts.set(i, updatedText);
                 }
             }
+
+            texts.add(Text.literal(""));
+
+            Text firstPart = Text.literal("Minebox ID: ").withColor(0x4497CE);
+            Text endPart = Text.literal(itemId).withColor(0x1D4159);
+            Text mineboxItemId = firstPart.copy().append(endPart);
+            texts.add(mineboxItemId);
+
         } else {
             texts.add(Text.literal(""));
 
