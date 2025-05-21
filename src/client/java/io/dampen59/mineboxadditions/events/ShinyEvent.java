@@ -44,7 +44,7 @@ public class ShinyEvent {
                 message = Text.literal("✔ Both MineboxAdditions users and current chat channel have been notified. Thank you !")
                         .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
                 if (MinecraftClient.getInstance().player != null)
-                    MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [" + Text.translatable(this.mobNameKey).getString() + "] on me ! [tpa]");
+                    MinecraftClient.getInstance().player.networkHandler.sendChatMessage("Shiny [bestiary:" + this.mobNameKey.replace("mbx.bestiary.", "") + "] on me ! [tpa]");
             } else {
                 message = Text.literal("❌ You've already notified other MineboxAdditions users !")
                         .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));

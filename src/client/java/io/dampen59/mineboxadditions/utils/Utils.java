@@ -1,8 +1,11 @@
 package io.dampen59.mineboxadditions.utils;
 
+import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.minebox.MineboxToast;
 import io.dampen59.mineboxadditions.minebox.ParsedMessage;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
@@ -20,7 +23,9 @@ import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
+import java.io.InputStream;
 import java.util.List;
+import java.util.Properties;
 
 public class Utils {
 
@@ -251,6 +256,11 @@ public class Utils {
         long minutes = (totalSeconds % 3600) / 60;
         long seconds = totalSeconds % 60;
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public static String getModVersion() {
+        ModMetadata modMetadata = FabricLoader.getInstance().getModContainer("mineboxadditions").isPresent() ? FabricLoader.getInstance().getModContainer("mineboxadditions").get().getMetadata() : null;
+        return modMetadata != null ? modMetadata.getVersion().getFriendlyString() : "unknown";
     }
 
 }

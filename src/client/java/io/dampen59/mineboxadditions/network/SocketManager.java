@@ -58,6 +58,16 @@ public class SocketManager {
             }
         });
 
+        socket.on(Socket.EVENT_DISCONNECT, args -> {
+            MinecraftClient client = MinecraftClient.getInstance();
+            if (client != null && client.player != null) {
+                if (this.modState.getConnectedToMinebox()) {
+                    if (this.modState.getSocket().connected()) this.modState.getSocket().disconnect();
+                    this.modState.getSocket().connect();
+                }
+            }
+        });
+
         socket.on("S2CShopOfferEvent", args -> {
             String shopName = (String) args[0];
             String itemName = (String) args[1];
@@ -369,20 +379,5 @@ public class SocketManager {
             this.modState.setMermaidCurrentItemQty(itemQuantity);
         });
 
-    }
-
-    // manual control over when to open or close the socket connection, not used rn
-    public void connect() {
-        Socket socket = modState.getSocket();
-        if (socket != null && !socket.connected()) {
-            socket.connect();
-        }
-    }
-
-    public void disconnect() {
-        Socket socket = modState.getSocket();
-        if (socket != null && socket.connected()) {
-            socket.disconnect();
-        }
     }
 }

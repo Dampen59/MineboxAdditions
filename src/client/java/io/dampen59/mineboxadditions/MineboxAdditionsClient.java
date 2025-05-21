@@ -30,6 +30,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.stream.Collectors;
+
 public class MineboxAdditionsClient implements ClientModInitializer {
 
     public final State modState = new State();
@@ -140,6 +142,21 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
+                )
+        );
+
+        dispatcher.register(ClientCommandManager.literal("mba")
+                .then(ClientCommandManager.literal("debug")
+                    .executes(context -> {
+                        Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
+                        Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
+                        Utils.displayChatInfoMessage("Socket state : " + (this.modState.getSocket().connected() ? "connected (ID : " + this.modState.getSocket().id() + ")" : "disconnected"));
+                        Utils.displayChatInfoMessage("Rain Data : " + this.modState.getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
+                        Utils.displayChatInfoMessage("Storm Data : " + this.modState.getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
+                        Utils.displayChatInfoMessage("Shiny Length : " + this.modState.getMbxShiniesUuids().size());
+
+                        return Command.SINGLE_SUCCESS;
+                    })
                 )
         );
 
