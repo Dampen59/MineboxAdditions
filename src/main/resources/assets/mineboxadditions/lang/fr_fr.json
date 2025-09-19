@@ -21,6 +21,7 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMuseumMissingItems": "Enable museum missing items border",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Paramètres des notifications de ramassage des objets",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Activer la fonctionnalité",
@@ -78,7 +79,10 @@
   "mineboxadditions.strings.keybinds.modSettings.open": "Open mod settings",
   "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen",
   "mineboxadditions.strings.keybinds.hudEditor.open": "Open HUD Edit screen",
-  "mineboxadditions.strings.keybinds.performanceMode.toggle": "Toggle performance mode",
-  "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuration"
+  "mineboxadditions.strings.keybinds.harvestables.open": "Open Harvestables screen",
+  "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuration",
+  "mineboxadditions.strings.keybinds.atlas.open": "Open Atlas",
+
+  "mineboxadditions.strings.unauthorized-api": "Vous n'avez pas autorisé les requêtes API de tierces-parties. Vous ne pouvez pas bénéficier de la fonctionnalité Musée MineboxAdditions. Si vous souhaitez modifier cela, effectuez la commande /settings et activez l'accès API, puis reconnectez-vous à Minebox !"
 }
 

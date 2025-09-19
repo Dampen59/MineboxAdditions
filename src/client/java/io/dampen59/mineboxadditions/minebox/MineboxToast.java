@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.minebox;
 
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.toast.Toast;
@@ -51,13 +52,13 @@ public class MineboxToast implements Toast {
         int width = this.getWidth();
         int height = this.getHeight();
 
-        context.drawGuiTexture(RenderLayer::getGuiTextured, Identifier.ofVanilla("toast/advancement"), 0, 0, width, height);
-        context.drawTexture(RenderLayer::getGuiTextured, iconTexture, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, Identifier.ofVanilla("toast/advancement"), 0, 0, width, height);
+        context.drawTexture(RenderPipelines.GUI_TEXTURED, iconTexture, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
 
         int textY = (height - (this.text.size() * 11)) / 2;
         for (int i = 0; i < this.text.size(); i++) {
             OrderedText line = this.text.get(i);
-            context.drawText(textRenderer, line, 30, textY + i * 11, 0xFFFFFF, false);
+            context.drawText(textRenderer, line, 30, textY + i * 11, 0xFFFFFFFF, false);
         }
     }
 }

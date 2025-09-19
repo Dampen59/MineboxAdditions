@@ -115,18 +115,20 @@ public class ShinyEvent {
         if (client.player == null) return;
 
         Text baseMessage = Text.literal("★ You just found a Shiny ")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
+                .setStyle(Style.EMPTY
+                        .withColor(Formatting.GREEN)
+                        .withBold(false)
+                        .withClickEvent(new ClickEvent.RunCommand("/mbaSendShinyAlert"))
                 );
 
         Text mobText = Text.literal("[" + prmMobName + "]")
                 .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
+                        .withClickEvent(new ClickEvent.RunCommand("/mbaSendShinyAlert"))
                 );
 
         Text endMessage = Text.literal(" ! Click on this message to notify both MineboxAdditions users and current chat channel.")
                 .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/mbaSendShinyAlert"))
+                        .withClickEvent(new ClickEvent.RunCommand("/mbaSendShinyAlert"))
                 );
 
         Text message = baseMessage.copy().append(mobText).append(endMessage);

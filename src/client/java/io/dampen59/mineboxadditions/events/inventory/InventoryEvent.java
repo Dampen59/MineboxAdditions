@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class InventoryEvent {
     private final State modState;
@@ -43,11 +44,12 @@ public class InventoryEvent {
 
     private void onTick() {
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        if (client.player == null || client.world == null || !modState.getConnectedToMinebox()) return;
+        if (client.player == null || client.world == null || !modState.isConnectedToMinebox()) return;
 
-        client.player.getInventory().offHand.stream().filter(stack -> !stack.isEmpty())
+        Stream.of(client.player.getOffHandStack())
+                .filter(stack -> !stack.isEmpty())
                 .forEach(this::handleDurability);
-        client.player.getInventory().main.stream().filter(stack -> !stack.isEmpty())
+        client.player.getInventory().getMainStacks().stream().filter(stack -> !stack.isEmpty())
                 .forEach(this::handleDurability);
 
         if (client.currentScreen instanceof GenericContainerScreen containerScreen) {
@@ -74,7 +76,7 @@ public class InventoryEvent {
 
     private void updateInventorySnapshot(int notificationDuration, int maxNotifications, boolean mergeNotifications) {
         if (client.currentScreen != null || client.player == null || client.player.getInventory() == null) return;
-        DefaultedList<ItemStack> currentInventory = client.player.getInventory().main;
+        DefaultedList<ItemStack> currentInventory = client.player.getInventory().getMainStacks();
         for (int slot = 0; slot < currentInventory.size(); slot++) {
             ItemStack currentStack = currentInventory.get(slot);
             int currentCount = currentStack.getCount();
@@ -113,27 +115,35 @@ public class InventoryEvent {
     private void renderItemsPickups(DrawContext drawContext, RenderTickCounter tickCounter) {
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         if (!config.displaySettings.itemPickupSettings.displayItemsPickups) return;
-        int screenWidth = client.getWindow().getScaledWidth();
-        int screenHeight = client.getWindow().getScaledHeight();
-        int x = screenWidth / 2 + 10;
-        int baseY = screenHeight / 2 - 20;
+
+        if (config.itemPickupHudX == 0 || config.itemPickupHudY == 0) {
+            int screenWidth = client.getWindow().getScaledWidth();
+            int screenHeight = client.getWindow().getScaledHeight();
+            config.itemPickupHudX = screenWidth / 2 + 10;
+            config.itemPickupHudY = screenHeight / 2 - 20;
+            AutoConfig.getConfigHolder(ModConfig.class).save();
+        }
+
+        int x = config.itemPickupHudX;
+        int baseY = config.itemPickupHudY;
+
         for (int i = 0; i < itemPickupNotifications.size(); i++) {
             ItemPickupNotification notif = itemPickupNotifications.get(i);
             int y = baseY - (i * 20);
             drawContext.drawItem(notif.itemStack, x, y);
             String text = "+ " + notif.count + " ";
-            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(text).append(notif.itemStack.getName()), x + 20, y + 4, 0xFFFFFF);
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(text).append(notif.itemStack.getName()), x + 20, y + 4, 0xFFFFFFFF);
         }
 
         if (fillRatePerSecond != 0) {
             String rateText = String.format("Haversack Fill Rate: %.2f/s", fillRatePerSecond);
             if (config.displaySettings.displayHaversackFillRate)
-                drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), config.haverSackFillRateX, config.haverSackFillRateY, 0xFFFFFF);
+                drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), config.haverSackFillRateX, config.haverSackFillRateY, 0xFFFFFFFF);
 
 
             String timeText = "Haversack Full in: " + timeUntilFull;
             if (config.displaySettings.displayHaversackFullIn)
-                drawContext.drawTextWithShadow(client.textRenderer, Text.literal(timeText), config.haversackFullInX, config.haversackFullInY, 0xFFFFFF);
+                drawContext.drawTextWithShadow(client.textRenderer, Text.literal(timeText), config.haversackFullInX, config.haversackFullInY, 0xFFFFFFFF);
         }
 
     }
@@ -144,7 +154,7 @@ public class InventoryEvent {
         if (itemData == null) return;
         NbtCompound nbtData = itemData.copyNbt();
         if (nbtData == null || !nbtData.contains("mbitems:id")) return;
-        String id = nbtData.getString("mbitems:id");
+        String id = nbtData.getString("mbitems:id").orElse("");
         LoreComponent loreComponent = stack.get(DataComponentTypes.LORE);
         if (loreComponent == null) return;
 
@@ -167,8 +177,8 @@ public class InventoryEvent {
         String[] parts = quantityArg.getString().split("/");
         if (parts.length < 2) return;
         int maxQuantity = Integer.parseInt(parts[1]);
-        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent");
-        int amountInside = persistentData.getInt("mbitems:amount_inside");
+        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
+        int amountInside = persistentData.getInt("mbitems:amount_inside").orElse(0);
 
         long currentTime = System.currentTimeMillis();
         if (lastAmountInside >= 0) {

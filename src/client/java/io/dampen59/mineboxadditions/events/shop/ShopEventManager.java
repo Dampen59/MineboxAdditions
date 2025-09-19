@@ -1,42 +1,65 @@
 package io.dampen59.mineboxadditions.events.shop;
 
 import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.state.OfferState;
 import io.dampen59.mineboxadditions.state.State;
 import me.shedaniel.autoconfig.AutoConfig;
 
 public class ShopEventManager {
 
     public ShopEventManager(State modState) {
-        new ShopEvent(Shop.BAKERY,
-                modState,
-                modState::getBakeryAlertSent,
-                modState::setBakeryAlertSent,
-                modState::getBakeryCurrentItemOffer,
-                modState::setBakeryCurrentItemOffer,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getBakeryAlerts);
+        OfferState offers = modState.getOfferState();
 
-        new ShopEvent(Shop.BUCKSTAR,
+        registerShopEvent(
+                Shop.BAKERY,
                 modState,
-                modState::getBuckstarAlertSent,
-                modState::setBuckstarAlertSent,
-                modState::getBuckstarCurrentItemOffer,
-                modState::setBuckstarCurrentItemOffer,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getBuckstarAlerts);
+                offers::isBakeryAlertSent,
+                offers::setBakeryAlertSent,
+                offers::getBakeryOffer,
+                offers::setBakeryOffer,
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getBakeryAlerts
+        );
 
-        new ShopEvent(Shop.COCKTAIL,
+        registerShopEvent(
+                Shop.BUCKSTAR,
                 modState,
-                modState::getCocktailAlertSent,
-                modState::setCocktailAlertSent,
-                modState::getCocktailCurrentItemOffer,
-                modState::setCocktailCurrentItemOffer,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getCocktailAlerts);
+                offers::isBuckstarAlertSent,
+                offers::setBuckstarAlertSent,
+                offers::getBuckstarOffer,
+                offers::setBuckstarOffer,
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getBuckstarAlerts
+        );
 
-        new ShopEvent(Shop.MOUSE,
+        registerShopEvent(
+                Shop.COCKTAIL,
                 modState,
-                modState::getMouseAlertSent,
-                modState::setMouseAlertSent,
-                modState::getMouseCurrentItemOffer,
-                modState::setMouseCurrentItemOffer,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getMouseAlerts);
+                offers::isCocktailAlertSent,
+                offers::setCocktailAlertSent,
+                offers::getCocktailOffer,
+                offers::setCocktailOffer,
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getCocktailAlerts
+        );
+
+        registerShopEvent(
+                Shop.MOUSE,
+                modState,
+                offers::isMouseAlertSent,
+                offers::setMouseAlertSent,
+                offers::getMouseOffer,
+                offers::setMouseOffer,
+                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopsAlertsSettings.getMouseAlerts
+        );
+    }
+
+    private void registerShopEvent(
+            Shop shop,
+            State modState,
+            java.util.function.BooleanSupplier isAlertSent,
+            java.util.function.Consumer<Boolean> setAlertSent,
+            java.util.function.Supplier<String> getOffer,
+            java.util.function.Consumer<String> setOffer,
+            java.util.function.BooleanSupplier isConfigEnabled
+    ) {
+        new ShopEvent(shop, modState, isAlertSent, setAlertSent, getOffer, setOffer, isConfigEnabled);
     }
 }

@@ -1,11 +1,9 @@
 package io.dampen59.mineboxadditions.utils;
 
+import com.mojang.blaze3d.textures.GpuTexture;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.AbstractTexture;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.texture.*;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,9 +21,7 @@ public class ImageUtils {
         }
 
         try {
-            // Convert BufferedImage to NativeImage
-            @SuppressWarnings("resource")
-            NativeImage nativeImage = new NativeImage(image.getWidth(), image.getHeight(), false);
+            NativeImage nativeImage = new NativeImage(NativeImage.Format.RGBA, image.getWidth(), image.getHeight(), false);
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
                     int argb = image.getRGB(x, y);
@@ -33,23 +29,27 @@ public class ImageUtils {
                 }
             }
 
-            // Create the identifier
-            Identifier identifier = Identifier.of("mineboxadditions", identifierName);
+            Identifier id = Identifier.of("mineboxadditions", identifierName);
 
-            // Register the texture on the main thread
-            MinecraftClient.getInstance().execute(() -> {
+            Runnable register = () -> {
                 try {
-                    MinecraftClient.getInstance().getTextureManager().registerTexture(
-                            identifier, new NativeImageBackedTexture(nativeImage));
-                    MineboxAdditions.LOGGER.info("Texture registered on render thread: {}", identifierName);
+                    NativeImageBackedTexture tex = new NativeImageBackedTexture(id::toString, nativeImage);
+                    MinecraftClient.getInstance().getTextureManager().registerTexture(id, tex);
+                    MineboxAdditions.LOGGER.info("Texture registered: {}", id);
                 } catch (Exception e) {
-                    MineboxAdditions.LOGGER.error("Error registering texture on render thread: {}\n{}", e.getMessage(), e.getStackTrace());
+                    MineboxAdditions.LOGGER.error("Error registering texture {}: ", id, e);
                 }
-            });
+            };
 
-            return identifier;
+            if (MinecraftClient.getInstance().isOnThread()) {
+                register.run();
+            } else {
+                MinecraftClient.getInstance().execute(register);
+            }
+
+            return id;
         } catch (Exception e) {
-            MineboxAdditions.LOGGER.error("Error creating texture: {}\n{}", e.getMessage(), e.getStackTrace());
+            MineboxAdditions.LOGGER.error("Error creating texture {}: ", identifierName, e);
             return null;
         }
     }
@@ -111,23 +111,20 @@ public class ImageUtils {
         }
     }
 
-    public static boolean textureExists(TextureManager textureManager, Identifier textureId) {
+    public static boolean textureExists(TextureManager textureManager, Identifier id) {
         try {
-            AbstractTexture texture = textureManager.getTexture(textureId);
-
-            // If the texture is null it doesn't exist
-            if (texture == null) {
-                return false;
+            AbstractTexture tex = textureManager.getTexture(id);
+            if (tex == null) return false;
+            GpuTexture gpu = tex.getGlTexture();
+            if (gpu == null || gpu.isClosed()) return false;
+            if (gpu instanceof GlTexture gl) {
+                int glId = gl.getGlId();
+                return glId != 0;
             }
-
-            // Check if the texture is valid by accessing its GL ID
-            // This will throw an exception if the texture is not properly loaded
-            int glId = texture.getGlId();
-            return glId != 0;
+            return true;
         } catch (Exception e) {
-            MineboxAdditions.LOGGER.warn("Error checking if texture exists: {}", textureId, e);
-            return false; // Texture doesn't exist or couldn't be accessed
+            MineboxAdditions.LOGGER.warn("Error checking if texture exists: {}", id, e);
+            return false;
         }
     }
-
 }

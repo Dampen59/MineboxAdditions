@@ -28,7 +28,7 @@ public class ServerEvents {
                 if (isMineboxServer(serverAddress)) {
                     modState.setConnectedToMinebox(true);
                     modState.getSocket().connect();
-                    if (config.autoIslandOnLogin && !modState.getLoginCommandSent()) {
+                    if (config.autoIslandOnLogin && !modState.isLoginCommandSent()) {
                         Objects.requireNonNull(client.getNetworkHandler()).sendPacket(new CommandExecutionC2SPacket("is"));
                         modState.setLoginCommandSent(true);
                     }
