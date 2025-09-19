@@ -6,14 +6,16 @@ import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
+
 public class SkyEvent {
     private final State modState;
 
@@ -41,7 +43,7 @@ public class SkyEvent {
         return this.modState.getCurrentMoonPhase() == 0;
     }
 
-    private void onRenderHud(DrawContext drawContext, RenderTickCounter renderTickCounter) {
+    private void onRenderHud(DrawContext drawContext, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null || client.options.hudHidden) return;
 
@@ -49,47 +51,68 @@ public class SkyEvent {
 
         if (isFullMoon() && config.displaySettings.displayFullMoon) {
             Identifier texture = Identifier.of("mineboxadditions", "textures/gui/moon_phases/full_moon.png");
-            drawContext.drawTexture(RenderLayer::getGuiTextured, texture, config.fullMoonHudX, config.fullMoonHudY, 0, 0, 24, 24, 24, 24);
-            //drawContext.drawText(client.textRenderer, Text.translatable("mineboxadditions.strings.full_moon"), 5, 32, 0xFFFFFF, true);
+            drawContext.drawTexture(RenderPipelines.GUI_TEXTURED, texture,
+                    config.fullMoonHudX, config.fullMoonHudY,
+                    0, 0,
+                    24, 24,
+                    24, 24);
         }
 
-
-        String rainText = null;
-        String stormText = null;
+        String rainText;
+        String stormText;
 
         if (client.world.isRaining()) {
             rainText = "Next Rain: Now !";
         } else {
-            rainText = "Next Rain: " + formatNextEventCountdown(modState.getRainTimestamps());
+            rainText = "Next Rain: " + formatNextEventCountdown(modState.getWeatherState().getRainTimestamps());
         }
 
         if (client.world.isThundering()) {
             stormText = "Next Storm: Now !";
         } else {
-            stormText = "Next Storm: " + formatNextEventCountdown(modState.getStormTimestamps());
+            stormText = "Next Storm: " + formatNextEventCountdown(modState.getWeatherState().getStormTimestamps());
         }
 
-        if (config.displaySettings.displayNextRain)
-            drawContext.drawText(client.textRenderer, Text.literal(rainText), config.rainHudX, config.rainHudY, 0xFFFFFF, true);
-
-        if (config.displaySettings.displayNextStorm)
-            drawContext.drawText(client.textRenderer, Text.literal(stormText), config.stormHudX, config.stormHudY, 0xFFFFFF, true);
-
+        if (config.displaySettings.displayNextRain) {
+            drawContext.drawText(client.textRenderer, Text.literal(rainText), config.rainHudX, config.rainHudY, 0xFFFFFFFF, true);
+        }
+        if (config.displaySettings.displayNextStorm) {
+            drawContext.drawText(client.textRenderer, Text.literal(stormText), config.stormHudX, config.stormHudY, 0xFFFFFFFF, true);
+        }
     }
 
     private String formatNextEventCountdown(List<Integer> timestamps) {
-        int currentTime = (int) (System.currentTimeMillis() / 1000);
+        if (timestamps == null || timestamps.isEmpty()) return "Unknown";
 
-        return timestamps.stream()
-                .filter(ts -> ts > currentTime)
-                .min(Comparator.naturalOrder())
-                .map(next -> {
-                    int secondsLeft = next - currentTime;
-                    int hours = secondsLeft / 3600;
-                    int minutes = (secondsLeft % 3600) / 60;
-                    int seconds = secondsLeft % 60;
-                    return String.format("in %02d:%02d:%02d", hours, minutes, seconds);
-                })
-                .orElse("Unknown");
+        List<Integer> snapshot = snapshotList(timestamps);
+        if (snapshot.isEmpty()) return "Unknown";
+
+        int now = (int) (System.currentTimeMillis() / 1000L);
+        Integer next = null;
+        for (Integer ts : snapshot) {
+            if (ts != null && ts > now && (next == null || ts < next)) {
+                next = ts;
+            }
+        }
+        if (next == null) return "Unknown";
+
+        int secondsLeft = next - now;
+        int hours = secondsLeft / 3600;
+        int minutes = (secondsLeft % 3600) / 60;
+        int seconds = secondsLeft % 60;
+        return String.format("in %02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    private static List<Integer> snapshotList(List<Integer> src) {
+        for (int attempt = 0; attempt < 3; attempt++) {
+            try {
+                return new ArrayList<>(src);
+            } catch (ConcurrentModificationException ignored) { }
+        }
+        List<Integer> fallback = new ArrayList<>();
+        try {
+            for (Integer i : src) fallback.add(i);
+        } catch (Exception ignored) { }
+        return fallback;
     }
 }

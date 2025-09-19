@@ -141,15 +141,19 @@ public class AudioManager {
             mixer = null;
         }
 
-        speaker.flush();
-        speaker.stop();
-        speaker.close();
+        if (speaker != null) {
+            speaker.flush();
+            speaker.stop();
+            speaker.close();
+        }
 
         isRecording = false;
 
-        microphone.flush();
-        microphone.stop();
-        microphone.close();
+        if (microphone != null) {
+            microphone.flush();
+            microphone.stop();
+            microphone.close();
+        }
     }
 
     private void startMicrophoneCapture() {

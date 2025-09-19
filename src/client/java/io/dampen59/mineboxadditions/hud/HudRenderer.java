@@ -19,15 +19,24 @@ public class HudRenderer {
     }
 
     private void renderHud(DrawContext drawContext, RenderTickCounter tickCounter) {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        if (client == null || client.player == null || client.options.hudHidden) return;
 
+        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         if (!config.displaySettings.displayMermaidRequest) return;
 
-        if (this.modState.getMermaidCurrentItem() != null && this.modState.getMermaidCurrentItemQty() > 0) {
-            String rateText = String.format("Mermaid request: %dx %s", this.modState.getMermaidCurrentItemQty(), Text.translatable(this.modState.getMermaidCurrentItem()).getString());
-            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), config.mermaidRequestHudX, config.getMermaidRequestHudY, 0xFFFFFF);
+        if (this.modState.getMermaidItemOffer().itemTranslationKey != null && this.modState.getMermaidItemOffer().quantity > 0) {
+
+            String mermaidText = null;
+
+            if (this.modState.getMermaidItemOffer().itemTranslationKeyArgs == null) {
+                mermaidText = String.format("Mermaid request: %dx %s", this.modState.getMermaidItemOffer().quantity, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKey).getString());
+            } else {
+                mermaidText = String.format("Mermaid request: %dx %s", this.modState.getMermaidItemOffer().quantity, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKey, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKeyArgs).getString()).getString());
+            }
+
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(mermaidText), config.mermaidRequestHudX, config.getMermaidRequestHudY, 0xFFFFFFFF);
         } else {
-            drawContext.drawTextWithShadow(client.textRenderer, Text.literal("Mermaid request: Unknown"), config.mermaidRequestHudX, config.getMermaidRequestHudY, 0xFFFFFF);
+            drawContext.drawTextWithShadow(client.textRenderer, Text.literal("Mermaid request: Unknown"), config.mermaidRequestHudX, config.getMermaidRequestHudY, 0xFFFFFFFF);
         }
 
 

@@ -2,3 +2,5 @@ accessWidener v1 named
 accessible method net/minecraft/client/gui/screen/Screen addDrawableChild (Lnet/minecraft/client/gui/Element;)Lnet/minecraft/client/gui/Element;
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen backgroundHeight I
 accessible field net/minecraft/client/gui/screen/ingame/HandledScreen backgroundWidth I
+accessible method net/minecraft/client/gui/widget/EntryListWidget addEntry (Lnet/minecraft/client/gui/widget/EntryListWidget$Entry;)I
+accessible method net/minecraft/client/gui/widget/EntryListWidget clearEntries ()V

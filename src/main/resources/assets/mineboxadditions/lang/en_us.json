@@ -22,6 +22,7 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMuseumMissingItems": "Enable museum missing items border",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Items pickup tooltip settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Enable the feature",
@@ -34,27 +35,13 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayMode": "Display mode (FILL, CIRCLE)",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.backgroundOpacity": "Background opacity percentage",
 
-  "text.autoconfig.mineboxadditions.option.chatSettings": "Chat settings",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings": "Multi Channel settings",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableMultiChannel": "Enable the feature",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableFrench": "French",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableEnglish": "English",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableSpanish": "Spanish",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableRussian": "Russian",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enablePortuguese": "Portuguese",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDeutsch": "German",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableChinese": "Chinese",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enablePolish": "Polish",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableItalian": "Italian",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableJapanese": "Japanese",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Dutch",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turkish",
-
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Fishing HUD settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Display Fish Drops HUD",
     "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "The amount of blocks to search around you for fishing shoals",
 
-  "mineboxadditions.strings.tooltip.more_info": "Press [LEFT ALT] for more info",
+  "mineboxadditions.strings.tooltip.more_info.press": "Press ",
+  "mineboxadditions.strings.tooltip.more_info.key": "[LEFT ALT] ",
+  "mineboxadditions.strings.tooltip.more_info.desc": "for more info",
 
   "mineboxadditions.strings.update.title": "Update available",
   "mineboxadditions.strings.update.content": "A new version of MineboxAdditions is available, some network features may not function anymore in your current version!",
@@ -93,5 +80,8 @@
   "mineboxadditions.strings.keybinds.modSettings.open": "Open mod settings",
   "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen",
   "mineboxadditions.strings.keybinds.hudEditor.open": "Open HUD Edit screen",
-  "mineboxadditions.strings.keybinds.performanceMode.toggle": "Toggle performance mode"
+  "mineboxadditions.strings.keybinds.harvestables.open": "Open Harvestables screen",
+  "mineboxadditions.strings.keybinds.atlas.open": "Open Atlas",
+
+  "mineboxadditions.strings.unauthorized-api": "You have not allowed third parties API requests. You can't benefit MineboxAdditions Museum feature. If you want to change that, do /settings and enable API access, then relog to Minebox!"
 }

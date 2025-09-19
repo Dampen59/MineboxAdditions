@@ -3,6 +3,8 @@ package io.dampen59.mineboxadditions.utils;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.minebox.MineboxToast;
 import io.dampen59.mineboxadditions.minebox.ParsedMessage;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
@@ -13,14 +15,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
-import java.util.List;
+import java.util.*;
 
 public class Utils {
 
@@ -101,7 +100,7 @@ public class Utils {
         NbtCompound nbtData = itemData.copyNbt();
         if (nbtData == null || !nbtData.contains("mbitems:id")) return null;
 
-        return nbtData.getString("mbitems:id");
+        return nbtData.getString("mbitems:id").orElse(null);
     }
 
     public static String getMineboxItemUid(ItemStack itemStack) {
@@ -113,10 +112,10 @@ public class Utils {
         NbtCompound nbtData = itemData.copyNbt();
         if (nbtData == null) return null;
 
-        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent");
+        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
         if (persistentData == null || !persistentData.contains("mbitems:uid")) return null;
 
-        return persistentData.getString("mbitems:uid");
+        return persistentData.getString("mbitems:uid").orElse(null);
     }
 
     public static MineboxItem findItemByName(List<MineboxItem> items, String itemName) {
@@ -146,7 +145,7 @@ public class Utils {
 
         Text endMessage = Text.literal(" ! Click on this message to send a teleport request.")
                 .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
-                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tpa " + prmPlayerName)));
+                        .withClickEvent(new ClickEvent.RunCommand("/tpa " + prmPlayerName)));
 
 
         Text message = baseMessage.copy().append(playerText).append(baseMessageNext).append(mobText).append(endMessage);
@@ -253,4 +252,18 @@ public class Utils {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+    public static String getModVersion() {
+        ModMetadata modMetadata = FabricLoader.getInstance().getModContainer("mineboxadditions").isPresent() ? FabricLoader.getInstance().getModContainer("mineboxadditions").get().getMetadata() : null;
+        return modMetadata != null ? modMetadata.getVersion().getFriendlyString() : "unknown";
+    }
+
+    public static boolean isInteger(String str) {
+        if (str == null || str.isEmpty()) return false;
+        try {
+            Integer.parseInt(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
 }

@@ -18,28 +18,31 @@ import java.util.function.Supplier;
 public class ShopEvent {
 
     private final Shop shop;
-    private final State modState;
-    private boolean isShopOpen = false;
+    private final State state;
 
     private final BooleanSupplier isAlertSent;
     private final Consumer<Boolean> setAlertSent;
-    private final Supplier<String> getCurrentItemOffer;
-    private final Consumer<String> setCurrentItemOffer;
+    private final Supplier<String> getCurrentOffer;
+    private final Consumer<String> setCurrentOffer;
     private final BooleanSupplier isConfigEnabled;
 
-    public ShopEvent(Shop shop,
-                     State modState,
-                     BooleanSupplier isAlertSent,
-                     Consumer<Boolean> setAlertSent,
-                     Supplier<String> getCurrentItemOffer,
-                     Consumer<String> setCurrentItemOffer,
-                     BooleanSupplier isConfigEnabled) {
+    private boolean isShopOpen = false;
+
+    public ShopEvent(
+            Shop shop,
+            State state,
+            BooleanSupplier isAlertSent,
+            Consumer<Boolean> setAlertSent,
+            Supplier<String> getCurrentOffer,
+            Consumer<String> setCurrentOffer,
+            BooleanSupplier isConfigEnabled
+    ) {
         this.shop = shop;
-        this.modState = modState;
+        this.state = state;
         this.isAlertSent = isAlertSent;
         this.setAlertSent = setAlertSent;
-        this.getCurrentItemOffer = getCurrentItemOffer;
-        this.setCurrentItemOffer = setCurrentItemOffer;
+        this.getCurrentOffer = getCurrentOffer;
+        this.setCurrentOffer = setCurrentOffer;
         this.isConfigEnabled = isConfigEnabled;
 
         HudRenderCallback.EVENT.register(this::onRenderHud);
@@ -47,41 +50,60 @@ public class ShopEvent {
     }
 
     private void onTick(MinecraftClient client) {
-        if (!modState.getConnectedToMinebox()) return;
-        if (client.world == null) return;
+        if (!state.isConnectedToMinebox() || client.world == null) return;
 
-        long currentWorldTicks = client.world.getTimeOfDay() % 24000;
-        if (currentWorldTicks >= shop.getStartTime() && currentWorldTicks <= shop.getStopTime()) {
-            isShopOpen = true;
-            if (isConfigEnabled.getAsBoolean() && !isAlertSent.getAsBoolean()) {
-                Utils.showShopToastNotification(
-                        shop.name(),
-                        Text.translatable(shop.getToastTitleKey()).getString(),
-                        Text.translatable(shop.getToastContentKey()).getString());
-                Utils.playSound(SoundEvents.BLOCK_BELL_USE);
-                setAlertSent.accept(true);
-            }
+        long worldTime = client.world.getTimeOfDay() % 24000;
+        boolean withinShopTime = worldTime >= shop.getStartTime() && worldTime <= shop.getStopTime();
+
+        if (withinShopTime) {
+            handleShopOpen();
         } else {
-            isShopOpen = false;
-            if (isAlertSent.getAsBoolean()) {
-                setAlertSent.accept(false);
-            }
-            if (getCurrentItemOffer.get() != null) {
-                setCurrentItemOffer.accept(null);
-            }
+            handleShopClosed();
         }
     }
 
-    private void onRenderHud(DrawContext drawContext, RenderTickCounter renderTickCounter) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.options.hudHidden) return;
-        if (client.player == null) return;
+    private void handleShopOpen() {
+        isShopOpen = true;
 
-        String displayOffer = getCurrentItemOffer.get();
-        if (displayOffer != null) {
-            drawContext.drawText(client.textRenderer, Text.of(displayOffer), MineboxAdditionsClient.INSTANCE.config.shopHudX, MineboxAdditionsClient.INSTANCE.config.shopHudY, 0xFFFFFF, true);
+        if (isConfigEnabled.getAsBoolean() && !isAlertSent.getAsBoolean()) {
+            showShopAlert();
+        }
+    }
+
+    private void handleShopClosed() {
+        isShopOpen = false;
+
+        if (isAlertSent.getAsBoolean()) {
+            setAlertSent.accept(false);
+        }
+
+        if (getCurrentOffer.get() != null) {
+            setCurrentOffer.accept(null);
+        }
+    }
+
+    private void showShopAlert() {
+        Utils.showShopToastNotification(
+                shop.name(),
+                Text.translatable(shop.getToastTitleKey()).getString(),
+                Text.translatable(shop.getToastContentKey()).getString()
+        );
+        Utils.playSound(SoundEvents.BLOCK_BELL_USE);
+        setAlertSent.accept(true);
+    }
+
+    private void onRenderHud(DrawContext context, RenderTickCounter tickCounter) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.options.hudHidden || client.player == null) return;
+
+        String offer = getCurrentOffer.get();
+        int x = MineboxAdditionsClient.INSTANCE.config.shopHudX;
+        int y = MineboxAdditionsClient.INSTANCE.config.shopHudY;
+
+        if (offer != null) {
+            context.drawText(client.textRenderer, Text.of(offer), x, y, 0xFFFFFFFF, true);
         } else if (isShopOpen) {
-            drawContext.drawText(client.textRenderer, Text.translatable(shop.getToastTitleKey()), MineboxAdditionsClient.INSTANCE.config.shopHudX, MineboxAdditionsClient.INSTANCE.config.shopHudY, 0xFFFFFF, true);
+            context.drawText(client.textRenderer, Text.translatable(shop.getToastTitleKey()), x, y, 0xFFFFFFFF, true);
         }
     }
 }

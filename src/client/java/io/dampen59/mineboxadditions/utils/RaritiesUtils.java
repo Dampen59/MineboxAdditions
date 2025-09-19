@@ -12,13 +12,13 @@ import java.awt.*;
 import java.util.Map;
 
 public class RaritiesUtils {
-    public static final Map<String, Color> BASE_RARITY_COLORS = Map.of(
-            "common", new Color(0x66, 0x54, 0x66),
-            "uncommon", new Color(0x00, 0xC0, 0x6F),
-            "rare", new Color(0x00, 0xA5, 0xFC),
-            "epic", new Color(0xF8, 0x16, 0xFC),
-            "legendary", new Color(0xFF, 0xBE, 0x35),
-            "mythic", new Color(0xA0, 0x06, 0x0A)
+    public static final Map<String, Integer> RARITY_ARGB = Map.of(
+            "common",    0xFF665466,
+            "uncommon",  0xFF00C06F,
+            "rare",      0xFF00A5FC,
+            "epic",      0xFFF816FC,
+            "legendary", 0xFFFFBE35,
+            "mythic",    0xFFA0060A
     );
 
     public static int percentToAlpha(double p) {
@@ -31,14 +31,24 @@ public class RaritiesUtils {
     }
 
     public static Color getRarityColor(String rarity) {
-        Color baseColor = BASE_RARITY_COLORS.get(rarity);
-        if (baseColor == null) {
-            return null;
-        }
+        if (rarity == null) return null;
 
-        double opacity = AutoConfig.getConfigHolder(ModConfig.class).getConfig().displaySettings.itemRaritySettings.backgroundOpacity;
-        return adjustAlpha(baseColor, opacity);
+        Integer base = RARITY_ARGB.get(rarity.toLowerCase());
+        if (base == null) return null;
+
+        double opacityCfg = AutoConfig.getConfigHolder(ModConfig.class)
+                .getConfig().displaySettings.itemRaritySettings.backgroundOpacity;
+
+        double opacity = opacityCfg > 1.0 ? (opacityCfg / 100.0) : opacityCfg;
+        opacity = Math.max(0.0, Math.min(1.0, opacity));
+
+        int a = (int) Math.round(255.0 * opacity);
+        int rgb  = base & 0x00FFFFFF;
+        int argb = (a << 24) | rgb;
+
+        return new Color(argb, true);
     }
+
 
     public static Color getItemRarityColorFromLore(ItemStack itemStack) {
         LoreComponent loreComponent = itemStack.get(DataComponentTypes.LORE);

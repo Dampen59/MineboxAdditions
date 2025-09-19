@@ -80,6 +80,12 @@ public class ModConfig implements ConfigData {
     @ConfigEntry.Gui.Excluded
     public int getMermaidRequestHudY = 40;
 
+    @ConfigEntry.Gui.Excluded
+    public int itemPickupHudX = 0;
+
+    @ConfigEntry.Gui.Excluded
+    public int itemPickupHudY = 0;
+
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();
 
@@ -136,12 +142,14 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.CollapsibleObject
         public FishingSettings fishingSettings = new FishingSettings();
 
+        public boolean displayMuseumMissingItems = true;
+
         public boolean displayFullMoon = false;
         public boolean displayNextRain = true;
-        public boolean displayNextStorm= true;
+        public boolean displayNextStorm = true;
         public boolean displayHaversackFillRate = true;
         public boolean displayHaversackFullIn = true;
-         public boolean displayMermaidRequest = true;
+        public boolean displayMermaidRequest = true;
     }
 
     public boolean autoIslandOnLogin = false;
@@ -181,7 +189,6 @@ public class ModConfig implements ConfigData {
         }
     }
 
-
     public void setSetName(int setIndex, String name) {
         if (setIndex >= 0 && setIndex < 4) {
             setNames.put(setIndex, name);
@@ -191,4 +198,14 @@ public class ModConfig implements ConfigData {
     public String getSetName(int setIndex) {
         return setNames.getOrDefault(setIndex, "Set " + (setIndex + 1));
     }
+
+    @ConfigEntry.Gui.Excluded
+    public Map<String, HarvestablesPrefs> harvestablesPrefs = new HashMap<>();
+
+    public static class HarvestablesPrefs {
+        public Map<String, Boolean> categoryEnabled = new HashMap<>();
+        public Map<String, Map<String, Boolean>> itemEnabled = new HashMap<>();
+        public Map<String, Map<String, Integer>> itemColor = new HashMap<>();
+    }
+
 }

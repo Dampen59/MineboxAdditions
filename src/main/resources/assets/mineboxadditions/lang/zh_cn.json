@@ -22,6 +22,7 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMuseumMissingItems": "Enable museum missing items border",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "物品拾取提示设置",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "启用此功能",
@@ -33,7 +34,9 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "显示鱼滴 HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "“在您周围搜索鱼群的块数",
 
-  "mineboxadditions.strings.tooltip.more_info": "按 [LEFT ALT] 获取更多信息",
+  "mineboxadditions.strings.tooltip.more_info.press": "按 ",
+  "mineboxadditions.strings.tooltip.more_info.key": "[LEFT ALT] ",
+  "mineboxadditions.strings.tooltip.more_info.desc": "获取更多信息",
 
   "mineboxadditions.strings.update.title": "更新可用",
   "mineboxadditions.strings.update.content": "MineboxAdditions 有新版本发布，您当前版本的一些网络功能可能不再有效！",
@@ -72,5 +75,12 @@
   "mineboxadditions.strings.keybinds.modSettings.open": "Open mod settings",
   "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen",
   "mineboxadditions.strings.keybinds.hudEditor.open": "Open HUD Edit screen",
-  "mineboxadditions.strings.keybinds.performanceMode.toggle": "Toggle performance mode"
+  "mineboxadditions.strings.keybinds.harvestables.open": "Open Harvestables screen",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings": "Items rarities background settings",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayItemsRarity": "Enable the feature",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayMode": "Display mode (FILL, CIRCLE)",
+  "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.backgroundOpacity": "Background opacity percentage",
+  "mineboxadditions.strings.keybinds.atlas.open": "Open Atlas",
+
+  "mineboxadditions.strings.unauthorized-api": "You have not allowed third parties API requests. You can't benefit MineboxAdditions Museum feature. If you want to change that, do /settings and enable API access, then relog to Minebox!"
 }

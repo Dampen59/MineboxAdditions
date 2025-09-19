@@ -8,9 +8,10 @@ import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
 import io.dampen59.mineboxadditions.gui.AudioDeviceScreen;
+import io.dampen59.mineboxadditions.gui.HarvestablesScreen;
 import io.dampen59.mineboxadditions.gui.HudEditorScreen;
+import io.dampen59.mineboxadditions.gui.MineboxAtlasScreen;
 import io.dampen59.mineboxadditions.hud.HudRenderer;
-import io.dampen59.mineboxadditions.minebox.EntitiesOptimizer;
 import io.dampen59.mineboxadditions.network.SocketManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
@@ -30,6 +31,8 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.stream.Collectors;
+
 public class MineboxAdditionsClient implements ClientModInitializer {
 
     public final State modState = new State();
@@ -38,7 +41,9 @@ public class MineboxAdditionsClient implements ClientModInitializer {
     private static KeyBinding openModSettings;
     private static KeyBinding openAudioSettings;
     public static KeyBinding openEditMode;
-    public static KeyBinding togglePerformanceMode;
+    public static KeyBinding openHarvestables;
+
+    public static KeyBinding openAtlas;
 
     public ModConfig config = null;
 
@@ -57,7 +62,6 @@ public class MineboxAdditionsClient implements ClientModInitializer {
         new ShinyEvent(modState);
         new WorldRendererEvent();
         new AudioManager(modState);
-        new EntitiesOptimizer(modState);
         new HudRenderer(modState);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
@@ -69,17 +73,13 @@ public class MineboxAdditionsClient implements ClientModInitializer {
             }
             if (openEditMode.wasPressed()) {
                 client.setScreen(new HudEditorScreen(AutoConfig.getConfigHolder(ModConfig.class).getConfig()));
+
             }
-            if (togglePerformanceMode.wasPressed()) {
-                if (modState.getPerformanceMode()) {
-                    modState.setPerformanceMode(false);
-                    this.modState.getUnrenderedEntities().clear();
-                    this.modState.getPerformanceModeDebugArmorstands().clear();
-                    Utils.displayChatInfoMessage("Performance mode had been disabled.");
-                } else {
-                    modState.setPerformanceMode(true);
-                    Utils.displayChatInfoMessage("Performance mode had been enabled.");
-                }
+            if (openAtlas.wasPressed()) {
+                client.setScreen(new MineboxAtlasScreen());
+            }
+            if (openHarvestables.wasPressed()) {
+                client.setScreen(new HarvestablesScreen());
             }
             if (openModSettings.wasPressed()) {
                 if (client.currentScreen == null) {
@@ -95,6 +95,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
 
         INSTANCE = this;
     }
+
     private void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
         dispatcher.register(ClientCommandManager.literal("mba")
                 .then(ClientCommandManager.literal("vc")
@@ -143,6 +144,33 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                 )
         );
 
+        dispatcher.register(ClientCommandManager.literal("mba")
+                .then(ClientCommandManager.literal("debug")
+                    .executes(context -> {
+                        Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
+                        Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
+                        Utils.displayChatInfoMessage("Socket state: " + (this.modState.getSocket().connected() ? "connected (ID : " + this.modState.getSocket().id() + ")" : "disconnected"));
+                        Utils.displayChatInfoMessage("Rain Data: " + this.modState.getWeatherState().getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
+                        Utils.displayChatInfoMessage("Storm Data: " + this.modState.getWeatherState().getStormTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
+                        Utils.displayChatInfoMessage("Shiny Length: " + this.modState.getMbxShiniesUuids().size());
+
+                        if (this.modState.getMermaidItemOffer().itemTranslationKey != null) {
+                            Utils.displayChatInfoMessage(String.format(
+                                    "Mermaid Data: {%s, %d}",
+                                    this.modState.getMermaidItemOffer().itemTranslationKey,
+                                    this.modState.getMermaidItemOffer().quantity
+                            ));
+                        } else {
+                            Utils.displayChatInfoMessage("Mermaid Data: None");
+                        }
+
+                        Utils.displayChatInfoMessage("Museum Length: " + this.modState.getMissingMuseumItemIds().size());
+
+                        return Command.SINGLE_SUCCESS;
+                    })
+                )
+        );
+
 
     }
 
@@ -168,12 +196,20 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                 "MineboxAdditions"
         ));
 
-        togglePerformanceMode = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.performanceMode.toggle",
+        openHarvestables = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "mineboxadditions.strings.keybinds.harvestables.open",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_P,
                 "MineboxAdditions"
         ));
+
+        openAtlas = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "mineboxadditions.strings.keybinds.atlas.open",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_RIGHT_SHIFT,
+                "MineboxAdditions"
+        ));
+
     }
 
 }

@@ -10,10 +10,7 @@ import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
@@ -34,7 +31,8 @@ public class TooltipEvent {
 
     private void onTooltip(ItemStack itemStack, Item.TooltipContext tooltipContext, TooltipType tooltipType, List<Text> texts) {
 
-        if (!Utils.isMineboxItem(itemStack) || !Utils.itemHaveStats(itemStack)) return;
+        //if (!Utils.isMineboxItem(itemStack) || !Utils.itemHaveStats(itemStack)) return;
+        if (!Utils.isMineboxItem(itemStack)) return;
 
         boolean isAltPressed = InputUtil.isKeyPressed(
                 MinecraftClient.getInstance().getWindow().getHandle(), LEFT_ALT_KEY
@@ -49,7 +47,7 @@ public class TooltipEvent {
             }
 
             MineboxItem mbxItem = Utils.findItemByName(modState.getMbxItems(), itemId);
-            if (mbxItem == null) return;
+            //if (mbxItem == null) return;
 
             for (int i = 0; i < texts.size(); i++) {
                 Text originalText = texts.get(i);
@@ -110,9 +108,23 @@ public class TooltipEvent {
                     texts.set(i, updatedText);
                 }
             }
+
+            texts.add(Text.literal(""));
+
+            Text firstPart = Text.literal("Minebox ID: ").withColor(0x4497CE);
+            Text endPart = Text.literal(itemId).withColor(0x1D4159);
+            Text mineboxItemId = firstPart.copy().append(endPart);
+            texts.add(mineboxItemId);
+
         } else {
             texts.add(Text.literal(""));
-            texts.add(Text.translatable("mineboxadditions.strings.tooltip.more_info"));
+
+            Text firstPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.press").withColor(0x4497CE);
+            Text midPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.key").withColor(0x1D4159);
+            Text endPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.desc").withColor(0x4497CE);
+
+            Text moreInfos = firstPart.copy().append(midPart).append(endPart);
+            texts.add(moreInfos);
         }
     }
 }

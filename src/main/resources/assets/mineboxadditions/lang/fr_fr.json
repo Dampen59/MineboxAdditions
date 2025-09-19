@@ -21,6 +21,7 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFillRate": "Enable Haversack Fill Rate HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayHaversackFullIn": "Enable Haversack Full-in-Timer HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayMermaidRequest": "Enable Mermaid HUD",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayMuseumMissingItems": "Enable museum missing items border",
 
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings": "Paramètres des notifications de ramassage des objets",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemPickupSettings.displayItemsPickups": "Activer la fonctionnalité",
@@ -33,27 +34,13 @@
   "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.displayMode": "Mode d'affichage (FILL (remplir), CIRCLE (cercle))",
   "text.autoconfig.mineboxadditions.option.displaySettings.itemRaritySettings.backgroundOpacity": "Pourcentage d'opacité",
 
-  "text.autoconfig.mineboxadditions.option.chatSettings": "Paramètres de chat",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings": "Paramètres multi-channel",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableMultiChannel": "Activer la fonctionnalité",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableFrench": "Français",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableEnglish": "Anglais",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableSpanish": "Espagnol",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableRussian": "Russe",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enablePortuguese": "Portuguais",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDeutsch": "Allemand",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableChinese": "Chinois",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enablePolish": "Polonais",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableItalian": "Italien",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableJapanese": "Japonais",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableDutch": "Néerlandais",
-  "text.autoconfig.mineboxadditions.option.chatSettings.multiChannelSettings.enableTurkish": "Turque",
-
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Paramètres du HUD de pêche",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Afficher les éléments pêchables",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "Rayon d'affichage des éléments pêchables",
 
-  "mineboxadditions.strings.tooltip.more_info": "[ALT GAUCHE] pour plus d'infos",
+  "mineboxadditions.strings.tooltip.more_info.press": "",
+  "mineboxadditions.strings.tooltip.more_info.key": "[ALT GAUCHE] ",
+  "mineboxadditions.strings.tooltip.more_info.desc": "pour plus d'infos",
 
   "mineboxadditions.strings.update.title": "Mise à jour disponible",
   "mineboxadditions.strings.update.content": "Une nouvelle version de MineboxAdditions est disponible, certaines fonctionnalités réseau peuvent ne plus fonctionner sur votre version actuelle !",
@@ -92,6 +79,10 @@
   "mineboxadditions.strings.keybinds.modSettings.open": "Open mod settings",
   "mineboxadditions.strings.keybinds.audioSettings.open": "Open audio settings screen",
   "mineboxadditions.strings.keybinds.hudEditor.open": "Open HUD Edit screen",
-  "mineboxadditions.strings.keybinds.performanceMode.toggle": "Toggle performance mode"
+  "mineboxadditions.strings.keybinds.harvestables.open": "Open Harvestables screen",
+  "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuration",
+  "mineboxadditions.strings.keybinds.atlas.open": "Open Atlas",
+
+  "mineboxadditions.strings.unauthorized-api": "Vous n'avez pas autorisé les requêtes API de tierces-parties. Vous ne pouvez pas bénéficier de la fonctionnalité Musée MineboxAdditions. Si vous souhaitez modifier cela, effectuez la commande /settings et activez l'accès API, puis reconnectez-vous à Minebox !"
 }
 
