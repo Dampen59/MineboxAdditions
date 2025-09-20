@@ -103,6 +103,21 @@ public class Utils {
         return nbtData.getString("mbitems:id").orElse(null);
     }
 
+    public static boolean isItemLooted(ItemStack itemStack) {
+        if (!isMineboxItem(itemStack)) return false;
+
+        NbtComponent itemData = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+        if (itemData == null) return false;
+
+        NbtCompound nbtData = itemData.copyNbt();
+        if (nbtData == null || !nbtData.contains("mbitems:looted")) return false;
+
+        return nbtData.getInt("mbitems:looted")
+                .map(value -> value == 1)
+                .orElse(false);
+    }
+
+
     public static String getMineboxItemUid(ItemStack itemStack) {
         if (!isMineboxItem(itemStack)) return null;
 
