@@ -425,7 +425,7 @@ public class SocketManager {
 
         socket.on("S2CMineboxApiUnauthorized", args -> {
             Utils.displayChatErrorMessage(Text
-                    .translatable("mineboxadditions.strings.unauthorized-api").getString());
+                    .translatable("mineboxadditions.strings.errors.unauthorized-api").getString());
         });
 
         socket.on("S2CMissingMuseumItems", args -> {

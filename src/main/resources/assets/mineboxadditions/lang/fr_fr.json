@@ -83,6 +83,7 @@
   "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuration",
   "mineboxadditions.strings.keybinds.atlas.open": "Open Atlas",
 
-  "mineboxadditions.strings.unauthorized-api": "Vous n'avez pas autorisé les requêtes API de tierces-parties. Vous ne pouvez pas bénéficier de la fonctionnalité Musée MineboxAdditions. Si vous souhaitez modifier cela, effectuez la commande /settings et activez l'accès API, puis reconnectez-vous à Minebox !"
+  "mineboxadditions.strings.errors.unauthorized-api": "Vous n'avez pas autorisé les requêtes API de tierces-parties. Vous ne pouvez pas bénéficier de la fonctionnalité Musée MineboxAdditions. Si vous souhaitez modifier cela, effectuez la commande /settings et activez l'accès API, puis reconnectez-vous à Minebox !",
+  "mineboxadditions.strings.errors.missing_atlas_data": "Vous n'avez pas les données de l'Atlas, vous êtes peut-être déconnecté du serveur MineboxAdditions. Essayez de vous reconnecter."
 }
 

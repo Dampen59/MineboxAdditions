@@ -4,6 +4,7 @@ import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.gui.components.ItemDetailPanel;
 import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
+import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -31,6 +32,12 @@ public class MineboxAtlasScreen extends Screen {
 
     @Override
     protected void init() {
+
+        if (MineboxAdditionsClient.INSTANCE.modState.getMbxItems() == null) {
+            Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
+            return;
+        }
+
         int left = 10;
         int top = 45;
         int height = this.height - 100;
