@@ -4,6 +4,7 @@ MineboxAddition is a Minecraft Fabric Mod for version 1.21.7 and 1.21.8 that int
 ## Features
 
 - Durability indicators for Haversacks and Harvesters
+- Enhanced item tooltips (press LEFT_ALT while hovering an item to show its base stats, ID...)
 - Shiny mobs alerter, send and receive alerts from other MineboxAdditions users
 - Shop opening alerts and their actual selling item (Mouse, Bakery, Buckstar, Cocktail)
 - Full moon HUD
