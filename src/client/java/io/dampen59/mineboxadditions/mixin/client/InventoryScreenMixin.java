@@ -5,8 +5,6 @@ import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -94,30 +92,25 @@ public abstract class InventoryScreenMixin extends Screen {
             String id = Utils.getMineboxItemId(stack);
             if (id == null || id.isEmpty()) continue;
             if (!missing.contains(id)) continue;
-            drawBorder(context, slot.x, slot.y, 16, 1, hueOffset);
+            drawMuseumBorder(context, slot.x, slot.y, hueOffset);
         }
     }
 
-    private static void drawBorder(DrawContext ctx, int x, int y, int size, int thickness, float hueOffset) {
+    private static void drawMuseumBorder(DrawContext ctx, int x, int y, float hueOffset) {
+        int top    = hsvToArgb((hueOffset + 0.00f) % 1f);
+        int right  = hsvToArgb((hueOffset + 0.25f) % 1f);
+        int bottom = hsvToArgb((hueOffset + 0.50f) % 1f);
+        int left   = hsvToArgb((hueOffset + 0.75f) % 1f);
 
-        for (int i = 0; i < size; i++) {
-
-            float f = i / (float) size;
-
-            int topRGB    = Color.HSBtoRGB((hueOffset + 0.00f + f) % 1f, 1.0f, 1.0f);
-            int rightRGB  = Color.HSBtoRGB((hueOffset + 0.25f + f) % 1f, 1.0f, 1.0f);
-            int bottomRGB = Color.HSBtoRGB((hueOffset + 0.50f + f) % 1f, 1.0f, 1.0f);
-            int leftRGB   = Color.HSBtoRGB((hueOffset + 0.75f + f) % 1f, 1.0f, 1.0f);
-
-            int topARGB     = 0xFF000000 | (topRGB & 0x00FFFFFF);
-            int rightARGB   = 0xFF000000 | (rightRGB & 0x00FFFFFF);
-            int bottomARGB  = 0xFF000000 | (bottomRGB & 0x00FFFFFF);
-            int leftARGB    = 0xFF000000 | (leftRGB & 0x00FFFFFF);
-
-            ctx.fill(x + i, y, x + i + 1, y + thickness, topARGB);
-            ctx.fill(x + i, y + size - thickness, x + i + 1, y + size, bottomARGB);
-            ctx.fill(x, y + i, x + thickness, y + i + 1, leftARGB);
-            ctx.fill(x + size - thickness, y + i, x + size, y + i + 1, rightARGB);
-        }
+        ctx.fill(x, y, x + 16, y + 1, top);
+        ctx.fill(x + 16 - 1, y, x + 16, y + 16, right);
+        ctx.fill(x, y + 16 - 1, x + 16, y + 16, bottom);
+        ctx.fill(x, y, x + 1, y + 16, left);
     }
+
+    private static int hsvToArgb(float hue) {
+        int rgb = java.awt.Color.HSBtoRGB(hue, (float) 1.0, (float) 1.0);
+        return 0xFF000000 | (rgb & 0x00FFFFFF);
+    }
+
 }
