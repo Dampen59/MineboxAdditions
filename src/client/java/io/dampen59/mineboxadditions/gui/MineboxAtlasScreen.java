@@ -32,12 +32,6 @@ public class MineboxAtlasScreen extends Screen {
 
     @Override
     protected void init() {
-
-        if (MineboxAdditionsClient.INSTANCE.modState.getMbxItems() == null) {
-            Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
-            return;
-        }
-
         int left = 10;
         int top = 45;
         int height = this.height - 100;
