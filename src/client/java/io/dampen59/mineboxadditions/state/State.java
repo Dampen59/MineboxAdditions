@@ -12,6 +12,7 @@ import java.util.*;
 public class State {
     private final OfferState offerState = new OfferState();
     private final WeatherState weatherState = new WeatherState();
+    private final HUDState hudState = new HUDState();
 
     private boolean connectedToMinebox = false;
     private boolean loginCommandSent = false;
@@ -79,6 +80,7 @@ public class State {
 
     public OfferState getOfferState() { return offerState; }
     public WeatherState getWeatherState() { return weatherState; }
+    public HUDState getHUDState() { return hudState; }
     public OfferState.MermaidItemOffer getMermaidItemOffer() { return mermaidItemOffer; }
 
     public void setLastSentCommand(String cmd) { this.lastSentCommand = cmd; }

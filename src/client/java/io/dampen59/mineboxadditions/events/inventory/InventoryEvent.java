@@ -1,6 +1,10 @@
 package io.dampen59.mineboxadditions.events.inventory;
 
+import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.hud.Hud;
+import io.dampen59.mineboxadditions.hud.ItemPickupHud;
+import io.dampen59.mineboxadditions.state.HUDState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -112,7 +116,7 @@ public class InventoryEvent {
         }
     }
 
-    private void renderItemsPickups(DrawContext drawContext, RenderTickCounter tickCounter) {
+    private void renderItemsPickups(DrawContext context, RenderTickCounter tickCounter) {
         ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
         if (!config.displaySettings.itemPickupSettings.displayItemsPickups) return;
 
@@ -124,26 +128,30 @@ public class InventoryEvent {
             AutoConfig.getConfigHolder(ModConfig.class).save();
         }
 
-        int x = config.itemPickupHudX;
-        int baseY = config.itemPickupHudY;
+        HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
+        ItemPickupHud pickupHud = (ItemPickupHud) hudState.getHud(Hud.Type.ITEM_PICKUP);
 
         for (int i = 0; i < itemPickupNotifications.size(); i++) {
-            ItemPickupNotification notif = itemPickupNotifications.get(i);
-            int y = baseY - (i * 20);
-            drawContext.drawItem(notif.itemStack, x, y);
-            String text = "+ " + notif.count + " ";
-            drawContext.drawTextWithShadow(client.textRenderer, Text.literal(text).append(notif.itemStack.getName()), x + 20, y + 4, 0xFFFFFFFF);
+            ItemPickupNotification notification = itemPickupNotifications.get(i);
+            int offsetY = (i * (pickupHud.getHeight() + 2));
+            pickupHud.setItem(notification.itemStack);
+            pickupHud.drawWithItem(context, offsetY);
         }
 
         if (fillRatePerSecond != 0) {
-            String rateText = String.format("Haversack Fill Rate: %.2f/s", fillRatePerSecond);
-            if (config.displaySettings.displayHaversackFillRate)
-                drawContext.drawTextWithShadow(client.textRenderer, Text.literal(rateText), config.haverSackFillRateX, config.haverSackFillRateY, 0xFFFFFFFF);
+            if (config.displaySettings.displayHaversackFillRate) {
+                String rateText = String.format("Haversack Fill Rate: %.2f/s", fillRatePerSecond);
+                Hud hud = hudState.getHud(Hud.Type.HAVERSACK_RATE);
+                hud.setText(Text.of(rateText));
+                hud.draw(context);
+            }
 
-
-            String timeText = "Haversack Full in: " + timeUntilFull;
-            if (config.displaySettings.displayHaversackFullIn)
-                drawContext.drawTextWithShadow(client.textRenderer, Text.literal(timeText), config.haversackFullInX, config.haversackFullInY, 0xFFFFFFFF);
+            if (config.displaySettings.displayHaversackFullIn) {
+                String timeText = "Haversack Full in: " + timeUntilFull;
+                Hud hud = hudState.getHud(Hud.Type.HAVERSACK_FULL);
+                hud.setText(Text.of(timeText));
+                hud.draw(context);
+            }
         }
 
     }
