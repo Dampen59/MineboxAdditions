@@ -135,6 +135,7 @@ public class InventoryEvent {
             ItemPickupNotification notification = itemPickupNotifications.get(i);
             int offsetY = (i * (pickupHud.getHeight() + 2));
             pickupHud.setItem(notification.itemStack);
+            pickupHud.setCount(notification.count);
             pickupHud.drawWithItem(context, offsetY);
         }
 

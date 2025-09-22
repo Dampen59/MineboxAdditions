@@ -10,14 +10,19 @@ import java.util.function.Supplier;
 
 public class ItemPickupHud extends Hud {
     private ItemStack item;
+    private int count;
 
     public ItemPickupHud(Supplier<Integer> getX, Supplier<Integer> getY,
                          Consumer<Integer> setX, Consumer<Integer> setY,
                          ItemStack item) {
         super(getX, getY, setX, setY, null, null);
         this.item = item;
+        this.count = item.getCount();
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
     public void setItem(ItemStack item) {
         this.item = item;
     }
@@ -50,7 +55,7 @@ public class ItemPickupHud extends Hud {
         this.drawPlate(context, x + 20, y, renderer.getWidth(item.getName()) + 8, this.getHeight());
         context.drawItem(item, x + 1, y + 1);
 
-        String count = String.valueOf(item.getCount());
+        String count = String.valueOf(this.count);
         context.drawText(renderer, count, x + (this.getHeight() - renderer.getWidth(count)), y + 1 + (this.getHeight() - renderer.fontHeight), 0xFFFFFFFF, true);
 
         int textY = (this.getHeight() - renderer.fontHeight) / 2 + (this.getHeight() - renderer.fontHeight) % 2;
