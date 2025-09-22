@@ -29,14 +29,11 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.stream.Collectors;
 
 public class MineboxAdditionsClient implements ClientModInitializer {
-
-    public final State modState = new State();
     public static MineboxAdditionsClient INSTANCE;
 
     private static KeyBinding openModSettings;
@@ -47,11 +44,13 @@ public class MineboxAdditionsClient implements ClientModInitializer {
     public static KeyBinding openAtlas;
 
     public ModConfig config = null;
+    public State modState = null;
 
     @Override
     public void onInitializeClient() {
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
         this.config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        this.modState = new State();
 
         new SocketManager(modState);
         new ServerEvents(modState);
@@ -73,14 +72,9 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                 MinecraftClient.getInstance().setScreen(new AudioDeviceScreen());
             }
             if (openEditMode.wasPressed()) {
-                client.setScreen(new HudEditorScreen(AutoConfig.getConfigHolder(ModConfig.class).getConfig()));
-
+                client.setScreen(new HudEditorScreen());
             }
             if (openAtlas.wasPressed()) {
-                if (MineboxAdditionsClient.INSTANCE.modState.getMbxItems() == null) {
-                    Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
-                    return;
-                }
                 client.setScreen(new MineboxAtlasScreen());
             }
             if (openHarvestables.wasPressed()) {
