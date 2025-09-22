@@ -29,6 +29,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.stream.Collectors;
@@ -75,6 +76,10 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                 client.setScreen(new HudEditorScreen());
             }
             if (openAtlas.wasPressed()) {
+                if (MineboxAdditionsClient.INSTANCE.modState.getMbxItems() == null) {
+                    Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
+                    return;
+                }
                 client.setScreen(new MineboxAtlasScreen());
             }
             if (openHarvestables.wasPressed()) {
