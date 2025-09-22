@@ -27,18 +27,21 @@ public class HudEditorScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
+            int screenCenterX = this.width / 2;
             for (Map.Entry<Hud.Type, Hud> entry : hudState.getHuds().entrySet()) {
+                Hud.Type type = entry.getKey();
                 Hud hud = entry.getValue();
 
-                int screenCenterX = this.width / 2;
-                if (entry.getKey() == Hud.Type.ITEM_PICKUP && mouseX > screenCenterX) {
-                    mouseX += hud.getWidth();
+                int boxX = hud.getX.get();
+                if (type == Hud.Type.ITEM_PICKUP && boxX > screenCenterX) {
+                    boxX -= hud.getWidth();
                 }
+                int boxY = hud.getY.get();
 
-                if (isInBounds(mouseX, mouseY, hud.getX.get(), hud.getY.get(), hud.getWidth(), hud.getHeight())) {
-                    dragging = entry.getKey();
-                    offsetX = (int) mouseX - hud.getX.get();
-                    offsetY = (int) mouseY - hud.getY.get();
+                if (isInBounds(mouseX, mouseY, boxX, boxY, hud.getWidth(), hud.getHeight())) {
+                    dragging = type;
+                    offsetX = (int) mouseX - boxX;
+                    offsetY = (int) mouseY - boxY;
                     return true;
                 }
             }
@@ -53,13 +56,15 @@ public class HudEditorScreen extends Screen {
             Hud hud = hudState.getHud(dragging);
 
             int screenCenterX = this.width / 2;
-            int newHudX = (int) mouseX - offsetX;
-            if (dragging == Hud.Type.ITEM_PICKUP && newHudX > screenCenterX) {
-                hud.setX.accept(newHudX + hud.getWidth());
+            int newBoxX = (int) mouseX - offsetX;
+            int newBoxY = (int) mouseY - offsetY;
+
+            if (dragging == Hud.Type.ITEM_PICKUP && hud.getX.get() > screenCenterX) {
+                hud.setX.accept(newBoxX + hud.getWidth());
             } else {
-                hud.setX.accept((int) mouseX - offsetX);
+                hud.setX.accept(newBoxX);
             }
-            hud.setY.accept((int) mouseY - offsetY);
+            hud.setY.accept(newBoxY);
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
