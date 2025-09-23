@@ -141,14 +141,14 @@ public class InventoryEvent {
 
         if (fillRatePerSecond != 0) {
             if (config.displaySettings.displayHaversackFillRate) {
-                String rateText = String.format("Haversack Fill Rate: %.2f/s", fillRatePerSecond);
+                String rateText = String.format("Fill Rate: %.2f/s", fillRatePerSecond);
                 Hud hud = hudState.getHud(Hud.Type.HAVERSACK_RATE);
                 hud.setText(Text.of(rateText));
                 hud.draw(context);
             }
 
             if (config.displaySettings.displayHaversackFullIn) {
-                String timeText = "Haversack Full in: " + timeUntilFull;
+                String timeText = "Full in: " + timeUntilFull;
                 Hud hud = hudState.getHud(Hud.Type.HAVERSACK_FULL);
                 hud.setText(Text.of(timeText));
                 hud.draw(context);
