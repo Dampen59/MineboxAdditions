@@ -32,9 +32,9 @@ public class HudRenderer {
             String mermaidText = null;
 
             if (this.modState.getMermaidItemOffer().itemTranslationKeyArgs == null) {
-                mermaidText = String.format("Mermaid Request: %dx %s", this.modState.getMermaidItemOffer().quantity, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKey).getString());
+                mermaidText = String.format("%dx %s", this.modState.getMermaidItemOffer().quantity, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKey).getString());
             } else {
-                mermaidText = String.format("Mermaid Request: %dx %s", this.modState.getMermaidItemOffer().quantity, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKey, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKeyArgs).getString()).getString());
+                mermaidText = String.format("%dx %s", this.modState.getMermaidItemOffer().quantity, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKey, Text.translatable(this.modState.getMermaidItemOffer().itemTranslationKeyArgs).getString()).getString());
             }
 
             Hud hud = hudState.getHud(Hud.Type.MERMAID_OFFER);
@@ -42,7 +42,7 @@ public class HudRenderer {
             hud.draw(context);
         } else {
             Hud hud = hudState.getHud(Hud.Type.MERMAID_OFFER);
-            hud.setText(Text.of("Mermaid Request: Unknown"));
+            hud.setText(Text.of("Unknown"));
             hud.draw(context);
         }
 

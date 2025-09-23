@@ -56,7 +56,7 @@ public class SkyEvent {
         }
 
         if (config.displaySettings.displayNextRain) {
-            String text = "Next Rain: " + (client.world.isRaining()
+            String text = (client.world.isRaining()
                     ? "Now!"
                     : formatNextEventCountdown(modState.getWeatherState().getRainTimestamps()));
             Hud hud = hudState.getHud(Hud.Type.RAIN);
@@ -65,7 +65,7 @@ public class SkyEvent {
         }
 
         if (config.displaySettings.displayNextStorm) {
-            String text = "Next Storm: " + (client.world.isThundering()
+            String text = (client.world.isThundering()
                     ? "Now!"
                     : formatNextEventCountdown(modState.getWeatherState().getStormTimestamps()));
             Hud hud = hudState.getHud(Hud.Type.STORM);

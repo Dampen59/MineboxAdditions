@@ -48,21 +48,21 @@ public class HUDState {
                 () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateY,
                 x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateX = x,
                 y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateY = y,
-                "haversack", Text.of("Haversack Fill Rate: 0.0/s")));
+                "haversack", Text.of("Fill Rate: 0.0/s")));
 
         huds.put(Hud.Type.HAVERSACK_FULL, new Hud(
                 () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInX,
                 () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInY,
                 x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInX = x,
                 y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInY = y,
-                "haversack", Text.of("Haversack Full In: 00:00:00")));
+                "haversack", Text.of("Full In: 00:00:00")));
 
         huds.put(Hud.Type.MERMAID_OFFER, new Hud(
                 () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().mermaidRequestHudX,
                 () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().getMermaidRequestHudY,
                 x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().mermaidRequestHudX = x,
                 y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().getMermaidRequestHudY = y,
-                "mermaid", Text.of("Mermaid Request: 1x Bedrock")));
+                "mermaid", Text.of("1x Bedrock")));
 
         huds.put(Hud.Type.ITEM_PICKUP, new ItemPickupHud(
                 () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().itemPickupHudX,
