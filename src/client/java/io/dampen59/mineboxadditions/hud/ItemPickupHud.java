@@ -28,6 +28,17 @@ public class ItemPickupHud extends Hud {
     }
 
     @Override
+    public int getX() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        int screenWidth = client.getWindow().getScaledWidth();
+        int x = super.getX();
+        if (x > screenWidth / 2) {
+            return x - this.getWidth();
+        }
+        return x;
+    }
+
+    @Override
     public int getWidth() {
         TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
         return 28 + renderer.getWidth(item.getName());
@@ -40,15 +51,17 @@ public class ItemPickupHud extends Hud {
 
     @Override
     public void draw(DrawContext context) {
+        if (getX() == -50) {
+            MinecraftClient client = MinecraftClient.getInstance();
+            int screenWidth = client.getWindow().getScaledWidth();
+            setX(screenWidth - 4);
+        }
         this.drawWithItem(context, 0);
     }
 
     public void drawWithItem(DrawContext context, int offsetY) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        int screenWidth = client.getWindow().getScaledWidth();
-        int x = getX.get();
-        if (x > screenWidth / 2) x -= this.getWidth();
-        int y = getY.get() + offsetY;
+        int x = getX();
+        int y = getY() + offsetY;
 
         TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
         this.drawPlate(context, x, y, 18, this.getHeight());

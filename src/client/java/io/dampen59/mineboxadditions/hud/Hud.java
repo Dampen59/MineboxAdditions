@@ -11,10 +11,10 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Hud {
-    public final Supplier<Integer> getX;
-    public final Supplier<Integer> getY;
-    public final Consumer<Integer> setX;
-    public final Consumer<Integer> setY;
+    private final Supplier<Integer> onGetX;
+    private final Supplier<Integer> onGetY;
+    private final Consumer<Integer> onSetX;
+    private final Consumer<Integer> onSetY;
     private String icon;
     private Text text;
 
@@ -25,10 +25,10 @@ public class Hud {
     public Hud(Supplier<Integer> getX, Supplier<Integer> getY,
         Consumer<Integer> setX, Consumer<Integer> setY,
         String icon, Text text) {
-        this.getX = getX;
-        this.getY = getY;
-        this.setX = setX;
-        this.setY = setY;
+        this.onGetX = getX;
+        this.onGetY = getY;
+        this.onSetX = setX;
+        this.onSetY = setY;
         this.icon = icon;
         this.text = text;
     }
@@ -39,12 +39,20 @@ public class Hud {
         this(getX, getY, setX, setY, icon, null);
     }
 
-    public Text getText() {
-        return text;
+    public int getX() {
+        return this.onGetX.get();
     }
 
-    public void setText(Text text) {
-        this.text = text;
+    public void setX(int x) {
+        this.onSetX.accept(x);
+    }
+
+    public int getY() {
+        return this.onGetY.get();
+    }
+
+    public void setY(int y) {
+        this.onSetY.accept(y);
     }
 
     public int getWidth() {
@@ -62,6 +70,14 @@ public class Hud {
         return 14;
     }
 
+    public Text getText() {
+        return text;
+    }
+
+    public void setText(Text text) {
+        this.text = text;
+    }
+
     public void drawPlate(DrawContext context, int x, int y, int w, int h) {
         context.fill(x + 1, y, x + w - 1, y + 1, 0x40000000);
         context.fill(x, y + 1, x + w, y + h - 1, 0x40000000);
@@ -70,9 +86,9 @@ public class Hud {
 
     public void draw(DrawContext context) {
         TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
-        int x = getX.get();
-        int y = getY.get();
-        this.drawPlate(context, x, y, this.getWidth(), this.getHeight());
+        int x = getX();
+        int y = getY();
+        this.drawPlate(context, x, y, getWidth(), getHeight());
 
         Identifier icon = Identifier.of("mineboxadditions", "textures/icons/" + this.icon + ".png");
 

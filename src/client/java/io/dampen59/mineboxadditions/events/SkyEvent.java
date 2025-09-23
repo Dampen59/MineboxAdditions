@@ -93,7 +93,7 @@ public class SkyEvent {
         int hours = secondsLeft / 3600;
         int minutes = (secondsLeft % 3600) / 60;
         int seconds = secondsLeft % 60;
-        return String.format("in %02d:%02d:%02d", hours, minutes, seconds);
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
     private static List<Integer> snapshotList(List<Integer> src) {

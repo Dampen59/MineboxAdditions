@@ -9,11 +9,13 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
+import java.awt.*;
 import java.util.Map;
 
 public class HudEditorScreen extends Screen {
     private Hud.Type dragging = null;
     private int offsetX, offsetY;
+    private static final int PADDING = 2;
 
     public HudEditorScreen() {
         super(Text.of("HUD Editor"));
@@ -27,21 +29,15 @@ public class HudEditorScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
             HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
-            int screenCenterX = this.width / 2;
             for (Map.Entry<Hud.Type, Hud> entry : hudState.getHuds().entrySet()) {
-                Hud.Type type = entry.getKey();
                 Hud hud = entry.getValue();
+                int hudX = hud.getX();
+                int hudY = hud.getY();
 
-                int boxX = hud.getX.get();
-                if (type == Hud.Type.ITEM_PICKUP && boxX > screenCenterX) {
-                    boxX -= hud.getWidth();
-                }
-                int boxY = hud.getY.get();
-
-                if (isInBounds(mouseX, mouseY, boxX, boxY, hud.getWidth(), hud.getHeight())) {
-                    dragging = type;
-                    offsetX = (int) mouseX - boxX;
-                    offsetY = (int) mouseY - boxY;
+                if (isInBounds(mouseX, mouseY, hudX, hudY, hud.getWidth(), hud.getHeight())) {
+                    dragging = entry.getKey();
+                    offsetX = (int) mouseX - hudX;
+                    offsetY = (int) mouseY - hudY;
                     return true;
                 }
             }
@@ -55,16 +51,62 @@ public class HudEditorScreen extends Screen {
             HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
             Hud hud = hudState.getHud(dragging);
 
-            int screenCenterX = this.width / 2;
-            int newBoxX = (int) mouseX - offsetX;
-            int newBoxY = (int) mouseY - offsetY;
+            int nextX = (int) mouseX - offsetX;
+            int nextY = (int) mouseY - offsetY;
 
-            if (dragging == Hud.Type.ITEM_PICKUP && hud.getX.get() > screenCenterX) {
-                hud.setX.accept(newBoxX + hud.getWidth());
+            nextX = Math.max(4, nextX);
+            nextX = Math.min(this.width - hud.getWidth() - 4, nextX);
+            nextY = Math.max(4, nextY);
+            nextY = Math.min(this.height - hud.getHeight() - 4, nextY);
+
+            boolean collisionOccurred;
+            int iterations = 0;
+            do {
+                collisionOccurred = false;
+                Rectangle hudBounds = new Rectangle(nextX, nextY, hud.getWidth(), hud.getHeight());
+
+                for (Map.Entry<Hud.Type, Hud> entry : hudState.getHuds().entrySet()) {
+                    if (entry.getKey() == dragging) continue;
+                    Hud otherHud = entry.getValue();
+                    Rectangle otherBounds = new Rectangle(
+                            otherHud.getX() - PADDING,
+                            otherHud.getY() - PADDING,
+                            otherHud.getWidth() + PADDING * 2,
+                            otherHud.getHeight() + PADDING * 2
+                    );
+
+                    if (hudBounds.intersects(otherBounds)) {
+                        collisionOccurred = true;
+                        double overlapX = (hudBounds.width / 2.0 + otherBounds.width / 2.0) - Math.abs(hudBounds.getCenterX() - otherBounds.getCenterX());
+                        double overlapY = (hudBounds.height / 2.0 + otherBounds.height / 2.0) - Math.abs(hudBounds.getCenterY() - otherBounds.getCenterY());
+
+                        if (overlapX < overlapY) {
+                            if (hudBounds.getCenterX() < otherBounds.getCenterX()) {
+                                nextX -= overlapX;
+                            } else {
+                                nextX += overlapX;
+                            }
+                        } else {
+                            if (hudBounds.getCenterY() < otherBounds.getCenterY()) {
+                                nextY -= overlapY;
+                            } else {
+                                nextY += overlapY;
+                            }
+                        }
+                        hudBounds.setLocation(nextX, nextY);
+                    }
+                }
+
+                iterations++;
+            } while (collisionOccurred && iterations < 10);
+
+            int screenCenterX = this.width / 2;
+            if (dragging == Hud.Type.ITEM_PICKUP && nextX > screenCenterX) {
+                hud.setX(nextX + hud.getWidth());
             } else {
-                hud.setX.accept(newBoxX);
+                hud.setX(nextX);
             }
-            hud.setY.accept(newBoxY);
+            hud.setY(nextY);
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
