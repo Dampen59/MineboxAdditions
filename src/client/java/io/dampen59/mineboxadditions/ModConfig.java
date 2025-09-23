@@ -39,52 +39,52 @@ public class ModConfig implements ConfigData {
     public float speakerVolumeMultiplier = 1.0f;
 
     @ConfigEntry.Gui.Excluded
-    public int rainHudX = 5;
+    public int rainHudX = 4;
 
     @ConfigEntry.Gui.Excluded
-    public int rainHudY = 60;
+    public int rainHudY = 36;
 
     @ConfigEntry.Gui.Excluded
-    public int stormHudX = 5;
+    public int stormHudX = 68;
 
     @ConfigEntry.Gui.Excluded
-    public int stormHudY = 72;
+    public int stormHudY = 36;
 
     @ConfigEntry.Gui.Excluded
-    public int shopHudX = 5;
+    public int shopHudX = 4;
 
     @ConfigEntry.Gui.Excluded
-    public int shopHudY = 40;
+    public int shopHudY = 4;
 
     @ConfigEntry.Gui.Excluded
-    public int fullMoonHudX = 14;
+    public int fullMoonHudX = 132;
 
     @ConfigEntry.Gui.Excluded
-    public int fullMoonHudY = 5;
+    public int fullMoonHudY = 36;
 
     @ConfigEntry.Gui.Excluded
-    public int haverSackFillRateX = 10;
+    public int haverSackFillRateX = 4;
 
     @ConfigEntry.Gui.Excluded
-    public int haverSackFillRateY = 10;
+    public int haverSackFillRateY = 52;
 
     @ConfigEntry.Gui.Excluded
-    public int haversackFullInX = 10;
+    public int haversackFullInX = 4;
 
     @ConfigEntry.Gui.Excluded
-    public int haversackFullInY = 25;
+    public int haversackFullInY = 68;
 
     @ConfigEntry.Gui.Excluded
-    public int mermaidRequestHudX = 10;
+    public int mermaidRequestHudX = 4;
 
     @ConfigEntry.Gui.Excluded
-    public int getMermaidRequestHudY = 40;
+    public int getMermaidRequestHudY = 20;
 
     @ConfigEntry.Gui.Excluded
-    public int itemPickupHudX = 0;
+    public int itemPickupHudX = -50;
 
     @ConfigEntry.Gui.Excluded
-    public int itemPickupHudY = 0;
+    public int itemPickupHudY = 4;
 
     @ConfigEntry.Gui.CollapsibleObject
     public ShopsAlertsSettings shopsAlertsSettings = new ShopsAlertsSettings();

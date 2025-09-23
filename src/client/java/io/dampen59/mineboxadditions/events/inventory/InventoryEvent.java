@@ -173,10 +173,6 @@ public class InventoryEvent {
                 if (config.durabilitySettings.haversackDurability) {
                     handleHaversackDurability(stack, nbtData, translatableContent);
                 }
-            } else if (id.contains("harvester_") && translatableContent.getKey().contains("mbx.durability")) {
-                if (config.durabilitySettings.harvesterDurability) {
-                    handleHarvesterDurability(stack, translatableContent);
-                }
             }
         }
     }
@@ -212,33 +208,6 @@ public class InventoryEvent {
             lastCheckTime = currentTime;
             timeUntilFull = "";
         }
-
-
-        ComponentChanges changes = ComponentChanges.builder()
-                .add(DataComponentTypes.DAMAGE, maxQuantity - amountInside)
-                .add(DataComponentTypes.MAX_DAMAGE, maxQuantity)
-                .remove(DataComponentTypes.UNBREAKABLE)
-                .build();
-        stack.setDamage(amountInside);
-        stack.applyChanges(changes);
-    }
-
-
-    private void handleHarvesterDurability(ItemStack stack, TranslatableTextContent content) {
-        StringVisitable durabilityArg = content.getArg(0);
-        String durabilityStr = durabilityArg.getString();
-        if (!durabilityStr.contains("/")) return;
-        String[] parts = durabilityStr.split("/");
-        if (parts.length < 2) return;
-        int currentDurability = Integer.parseInt(parts[0]);
-        int maxDurability = Integer.parseInt(parts[1]);
-        ComponentChanges changes = ComponentChanges.builder()
-                .add(DataComponentTypes.DAMAGE, maxDurability - currentDurability)
-                .add(DataComponentTypes.MAX_DAMAGE, maxDurability)
-                .remove(DataComponentTypes.UNBREAKABLE)
-                .build();
-        stack.setDamage(maxDurability - currentDurability);
-        stack.applyChanges(changes);
     }
 
     private static class ItemPickupNotification {
