@@ -1,19 +1,22 @@
 {
   "text.autoconfig.mineboxadditions.title": "MineboxAdditions Configuration",
+
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings": "Alert settings",
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getMouseAlerts": "Mouse",
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBakeryAlerts": "Bakery",
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getBuckstarAlerts": "Buckstar",
   "text.autoconfig.mineboxadditions.option.shopsAlertsSettings.getCocktailAlerts": "Cocktail Bar",
+
   "text.autoconfig.mineboxadditions.option.durabilitySettings": "Durability settings",
   "text.autoconfig.mineboxadditions.option.durabilitySettings.haversackDurability": "Enable Haversacks durability bar",
   "text.autoconfig.mineboxadditions.option.durabilitySettings.harvesterDurability": "Enable Harvesters durability bar",
+
   "text.autoconfig.mineboxadditions.option.autoIslandOnLogin": "Automatically go to your island when connecting to the server",
+
   "text.autoconfig.mineboxadditions.option.networkFeatures": "Network features",
   "text.autoconfig.mineboxadditions.option.networkFeatures.enableNetworkFeatures": "Enable network features? (Must reconnect to take effect)",
   "text.autoconfig.mineboxadditions.option.networkFeatures.receiveShopsAlerts": "Display an alert when the shop offers are known",
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Send an alert to other MineboxAdditions users when you discover a shop offer",
-  "mineboxadditions.strings.full_moon": "Full moon",
 
   "text.autoconfig.mineboxadditions.option.displaySettings": "Display settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Enable Full Moon HUD",
@@ -37,7 +40,9 @@
 
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings": "Fishing HUD settings",
   "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.showFishDrops": "Display Fish Drops HUD",
-    "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "The amount of blocks to search around you for fishing shoals",
+  "text.autoconfig.mineboxadditions.option.displaySettings.fishingSettings.fishDropRadius": "The amount of blocks to search around you for fishing shoals",
+
+  "mineboxadditions.strings.full_moon": "Full moon",
 
   "mineboxadditions.strings.tooltip.more_info.press": "Press ",
   "mineboxadditions.strings.tooltip.more_info.key": "[LEFT ALT] ",
