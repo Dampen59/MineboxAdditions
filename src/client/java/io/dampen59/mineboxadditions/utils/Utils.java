@@ -117,6 +117,19 @@ public class Utils {
                 .orElse(false);
     }
 
+    public static boolean isStatsItem(ItemStack stack) {
+        if (stack == null || stack.getCustomName() == null) {
+            return false;
+        }
+
+        Text customName = stack.getCustomName();
+
+        if (customName.getContent() instanceof TranslatableTextContent translatable) {
+            return "mbx.your_stats.title".equals(translatable.getKey());
+        }
+
+        return false;
+    }
 
     public static String getMineboxItemUid(ItemStack itemStack) {
         if (!isMineboxItem(itemStack)) return null;

@@ -101,6 +101,7 @@ public class InventoryEvent {
     }
 
     private void addOrUpdateItemPickup(ItemStack stack, int count, int duration, int maxNotifications, boolean merge) {
+        if (Utils.isStatsItem(stack)) return;
         if (merge) {
             for (ItemPickupNotification notif : itemPickupNotifications) {
                 if (ItemStack.areItemsAndComponentsEqual(notif.itemStack, stack)) {
