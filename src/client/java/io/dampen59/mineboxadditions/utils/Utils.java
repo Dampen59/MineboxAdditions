@@ -2,7 +2,6 @@ package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.minebox.MineboxToast;
-import io.dampen59.mineboxadditions.minebox.ParsedMessage;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.MinecraftClient;
@@ -181,54 +180,6 @@ public class Utils {
         client.player.sendMessage(message, false);
 
         playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
-    }
-
-    public static String actionBarDataToChatLang(String prmActionBarData) {
-        if (prmActionBarData == null || prmActionBarData.isEmpty()) {
-            return "en";
-        }
-
-        if (prmActionBarData.contains("끰")) return "fr";
-        if (prmActionBarData.contains("끮")) return "en";
-        if (prmActionBarData.contains("끯")) return "es";
-        if (prmActionBarData.contains("낃")) return "ru";
-        if (prmActionBarData.contains("낁")) return "pt";
-        if (prmActionBarData.contains("끬")) return "de";
-        if (prmActionBarData.contains("낊")) return "cn";
-        if (prmActionBarData.contains("낀")) return "pl";
-        if (prmActionBarData.contains("끺")) return "it";
-        if (prmActionBarData.contains("끻")) return "jp";
-        if (prmActionBarData.contains("끾")) return "nl";
-        if (prmActionBarData.contains("낈")) return "tr";
-
-        return "en";
-    }
-
-
-    public static ParsedMessage extractPlayerNameAndMessage(String input) {
-        if (input == null || !input.contains(": ")) return null;
-        int lastSpecialCharIndex = input.lastIndexOf('', input.indexOf(": "));
-        if (lastSpecialCharIndex == -1) return null;
-        String playerName = input.substring(lastSpecialCharIndex + 1, input.indexOf(": ")).trim();
-        String message = input.substring(input.indexOf(": ") + 2).trim();
-        return new ParsedMessage(playerName, message);
-    }
-
-    public static void displayChatMessage(String prmFlag, String prmPlayerName, String prmMessageContent) {
-
-        MinecraftClient client = MinecraftClient.getInstance();
-
-        Text baseMessage = Text.literal(prmFlag);
-
-        Text playerName = Text.literal(" " + prmPlayerName)
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-
-        Text playerMessage = Text.literal(": " + prmMessageContent)
-                .setStyle(Style.EMPTY.withColor(Formatting.GRAY).withBold(false));
-
-        Text message = baseMessage.copy().append(playerName).append(playerMessage);
-
-        client.player.sendMessage(message, false);
     }
 
     public static String shopNameToTexture(String prmShopName) {
