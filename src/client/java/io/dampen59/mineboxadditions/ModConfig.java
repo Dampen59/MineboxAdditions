@@ -142,8 +142,8 @@ public class ModConfig implements ConfigData {
         @ConfigEntry.Gui.CollapsibleObject
         public FishingSettings fishingSettings = new FishingSettings();
 
+        public boolean displayItemRange = false;
         public boolean displayMuseumMissingItems = true;
-
         public boolean displayFullMoon = false;
         public boolean displayNextRain = true;
         public boolean displayNextStorm = true;

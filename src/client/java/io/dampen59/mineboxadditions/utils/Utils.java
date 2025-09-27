@@ -116,18 +116,49 @@ public class Utils {
                 .orElse(false);
     }
 
-    public static boolean isStatsItem(ItemStack stack) {
-        if (stack == null || stack.getCustomName() == null) {
+    public static boolean isStatsItem(ItemStack itemStack) {
+        if (itemStack == null || itemStack.getCustomName() == null) {
             return false;
         }
 
-        Text customName = stack.getCustomName();
+        Text customName = itemStack.getCustomName();
 
         if (customName.getContent() instanceof TranslatableTextContent translatable) {
             return "mbx.your_stats.title".equals(translatable.getKey());
         }
 
         return false;
+    }
+
+    public static int getItemSize(ItemStack itemStack) {
+        if (itemStack == null) return 0;
+        if (!isMineboxItem(itemStack)) return 0;
+
+        LoreComponent loresList = itemStack.get(DataComponentTypes.LORE);
+        if (loresList == null) return 0;
+
+        for (Text lore : loresList.lines()) {
+            TextContent content = lore.getContent();
+            if (content instanceof TranslatableTextContent tl &&
+                    "mbx.size".equals(tl.getKey())) {
+                Object[] args = tl.getArgs();
+                if (args.length > 0) {
+                    return parseIntArg(args[0]);
+                }
+            }
+
+            for (Text sibling : lore.getSiblings()) {
+                TextContent sibContent = sibling.getContent();
+                if (sibContent instanceof TranslatableTextContent tl2 &&
+                        "mbx.size".equals(tl2.getKey())) {
+                    Object[] args = tl2.getArgs();
+                    if (args.length > 0) {
+                        return parseIntArg(args[0]);
+                    }
+                }
+            }
+        }
+        return 0;
     }
 
     public static String getMineboxItemUid(ItemStack itemStack) {
@@ -243,6 +274,33 @@ public class Utils {
             return true;
         } catch (NumberFormatException e) {
             return false;
+        }
+    }
+
+    private static int parseIntArg(Object arg) {
+        if (arg == null) return 0;
+
+        if (arg instanceof Text t) {
+            String s = t.getString().trim();
+            return tryParseInt(s);
+        }
+
+        if (arg instanceof Number n) {
+            return n.intValue();
+        }
+
+        return tryParseInt(arg.toString().trim());
+    }
+
+    private static int tryParseInt(String s) {
+        try {
+            int space = s.indexOf(' ');
+            if (space > 0) s = s.substring(0, space);
+            int slash = s.indexOf('/');
+            if (slash > 0) s = s.substring(0, slash);
+            return Integer.parseInt(s);
+        } catch (Exception e) {
+            return 0;
         }
     }
 }

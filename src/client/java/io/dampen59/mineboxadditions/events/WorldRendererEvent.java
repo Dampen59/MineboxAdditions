@@ -7,13 +7,18 @@ import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
@@ -24,10 +29,14 @@ import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -46,6 +55,21 @@ public class WorldRendererEvent {
     private static final Identifier BEACON_BEAM_TEX = Identifier.of("textures/entity/beacon_beam.png");
     private static int tickCounter = 0;
 
+    private static final int HIGHLIGHT_TICKS = 120;
+    private static final float R = 1.0f, G = 1.0f, B = 1.0f, A = 0.85f;
+    private static final int MAX_HIGHLIGHTS = 256;
+
+    private static class HighlightEntry {
+        final BlockPos pos;
+        final long untilTick;
+        HighlightEntry(BlockPos pos, long untilTick) {
+            this.pos = pos.toImmutable();
+            this.untilTick = untilTick;
+        }
+    }
+
+    private static final List<HighlightEntry> ENTRIES = new ArrayList<>();
+
     public WorldRendererEvent() {
         WorldRenderEvents.AFTER_ENTITIES.register(WorldRendererEvent::onRender);
 
@@ -63,6 +87,66 @@ public class WorldRendererEvent {
             }
             MineboxAdditionsClient.INSTANCE.modState.cleanStaleEntityTextCache(liveUuids);
         });
+
+        UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+            ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+            if (!config.displaySettings.displayItemRange) return ActionResult.PASS;
+
+            if (!world.isClient) return ActionResult.PASS;
+            if (!(player instanceof ClientPlayerEntity)) return ActionResult.PASS;
+            if (hand != Hand.MAIN_HAND) return ActionResult.PASS;
+
+            int itemSize = Utils.getItemSize(player.getStackInHand(Hand.MAIN_HAND));
+            if (itemSize == 0) return ActionResult.PASS;
+
+            Direction facing = player.getHorizontalFacing();
+            BlockPos clicked = hit.getBlockPos();
+            BlockPos target = clicked.offset(facing, itemSize);
+
+            long now = world.getTime();
+            if (ENTRIES.size() >= MAX_HIGHLIGHTS) {
+                ENTRIES.removeFirst();
+            }
+            ENTRIES.add(new HighlightEntry(target, now + HIGHLIGHT_TICKS));
+            return ActionResult.PASS;
+        });
+
+        WorldRenderEvents.LAST.register(context -> {
+            MinecraftClient mc = MinecraftClient.getInstance();
+            if (mc.world == null || ENTRIES.isEmpty()) return;
+
+            long now = mc.world.getTime();
+            Vec3d camPos = context.camera().getPos();
+            MatrixStack matrices = context.matrixStack();
+            VertexConsumer buffer = context.consumers().getBuffer(RenderLayer.getLines());
+
+            Iterator<HighlightEntry> it = ENTRIES.iterator();
+            while (it.hasNext()) {
+                HighlightEntry e = it.next();
+                if (now > e.untilTick) {
+                    it.remove();
+                    continue;
+                }
+
+                BlockState state = mc.world.getBlockState(e.pos);
+                if (state.isAir()) continue;
+
+                VoxelShape shape = state.getOutlineShape(mc.world, e.pos);
+                if (shape.isEmpty()) continue;
+
+                double ox = e.pos.getX() - camPos.x;
+                double oy = e.pos.getY() - camPos.y;
+                double oz = e.pos.getZ() - camPos.z;
+
+                DebugRenderer.drawVoxelShapeOutlines(
+                        matrices, buffer, shape,
+                        ox, oy, oz,
+                        R, G, B, A,
+                        true
+                );
+            }
+        });
+
     }
 
     public static void onRender(WorldRenderContext context) {
