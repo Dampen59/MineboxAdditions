@@ -16,6 +16,7 @@
   "mineboxadditions.strings.full_moon": "Полнолуние",
 
   "text.autoconfig.mineboxadditions.option.displaySettings": "Настройки отображения",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayItemRange": "Display the range of tools on use (seed baskets, block sticks, hoes...)",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Показать полнолуние",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Показать следующий дождь",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Показать следующий шторм",

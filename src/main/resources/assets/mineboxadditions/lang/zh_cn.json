@@ -19,6 +19,7 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "当你发现商店优惠时向其他 MineboxAdditions 用户发送提醒",
 
   "text.autoconfig.mineboxadditions.option.displaySettings": "显示设置",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayItemRange": "Display the range of tools on use (seed baskets, block sticks, hoes...)",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "启用满月 HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "启用下雨 HUD",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "启用暴风雨 HUD",

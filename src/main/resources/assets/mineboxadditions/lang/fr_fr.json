@@ -19,6 +19,7 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Envoyez une alerte aux autres utilisateurs de MineboxAdditions lorsque vous découvrez une offre de shop",
 
   "text.autoconfig.mineboxadditions.option.displaySettings": "Paramètres d'affichage",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayItemRange": "Afficher la portée des outils lors de l'utilisation (paniers à graines, blâtons, houes...)",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Activer l'affichage de la pleine lune",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Activer l'affichage de la prochaine pluie",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Activer l'affichage du prochain orage",

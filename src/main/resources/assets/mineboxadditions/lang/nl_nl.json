@@ -19,6 +19,7 @@
   "text.autoconfig.mineboxadditions.option.networkFeatures.sendShopsAlerts": "Stuur een waarschuwing naar andere MineboxAdditions-gebruikers wanneer je een aanbod ontdekt",
 
   "text.autoconfig.mineboxadditions.option.displaySettings": "Weergave-instellingen",
+  "text.autoconfig.mineboxadditions.option.displaySettings.displayItemRange": "Display the range of tools on use (seed baskets, block sticks, hoes...)",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayFullMoon": "Schakel volle maan HUD in",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextRain": "Schakel volgende regen HUD in",
   "text.autoconfig.mineboxadditions.option.displaySettings.displayNextStorm": "Schakel volgende storm HUD in",
