@@ -31,10 +31,14 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
 public class MineboxAdditionsClient implements ClientModInitializer {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger("mineboxadditions");
     public static MineboxAdditionsClient INSTANCE;
 
     private static KeyBinding openModSettings;

@@ -3,7 +3,6 @@ package io.dampen59.mineboxadditions.network;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.maxhenkel.opus4j.OpusDecoder;
-import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionsClient;
 import io.dampen59.mineboxadditions.ModConfig;
 import io.dampen59.mineboxadditions.audio.AudioManager;
@@ -145,7 +144,7 @@ public class SocketManager {
 
                 for (MineboxFishingShoal.FishingShoalFish fish : items) {
                     if (fish.getTexture() == null) {
-                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", fish.getName());
+                        MineboxAdditionsClient.LOGGER.warn("Fish {} has null texture data", fish.getName());
                         continue;
                     }
 
@@ -158,7 +157,7 @@ public class SocketManager {
 
                 modState.setMbxFishables(items);
             } catch (JsonProcessingException e) {
-                MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
+                MineboxAdditionsClient.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
                         e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             }
         });
@@ -268,7 +267,7 @@ public class SocketManager {
                 this.modState.getSocket().emit("C2SLeaveAudioRoom");
                 Utils.displayChatErrorMessage(
                         "You have left the voice channel because MineboxAdditions was not able to setup your Speakers and/or Microphone. Please check your game logs.");
-                MineboxAdditions.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
+                MineboxAdditionsClient.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
                         e.getMessage());
             }
         });
@@ -300,7 +299,7 @@ public class SocketManager {
                 this.modState.getSocket().emit("C2SLeaveAudioRoom");
                 Utils.displayChatErrorMessage(
                         "You have left the voice channel because MineboxAdditions was not able to setup your Speakers and/or Microphone. Please check your game logs.");
-                MineboxAdditions.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
+                MineboxAdditionsClient.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
                         e.getMessage());
             }
 

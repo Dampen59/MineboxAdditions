@@ -1,41 +1,38 @@
 {
-	"schemaVersion": 1,
-	"id": "mineboxadditions",
-	"version": "${version}",
-	"name": "Minebox Additions",
-	"description": "This mod adds blatant features to Minebox",
-	"authors": [
-		"Dampen59"
-	],
-	"contact": {
-		"homepage": "https://dampen59.io/",
-		"sources": "https://github.com/Dampen59/MineboxAdditions"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/mineboxadditions/icon.png",
-	"environment": "*",
-	"accessWidener": "mineboxadditions.accesswidener",
-	"mixins": [
-		"mineboxadditions.mixins.json"
-	],
-	"entrypoints": {
-		"main": [
-			"io.dampen59.mineboxadditions.MineboxAdditions"
-		],
-		"client": [
-			"io.dampen59.mineboxadditions.MineboxAdditionsClient"
-		],
-		"modmenu": [
-			"io.dampen59.mineboxadditions.ModMenuIntegration"
-		]
-	},
-	"depends": {
-		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.21.3",
-		"java": ">=21",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+  "schemaVersion": 1,
+  "id": "mineboxadditions",
+  "version": "${version}",
+  "name": "MineboxAdditions",
+  "description": "This mod adds blatant features to Minebox",
+  "authors": [
+    "Dampen59"
+  ],
+  "contact": {
+    "homepage": "https://dampen59.io/",
+    "sources": "https://github.com/Dampen59/MineboxAdditions"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/mineboxadditions/icon.png",
+  "environment": "client",
+  "accessWidener": "mineboxadditions.accesswidener",
+  "mixins": [
+    {
+      "config": "mineboxadditions.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "entrypoints": {
+    "client": [
+      "io.dampen59.mineboxadditions.MineboxAdditionsClient"
+    ],
+    "modmenu": [
+      "io.dampen59.mineboxadditions.ModMenuIntegration"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "minecraft": "~1.21.7",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
 }
