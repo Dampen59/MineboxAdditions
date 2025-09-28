@@ -116,7 +116,7 @@ public class Utils {
                 .orElse(false);
     }
 
-    public static boolean isStatsItem(ItemStack itemStack) {
+    public static boolean isInventoryBaseItem(ItemStack itemStack) {
         if (itemStack == null || itemStack.getCustomName() == null) {
             return false;
         }
@@ -124,11 +124,13 @@ public class Utils {
         Text customName = itemStack.getCustomName();
 
         if (customName.getContent() instanceof TranslatableTextContent translatable) {
-            return "mbx.your_stats.title".equals(translatable.getKey());
+            String key = translatable.getKey();
+            return "mbx.your_stats.title".equals(key) || "mbx.main_menu.title".equals(key);
         }
 
         return false;
     }
+
 
     public static int getItemSize(ItemStack itemStack) {
         if (itemStack == null) return 0;
