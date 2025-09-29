@@ -1,8 +1,7 @@
-package io.dampen59.mineboxadditions.gui;
+package io.dampen59.mineboxadditions.features.harvestable;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
@@ -20,7 +19,7 @@ import net.minecraft.util.Identifier;
 import java.util.*;
 import java.util.function.IntConsumer;
 
-public class HarvestablesScreen extends Screen {
+public class HarvestableScreen extends Screen {
     private static final int PADDING = 8;
     private static final int ROW_H = 20;
 
@@ -44,7 +43,7 @@ public class HarvestablesScreen extends Screen {
 
     private MineboxAdditionConfig.HarvestablesPrefs prefs;
 
-    public HarvestablesScreen() {
+    public HarvestableScreen() {
         super(Text.literal("Harvestables"));
     }
 

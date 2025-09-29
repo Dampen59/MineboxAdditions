@@ -1,34 +1,50 @@
-package io.dampen59.mineboxadditions.state;
+package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.hud.Hud;
-import io.dampen59.mineboxadditions.hud.ItemPickupHud;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import io.dampen59.mineboxadditions.features.hud.huds.ItemPickupHud;
+import io.dampen59.mineboxadditions.features.hud.huds.MermaidHud;
+import io.dampen59.mineboxadditions.features.hud.huds.WeatherHud;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.text.Text;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-public class HUDState {
+public enum HudManager {
+    INSTANCE;
+
     private final Map<Hud.Type, Hud> huds = new EnumMap<>(Hud.Type.class);
 
-    public HUDState() {
-        huds.put(Hud.Type.RAIN, new Hud(
-                () -> MineboxAdditionConfig.get().rainHudX,
-                () -> MineboxAdditionConfig.get().rainHudY,
-                x -> MineboxAdditionConfig.get().rainHudX = x,
-                y -> MineboxAdditionConfig.get().rainHudY = y,
-                "rain", Text.of("Next Rain: 00:00:00")));
+    public void init() {
+        this.initHuds();
+        HudRenderCallback.EVENT.register(this::render);
+    }
 
-        huds.put(Hud.Type.STORM, new Hud(
-                () -> MineboxAdditionConfig.get().stormHudX,
-                () -> MineboxAdditionConfig.get().stormHudY,
-                x -> MineboxAdditionConfig.get().stormHudX = x,
-                y -> MineboxAdditionConfig.get().stormHudY = y,
-                "storm", Text.of("Next Storm: 00:00:00")));
+    private void render(DrawContext context, RenderTickCounter tickCounter) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null || client.player == null || client.options.hudHidden) return;
+        MineboxAdditionConfig config = MineboxAdditionConfig.get();
 
+        boolean isFullMoon = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() == 0;
+        if (isFullMoon && config.displaySettings.displayFullMoon) {
+            HudManager.INSTANCE.getHud(Hud.Type.FULL_MOON).draw(context);
+        }
+
+        if (config.displaySettings.displayNextRain)
+            WeatherHud.RainHud.render(context, client);
+
+        if (MineboxAdditionConfig.get().displaySettings.displayNextStorm)
+            WeatherHud.StormHud.render(context, client);
+
+        if (MineboxAdditionConfig.get().displaySettings.displayMermaidRequest)
+            MermaidHud.render(context);
+    }
+
+    private void initHuds() {
         huds.put(Hud.Type.SHOP, new Hud(
                 () -> MineboxAdditionConfig.get().shopHudX,
                 () -> MineboxAdditionConfig.get().shopHudY,
@@ -36,6 +52,9 @@ public class HUDState {
                 y -> MineboxAdditionConfig.get().shopHudY = y,
                 "shop", Text.of("Shop Name: Shop Offer")));
 
+        huds.put(Hud.Type.MERMAID_OFFER, new MermaidHud());
+        huds.put(Hud.Type.RAIN, new WeatherHud.RainHud());
+        huds.put(Hud.Type.STORM, new WeatherHud.StormHud());
         huds.put(Hud.Type.FULL_MOON, new Hud(
                 () -> MineboxAdditionConfig.get().fullMoonHudX,
                 () -> MineboxAdditionConfig.get().fullMoonHudY,
@@ -57,19 +76,7 @@ public class HUDState {
                 y -> MineboxAdditionConfig.get().haversackFullInY = y,
                 "haversack", Text.of("Full In: 00:00:00")));
 
-        huds.put(Hud.Type.MERMAID_OFFER, new Hud(
-                () -> MineboxAdditionConfig.get().mermaidRequestHudX,
-                () -> MineboxAdditionConfig.get().getMermaidRequestHudY,
-                x -> MineboxAdditionConfig.get().mermaidRequestHudX = x,
-                y -> MineboxAdditionConfig.get().getMermaidRequestHudY = y,
-                "mermaid", Text.of("1x Bedrock")));
-
-        huds.put(Hud.Type.ITEM_PICKUP, new ItemPickupHud(
-                () -> MineboxAdditionConfig.get().itemPickupHudX,
-                () -> MineboxAdditionConfig.get().itemPickupHudY,
-                x -> MineboxAdditionConfig.get().itemPickupHudX = x,
-                y -> MineboxAdditionConfig.get().itemPickupHudY = y,
-                new ItemStack(Items.DIAMOND)));
+        huds.put(Hud.Type.ITEM_PICKUP, new ItemPickupHud());
     }
 
     public Map<Hud.Type, Hud> getHuds() {

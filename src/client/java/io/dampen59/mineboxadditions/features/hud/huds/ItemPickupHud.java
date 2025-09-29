@@ -1,22 +1,24 @@
-package io.dampen59.mineboxadditions.hud;
+package io.dampen59.mineboxadditions.features.hud.huds;
 
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.features.hud.Hud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.item.ItemStack;
-
-import java.util.function.Consumer;
-import java.util.function.Supplier;
+import net.minecraft.item.Items;
 
 public class ItemPickupHud extends Hud {
     private ItemStack item;
     private int count;
 
-    public ItemPickupHud(Supplier<Integer> getX, Supplier<Integer> getY,
-                         Consumer<Integer> setX, Consumer<Integer> setY,
-                         ItemStack item) {
-        super(getX, getY, setX, setY, null, null);
-        this.item = item;
+    public ItemPickupHud() {
+        super(() -> MineboxAdditionConfig.get().itemPickupHudX,
+                () -> MineboxAdditionConfig.get().itemPickupHudY,
+                x -> MineboxAdditionConfig.get().itemPickupHudX = x,
+                y -> MineboxAdditionConfig.get().itemPickupHudY = y,
+                null, null);
+        this.item = new ItemStack(Items.DIAMOND);
         this.count = item.getCount();
     }
 
@@ -55,6 +57,7 @@ public class ItemPickupHud extends Hud {
             MinecraftClient client = MinecraftClient.getInstance();
             int screenWidth = client.getWindow().getScaledWidth();
             setX(screenWidth - 4);
+            MineboxAdditionConfig.save();
         }
         this.drawWithItem(context, 0);
     }

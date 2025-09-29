@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.hud;
+package io.dampen59.mineboxadditions.features.hud;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

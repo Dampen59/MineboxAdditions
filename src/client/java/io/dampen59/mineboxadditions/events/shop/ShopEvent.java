@@ -1,8 +1,8 @@
 package io.dampen59.mineboxadditions.events.shop;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.hud.Hud;
-import io.dampen59.mineboxadditions.state.HUDState;
+import io.dampen59.mineboxadditions.features.hud.Hud;
+import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -98,8 +98,7 @@ public class ShopEvent {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.options.hudHidden || client.player == null) return;
 
-        HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
-        Hud hud = hudState.getHud(Hud.Type.SHOP);
+        Hud hud = HudManager.INSTANCE.getHud(Hud.Type.SHOP);
         String offer = getCurrentOffer.get();
         if (offer != null) {
             hud.setText(Text.of(offer));

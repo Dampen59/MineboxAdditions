@@ -1,10 +1,6 @@
-package io.dampen59.mineboxadditions.gui;
+package io.dampen59.mineboxadditions.features.hud;
 
-import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.hud.Hud;
-import io.dampen59.mineboxadditions.state.HUDState;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -28,8 +24,7 @@ public class HudEditorScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
-            HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
-            for (Map.Entry<Hud.Type, Hud> entry : hudState.getHuds().entrySet()) {
+            for (Map.Entry<Hud.Type, Hud> entry : HudManager.INSTANCE.getHuds().entrySet()) {
                 Hud hud = entry.getValue();
                 int hudX = hud.getX();
                 int hudY = hud.getY();
@@ -48,8 +43,7 @@ public class HudEditorScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (dragging != null) {
-            HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
-            Hud hud = hudState.getHud(dragging);
+            Hud hud = HudManager.INSTANCE.getHud(dragging);
 
             int nextX = (int) mouseX - offsetX;
             int nextY = (int) mouseY - offsetY;
@@ -65,7 +59,7 @@ public class HudEditorScreen extends Screen {
                 collisionOccurred = false;
                 Rectangle hudBounds = new Rectangle(nextX, nextY, hud.getWidth(), hud.getHeight());
 
-                for (Map.Entry<Hud.Type, Hud> entry : hudState.getHuds().entrySet()) {
+                for (Map.Entry<Hud.Type, Hud> entry : HudManager.INSTANCE.getHuds().entrySet()) {
                     if (entry.getKey() == dragging) continue;
                     Hud otherHud = entry.getValue();
                     Rectangle otherBounds = new Rectangle(
@@ -124,8 +118,7 @@ public class HudEditorScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
-        for (Hud hud : hudState.getHuds().values()) {
+        for (Hud hud : HudManager.INSTANCE.getHuds().values()) {
             hud.draw(context);
         }
     }

@@ -7,18 +7,17 @@ import io.dampen59.mineboxadditions.audio.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
+import io.dampen59.mineboxadditions.features.harvestable.HarvestableScreen;
+import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.gui.AudioDeviceScreen;
-import io.dampen59.mineboxadditions.gui.HarvestablesScreen;
-import io.dampen59.mineboxadditions.gui.HudEditorScreen;
+import io.dampen59.mineboxadditions.features.hud.HudEditorScreen;
 import io.dampen59.mineboxadditions.gui.MineboxAtlasScreen;
-import io.dampen59.mineboxadditions.hud.HudRenderer;
 import io.dampen59.mineboxadditions.network.SocketManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -53,17 +52,19 @@ public class MineboxAdditions implements ClientModInitializer {
         MineboxAdditionConfig.init();
         this.state = new State();
 
+        HudManager.INSTANCE.init();
+
+        new SkyEvent();
+
         new SocketManager(state);
         new ServerEvents(state);
         new ShopEventManager(state);
         new InventoryEvent(state);
         new ContainerOpenEvent(state);
         new TooltipEvent(state);
-        new SkyEvent(state);
         new ShinyEvent(state);
         new WorldRendererEvent();
         new AudioManager(state);
-        new HudRenderer(state);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
         this.registerKeybinds();
@@ -83,7 +84,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 client.setScreen(new MineboxAtlasScreen());
             }
             if (openHarvestables.wasPressed()) {
-                client.setScreen(new HarvestablesScreen());
+                client.setScreen(new HarvestableScreen());
             }
             if (openModSettings.wasPressed()) {
                 if (client.currentScreen == null) {
