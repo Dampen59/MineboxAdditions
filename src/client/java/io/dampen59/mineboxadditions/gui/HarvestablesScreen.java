@@ -2,12 +2,11 @@ package io.dampen59.mineboxadditions.gui;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
-import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
@@ -28,16 +27,16 @@ public class HarvestablesScreen extends Screen {
     private final MinecraftClient mc = MinecraftClient.getInstance();
 
     private String islandKeyPath;
-    private List<MineboxHarvestable> data = List.of();
+    private List<Harvestable> data = List.of();
 
-    private final Map<String, List<MineboxHarvestable>> byCategory = new HashMap<>();
-    private final Map<MineboxHarvestable, List<MineboxHarvestable>> groupMembers = new HashMap<>();
+    private final Map<String, List<Harvestable>> byCategory = new HashMap<>();
+    private final Map<Harvestable, List<Harvestable>> groupMembers = new HashMap<>();
 
     private final Map<String, CheckboxWidget> catChecks = new HashMap<>();
-    private final Map<MineboxHarvestable, CheckboxWidget> itemChecks = new HashMap<>();
+    private final Map<Harvestable, CheckboxWidget> itemChecks = new HashMap<>();
 
-    private final Map<MineboxHarvestable, ButtonWidget> colorButtons = new HashMap<>();
-    private final Map<MineboxHarvestable, Integer> currentColors = new HashMap<>();
+    private final Map<Harvestable, ButtonWidget> colorButtons = new HashMap<>();
+    private final Map<Harvestable, Integer> currentColors = new HashMap<>();
 
 
     private int scrollY = 0;
@@ -60,12 +59,12 @@ public class HarvestablesScreen extends Screen {
         prefs = MineboxAdditionConfig.get().harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
 
         var modState = MineboxAdditions.INSTANCE.state;
-        List<MineboxHarvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
+        List<Harvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
         if (raw == null || raw.isEmpty())
             raw = modState.getMineboxHarvestables(worldId.toString());
         data = raw != null ? raw : List.of();
 
-        Map<String, Map<String, List<MineboxHarvestable>>> grouped = new HashMap<>();
+        Map<String, Map<String, List<Harvestable>>> grouped = new HashMap<>();
         for (var h : data) {
             String cat = h.getCategory() != null ? h.getCategory() : "misc";
             String name = h.getName() != null ? h.getName() : "unknown";
@@ -78,10 +77,10 @@ public class HarvestablesScreen extends Screen {
         groupMembers.clear();
         for (var e : grouped.entrySet()) {
             String cat = e.getKey();
-            List<MineboxHarvestable> reps = new ArrayList<>();
+            List<Harvestable> reps = new ArrayList<>();
             for (var nameEntry : e.getValue().entrySet()) {
-                List<MineboxHarvestable> members = nameEntry.getValue();
-                MineboxHarvestable rep = members.get(0);
+                List<Harvestable> members = nameEntry.getValue();
+                Harvestable rep = members.get(0);
                 reps.add(rep);
                 groupMembers.put(rep, members);
             }
@@ -169,7 +168,7 @@ public class HarvestablesScreen extends Screen {
         return keys;
     }
 
-    private int savedColorOrCurrent(MineboxHarvestable rep) {
+    private int savedColorOrCurrent(Harvestable rep) {
         return currentColors.getOrDefault(rep, 0xFFFFFFFF);
     }
 
@@ -472,7 +471,7 @@ public class HarvestablesScreen extends Screen {
         }
     }
 
-    private static String idOf(MineboxHarvestable h) {
+    private static String idOf(Harvestable h) {
         String n = h.getName();
         return (n != null && !n.isEmpty()) ? n : "unknown";
     }
@@ -531,7 +530,7 @@ public class HarvestablesScreen extends Screen {
         Map<String, Identifier> cache = ItemListWidget.ItemEntry.getTextureCache();
 
         for (var reps : byCategory.values()) {
-            for (MineboxHarvestable rep : reps) {
+            for (Harvestable rep : reps) {
                 String id = rep.getName();
                 if (id == null || id.isEmpty()) continue;
                 if (!cache.containsKey(id)) {

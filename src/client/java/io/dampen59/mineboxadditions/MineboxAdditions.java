@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 public class MineboxAdditions implements ClientModInitializer {
+    public static final String NAMESPACE = "mineboxadditions";
     public static MineboxAdditions INSTANCE;
     public static final Logger LOGGER = LoggerFactory.getLogger("mineboxadditions");
     public State state = null;

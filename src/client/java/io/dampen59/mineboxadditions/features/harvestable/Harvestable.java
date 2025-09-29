@@ -1,10 +1,10 @@
-package io.dampen59.mineboxadditions.minebox;
+package io.dampen59.mineboxadditions.features.harvestable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class MineboxHarvestable {
+public class Harvestable {
     @JsonProperty("category")
     private String category;
 

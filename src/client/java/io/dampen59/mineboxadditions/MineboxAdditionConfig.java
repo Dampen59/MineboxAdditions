@@ -21,7 +21,7 @@ public class MineboxAdditionConfig implements ConfigData {
     }
 
     public static void save() {
-        MineboxAdditionConfig.save();
+        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
     }
 
     public MineboxAdditionConfig() {

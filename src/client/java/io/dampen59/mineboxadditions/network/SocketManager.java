@@ -6,8 +6,8 @@ import de.maxhenkel.opus4j.OpusDecoder;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.audio.AudioManager;
-import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
-import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
+import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
+import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
@@ -15,7 +15,6 @@ import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -135,24 +134,23 @@ public class SocketManager {
             String jsonData = (String) args[0];
 
             try {
-                List<MineboxFishingShoal.FishingShoalFish> items = mapper.readValue(jsonData,
+                List<FishingShoal.Item> items = mapper.readValue(jsonData,
                         mapper.getTypeFactory().constructCollectionType(List.class,
-                                MineboxFishingShoal.FishingShoalFish.class));
+                                FishingShoal.Item.class));
 
-                for (MineboxFishingShoal.FishingShoalFish fish : items) {
-                    if (fish.getTexture() == null) {
-                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", fish.getName());
+                for (FishingShoal.Item item : items) {
+                    if (item.getTexture() == null) {
+                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
                         continue;
                     }
 
-                    String textureName = "textures/fish/" + fish.getName() + ".png";
-                    Identifier resource = ImageUtils.createTextureFromBase64(fish.getTexture(), textureName);
+                    String textureName = "textures/fish/" + item.getName() + ".png";
+                    Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
                     if (resource != null)
-                        fish.setResource(resource);
-
+                        item.setResource(resource);
                 }
 
-                modState.setMbxFishables(items);
+                modState.setShoalItems(items);
             } catch (JsonProcessingException e) {
                 MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
                         e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
@@ -198,8 +196,8 @@ public class SocketManager {
             String islandName = (String) args[0];
             String jsonData = (String) args[1];
             try {
-                List<MineboxHarvestable> items = mapper.readValue(jsonData,
-                        mapper.getTypeFactory().constructCollectionType(List.class, MineboxHarvestable.class));
+                List<Harvestable> items = mapper.readValue(jsonData,
+                        mapper.getTypeFactory().constructCollectionType(List.class, Harvestable.class));
                 modState.addMineboxHarvestables(islandName, items);
             } catch (Exception e) {
                 System.out.println("[SocketManager] Failed to load Harvestables JSON: " + e.getMessage());
