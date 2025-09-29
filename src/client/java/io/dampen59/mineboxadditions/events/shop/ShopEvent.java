@@ -98,7 +98,7 @@ public class ShopEvent {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.options.hudHidden || client.player == null) return;
 
-        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
+        HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
         Hud hud = hudState.getHud(Hud.Type.SHOP);
         String offer = getCurrentOffer.get();
         if (offer != null) {

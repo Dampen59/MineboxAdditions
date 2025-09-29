@@ -23,7 +23,7 @@ public class ChatMessageMixin {
 
         if (!WeatherUtils.isFullWeatherMessage(rawMessage)) return;
 
-        String lastCommand = MineboxAdditions.INSTANCE.modState.getLastSentCommand();
+        String lastCommand = MineboxAdditions.INSTANCE.state.getLastSentCommand();
         if (lastCommand == null) return;
 
         if (lastCommand.startsWith("/prediction") || lastCommand.startsWith("/meteo") || lastCommand.startsWith("/forecast") || lastCommand.startsWith("/weather")) {
@@ -41,7 +41,7 @@ public class ChatMessageMixin {
             if (forecastData != null) {
                 try {
                     JSONObject forecastDataJson = WeatherUtils.parseWeatherForecastJson(forecastData);
-                    MineboxAdditions.INSTANCE.modState.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
+                    MineboxAdditions.INSTANCE.state.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
                 } catch (JSONException e) {
                     System.out.println("Failed to serialize weather forecast data : " + e.getMessage());
                 }

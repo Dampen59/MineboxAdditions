@@ -57,10 +57,9 @@ public class HarvestablesScreen extends Screen {
                 : Identifier.of("minecraft", "overworld");
         islandKeyPath = worldId.getPath();
 
-        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        prefs = cfg.harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
+        prefs = MineboxAdditionConfig.get().harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
 
-        var modState = MineboxAdditions.INSTANCE.modState;
+        var modState = MineboxAdditions.INSTANCE.state;
         List<MineboxHarvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
         if (raw == null || raw.isEmpty())
             raw = modState.getMineboxHarvestables(worldId.toString());
@@ -237,7 +236,7 @@ public class HarvestablesScreen extends Screen {
                     int iconY = rowY + 2;
 
                     String id = rep.getName() != null ? rep.getName() : "unknown";
-                    var item = MineboxAdditions.INSTANCE.modState.getItemById(id);
+                    var item = MineboxAdditions.INSTANCE.state.getItemById(id);
 
                     Identifier icon = ItemListWidget.ItemEntry.getTexture(id);
                     if (icon == null) {
@@ -302,8 +301,7 @@ public class HarvestablesScreen extends Screen {
     @Override
     public void close() {
         // save config on close :)
-        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        MineboxAdditionConfig.HarvestablesPrefs p = cfg.harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
+        MineboxAdditionConfig.HarvestablesPrefs p = MineboxAdditionConfig.get().harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
         p.categoryEnabled.clear();
         for (String cat : byCategory.keySet()) {
             CheckboxWidget cb = catChecks.get(cat);
@@ -325,7 +323,7 @@ public class HarvestablesScreen extends Screen {
             p.itemColor.put(cat, itemsColor);
         }
 
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+        MineboxAdditionConfig.save();
         super.close();
     }
 
@@ -483,7 +481,7 @@ public class HarvestablesScreen extends Screen {
         Identifier cached = ItemListWidget.ItemEntry.getTexture(id);
         if (cached != null) return cached;
 
-        MineboxItem item = MineboxAdditions.INSTANCE.modState.getItemById(id);
+        MineboxItem item = MineboxAdditions.INSTANCE.state.getItemById(id);
         if (item != null) {
             String b64 = item.getTexture();
             if (b64 != null && !b64.isEmpty()) {
@@ -540,7 +538,7 @@ public class HarvestablesScreen extends Screen {
                     Identifier icon = resolveHarvestableIcon(id);
                     if (icon != null) {
                         cache.put(id, icon);
-                        MineboxItem item = MineboxAdditions.INSTANCE.modState.getItemById(id);
+                        MineboxItem item = MineboxAdditions.INSTANCE.state.getItemById(id);
                         if (item != null) preloadIngredientTextures(item);
                     }
                 }

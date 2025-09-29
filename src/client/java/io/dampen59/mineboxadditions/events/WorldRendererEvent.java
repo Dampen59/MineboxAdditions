@@ -76,12 +76,11 @@ public class WorldRendererEvent {
             for (Entity entity : client.world.getEntities()) {
                 liveUuids.add(entity.getUuid().toString());
             }
-            MineboxAdditions.INSTANCE.modState.cleanStaleEntityTextCache(liveUuids);
+            MineboxAdditions.INSTANCE.state.cleanStaleEntityTextCache(liveUuids);
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-            MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-            if (!config.displaySettings.displayItemRange) return ActionResult.PASS;
+            if (!MineboxAdditionConfig.get().displaySettings.displayItemRange) return ActionResult.PASS;
 
             if (!world.isClient) return ActionResult.PASS;
             if (!(player instanceof ClientPlayerEntity)) return ActionResult.PASS;
@@ -141,8 +140,7 @@ public class WorldRendererEvent {
     }
 
     public static void onRender(WorldRenderContext context) {
-        State state = MineboxAdditions.INSTANCE.modState;
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+        State state = MineboxAdditions.INSTANCE.state;
         MinecraftClient mc = MinecraftClient.getInstance();
 
         if (!state.isConnectedToMinebox())
@@ -150,8 +148,8 @@ public class WorldRendererEvent {
         if (mc.player == null || mc.world == null)
             return;
 
-        if (config.displaySettings.fishingSettings.showFishDrops) {
-            Box searchBox = mc.player.getBoundingBox().expand(config.displaySettings.fishingSettings.fishDropRadius);
+        if (MineboxAdditionConfig.get().displaySettings.fishingSettings.showFishDrops) {
+            Box searchBox = mc.player.getBoundingBox().expand(MineboxAdditionConfig.get().displaySettings.fishingSettings.fishDropRadius);
             Map<Entity, String> shoalEntities = new HashMap<>();
 
             for (Entity entity : mc.world.getOtherEntities(mc.player, searchBox,
@@ -180,7 +178,7 @@ public class WorldRendererEvent {
         Identifier worldId = world.getRegistryKey().getValue();
         String islandKeyPath = worldId.getPath();
 
-        var state = MineboxAdditions.INSTANCE.modState;
+        var state = MineboxAdditions.INSTANCE.state;
         List<MineboxHarvestable> items = state.getMineboxHarvestables(islandKeyPath);
         if (items == null || items.isEmpty()) {
             items = state.getMineboxHarvestables(worldId.toString());
@@ -188,8 +186,7 @@ public class WorldRendererEvent {
                 return;
         }
 
-        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        MineboxAdditionConfig.HarvestablesPrefs prefs = cfg.harvestablesPrefs.get(islandKeyPath);
+        MineboxAdditionConfig.HarvestablesPrefs prefs = MineboxAdditionConfig.get().harvestablesPrefs.get(islandKeyPath);
         if (prefs == null)
             return;
 
@@ -476,7 +473,7 @@ public class WorldRendererEvent {
 
     private static String getCachedEntityTextKey(Entity entity) {
         String uuid = entity.getUuid().toString();
-        State state = MineboxAdditions.INSTANCE.modState;
+        State state = MineboxAdditions.INSTANCE.state;
         if (state.hasEntityTextCached(uuid)) {
             return state.getCachedEntityText(uuid);
         }

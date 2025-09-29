@@ -37,7 +37,7 @@ public class MineboxAtlasScreen extends Screen {
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        int maxTextWidth = MineboxAdditions.INSTANCE.modState.getMbxItems().stream()
+        int maxTextWidth = MineboxAdditions.INSTANCE.state.getMbxItems().stream()
                 .map(item -> {
                     String line1 = Text.translatable("mbx.items." + item.getId() + ".name").getString();
                     String line2 = "Lvl " + item.getLevel() + " • " + item.getCategory();
@@ -55,7 +55,7 @@ public class MineboxAtlasScreen extends Screen {
         itemList = new ItemListWidget(client, left, top, panelWidth, height, 25);
         this.addDrawableChild(itemList);
 
-        this.allItems = new ArrayList<>(MineboxAdditions.INSTANCE.modState.getMbxItems());
+        this.allItems = new ArrayList<>(MineboxAdditions.INSTANCE.state.getMbxItems());
 
         updateFilteredItems(searchField.getText());
 
@@ -65,7 +65,7 @@ public class MineboxAtlasScreen extends Screen {
         this.addDrawableChild(itemDetailPanel);
         this.addSelectableChild(itemDetailPanel);
         itemDetailPanel.initLockButton(this);
-        String lockedId = MineboxAdditions.INSTANCE.modState.getLockedItemId();
+        String lockedId = MineboxAdditions.INSTANCE.state.getLockedItemId();
         if (lockedId != null) {
             MineboxItem locked = allItems.stream()
                     .filter(item -> item.getId().equals(lockedId))

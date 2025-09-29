@@ -13,7 +13,7 @@ public class ChatScreenMixin {
     @Inject(method = "sendMessage", at = @At("HEAD"))
     private void onSendMessage(String chatText, boolean addToHistory, CallbackInfo ci) {
         if (chatText.startsWith("/")) {
-            MineboxAdditions.INSTANCE.modState.setLastSentCommand(chatText);
+            MineboxAdditions.INSTANCE.state.setLastSentCommand(chatText);
         }
     }
 }

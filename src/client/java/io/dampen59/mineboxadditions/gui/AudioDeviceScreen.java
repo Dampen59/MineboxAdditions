@@ -117,7 +117,7 @@ public class AudioDeviceScreen extends Screen {
                 .initially(selected)
                 .build(centerX - WIDGET_WIDTH / 2, y, WIDGET_WIDTH, 20, Text.literal("Device"), (button, value) -> {
 
-                    AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
+                    AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
 
                     if (isInput) {
                         AudioDeviceState.selectedInput = value;
@@ -130,8 +130,8 @@ public class AudioDeviceScreen extends Screen {
                             }
                         }
 
-                        MineboxAdditions.INSTANCE.config.selectedMicName = value.getName();
-                        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+                        MineboxAdditionConfig.get().selectedMicName = value.getName();
+                        MineboxAdditionConfig.save();
                         restartMicTestLine();
                     } else {
                         AudioDeviceState.selectedOutput = value;
@@ -144,8 +144,8 @@ public class AudioDeviceScreen extends Screen {
                             }
                         }
 
-                        MineboxAdditions.INSTANCE.config.selectedSpeakerName = value.getName();
-                        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+                        MineboxAdditionConfig.get().selectedSpeakerName = value.getName();
+                        MineboxAdditionConfig.save();
                     }
                 })
         );
@@ -188,7 +188,7 @@ public class AudioDeviceScreen extends Screen {
             micThread = null;
         }
 
-        AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
+        AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
         TargetDataLine sharedMic = audioManager != null ? audioManager.getMicrophone() : null;
 
         if (micTestLine != null && micTestLine.isOpen()) {
@@ -214,7 +214,7 @@ public class AudioDeviceScreen extends Screen {
                 DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
                 Mixer mixer = AudioSystem.getMixer(AudioDeviceState.selectedInput);
 
-                AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
+                AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
                 TargetDataLine sharedMic = audioManager != null ? audioManager.getMicrophone() : null;
 
                 if (sharedMic != null && sharedMic.isOpen()) {
@@ -327,7 +327,7 @@ public class AudioDeviceScreen extends Screen {
             micThread = null;
         }
 
-        AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
+        AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
         TargetDataLine sharedMic = audioManager != null ? audioManager.getMicrophone() : null;
 
         if (micTestLine != null && micTestLine.isOpen()) {

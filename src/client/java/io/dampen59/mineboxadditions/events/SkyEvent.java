@@ -48,14 +48,13 @@ public class SkyEvent {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null || client.options.hudHidden) return;
 
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
+        HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
 
-        if (isFullMoon() && config.displaySettings.displayFullMoon) {
+        if (isFullMoon() && MineboxAdditionConfig.get().displaySettings.displayFullMoon) {
             hudState.getHud(Hud.Type.FULL_MOON).draw(context);
         }
 
-        if (config.displaySettings.displayNextRain) {
+        if (MineboxAdditionConfig.get().displaySettings.displayNextRain) {
             String text = (client.world.isRaining()
                     ? "Now!"
                     : formatNextEventCountdown(modState.getWeatherState().getRainTimestamps()));
@@ -64,7 +63,7 @@ public class SkyEvent {
             hud.draw(context);
         }
 
-        if (config.displaySettings.displayNextStorm) {
+        if (MineboxAdditionConfig.get().displaySettings.displayNextStorm) {
             String text = (client.world.isThundering()
                     ? "Now!"
                     : formatNextEventCountdown(modState.getWeatherState().getStormTimestamps()));

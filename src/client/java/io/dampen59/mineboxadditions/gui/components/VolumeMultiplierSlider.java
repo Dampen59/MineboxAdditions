@@ -23,7 +23,7 @@ public class VolumeMultiplierSlider extends SliderWidget {
     @Override
     protected void applyValue() {
         AudioDeviceState.speakerVolumeMultiplier = (float) (this.value * 2.0); // 0.0 – 2.0
-        MineboxAdditions.INSTANCE.config.speakerVolumeMultiplier = AudioDeviceState.speakerVolumeMultiplier;
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+        MineboxAdditionConfig.get().speakerVolumeMultiplier = AudioDeviceState.speakerVolumeMultiplier;
+        MineboxAdditionConfig.save();
     }
 }

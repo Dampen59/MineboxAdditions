@@ -23,9 +23,8 @@ public class HudRenderer {
     private void renderHud(DrawContext context, RenderTickCounter tickCounter) {
         if (client == null || client.player == null || client.options.hudHidden) return;
 
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
-        if (!config.displaySettings.displayMermaidRequest) return;
+        HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
+        if (!MineboxAdditionConfig.get().displaySettings.displayMermaidRequest) return;
 
         if (this.modState.getMermaidItemOffer().itemTranslationKey != null && this.modState.getMermaidItemOffer().quantity > 0) {
 

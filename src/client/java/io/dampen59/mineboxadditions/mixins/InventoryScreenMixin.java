@@ -32,8 +32,7 @@ public abstract class InventoryScreenMixin extends Screen {
             )
     )
     private void renderRarityBackgroundsUnderItems(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        if (!cfg.displaySettings.itemRaritySettings.displayItemsRarity) return;
+        if (!MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayItemsRarity) return;
 
         HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
 
@@ -48,9 +47,9 @@ public abstract class InventoryScreenMixin extends Screen {
 
             int argb = rarity.getRGB();
 
-            if (cfg.displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.CIRCLE) {
+            if (MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.CIRCLE) {
                 drawCircle(context, slot.x, slot.y, argb);
-            } else if (cfg.displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.FILL) {
+            } else if (MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.FILL) {
                 context.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, argb);
             }
         }
@@ -73,14 +72,13 @@ public abstract class InventoryScreenMixin extends Screen {
             )
     )
     private void renderMissingMuseumItemsBorder(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        if (!cfg.displaySettings.displayMuseumMissingItems) return;
+        if (!MineboxAdditionConfig.get().displaySettings.displayMuseumMissingItems) return;
 
         HandledScreen<?> screen = (HandledScreen<?>)(Object)this;
 
-        if (MineboxAdditions.INSTANCE.modState == null) return;
+        if (MineboxAdditions.INSTANCE.state == null) return;
 
-        List<String> missing = MineboxAdditions.INSTANCE.modState.getMissingMuseumItemIds();
+        List<String> missing = MineboxAdditions.INSTANCE.state.getMissingMuseumItemIds();
         if (missing == null || missing.isEmpty()) return;
 
         final float hueOffset = ((System.currentTimeMillis() % 6000L) / 6000f);

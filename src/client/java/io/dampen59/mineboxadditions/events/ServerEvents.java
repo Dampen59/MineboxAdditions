@@ -22,13 +22,12 @@ public class ServerEvents {
     private void registerServerJoinEvent() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             var serverEntry = client.getCurrentServerEntry();
-            MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
             if (serverEntry != null) {
                 String serverAddress = serverEntry.address;
                 if (isMineboxServer(serverAddress)) {
                     modState.setConnectedToMinebox(true);
                     modState.getSocket().connect();
-                    if (config.autoIslandOnLogin && !modState.isLoginCommandSent()) {
+                    if (MineboxAdditionConfig.get().autoIslandOnLogin && !modState.isLoginCommandSent()) {
                         Objects.requireNonNull(client.getNetworkHandler()).sendPacket(new CommandExecutionC2SPacket("is"));
                         modState.setLoginCommandSent(true);
                     }

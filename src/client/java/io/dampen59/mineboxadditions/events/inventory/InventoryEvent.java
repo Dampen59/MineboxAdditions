@@ -46,7 +46,6 @@ public class InventoryEvent {
     }
 
     private void onTick() {
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         if (client.player == null || client.world == null || !modState.isConnectedToMinebox()) return;
 
         Stream.of(client.player.getOffHandStack())
@@ -64,10 +63,10 @@ public class InventoryEvent {
             });
         }
 
-        if (config.displaySettings.itemPickupSettings.displayItemsPickups) {
-            int displayDurationTicks = config.displaySettings.itemPickupSettings.pickupNotificationDuration * 20;
-            int maxNotifications = config.displaySettings.itemPickupSettings.maxPickupNotifications;
-            boolean mergeNotifications = config.displaySettings.itemPickupSettings.mergeLines;
+        if (MineboxAdditionConfig.get().displaySettings.itemPickupSettings.displayItemsPickups) {
+            int displayDurationTicks = MineboxAdditionConfig.get().displaySettings.itemPickupSettings.pickupNotificationDuration * 20;
+            int maxNotifications = MineboxAdditionConfig.get().displaySettings.itemPickupSettings.maxPickupNotifications;
+            boolean mergeNotifications = MineboxAdditionConfig.get().displaySettings.itemPickupSettings.mergeLines;
             updateInventorySnapshot(displayDurationTicks, maxNotifications, mergeNotifications);
             tickItemPickupNotifications();
         }
@@ -117,18 +116,17 @@ public class InventoryEvent {
     }
 
     private void renderItemsPickups(DrawContext context, RenderTickCounter tickCounter) {
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        if (!config.displaySettings.itemPickupSettings.displayItemsPickups) return;
+        if (!MineboxAdditionConfig.get().displaySettings.itemPickupSettings.displayItemsPickups) return;
 
-        if (config.itemPickupHudX == 0 || config.itemPickupHudY == 0) {
+        if (MineboxAdditionConfig.get().itemPickupHudX == 0 || MineboxAdditionConfig.get().itemPickupHudY == 0) {
             int screenWidth = client.getWindow().getScaledWidth();
             int screenHeight = client.getWindow().getScaledHeight();
-            config.itemPickupHudX = screenWidth / 2 + 10;
-            config.itemPickupHudY = screenHeight / 2 - 20;
-            AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+            MineboxAdditionConfig.get().itemPickupHudX = screenWidth / 2 + 10;
+            MineboxAdditionConfig.get().itemPickupHudY = screenHeight / 2 - 20;
+            MineboxAdditionConfig.save();
         }
 
-        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
+        HUDState hudState = MineboxAdditions.INSTANCE.state.getHUDState();
         ItemPickupHud pickupHud = (ItemPickupHud) hudState.getHud(Hud.Type.ITEM_PICKUP);
 
         for (int i = 0; i < itemPickupNotifications.size(); i++) {
@@ -140,14 +138,14 @@ public class InventoryEvent {
         }
 
         if (fillRatePerSecond != 0) {
-            if (config.displaySettings.displayHaversackFillRate) {
+            if (MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate) {
                 String rateText = String.format("Fill Rate: %.2f/s", fillRatePerSecond);
                 Hud hud = hudState.getHud(Hud.Type.HAVERSACK_RATE);
                 hud.setText(Text.of(rateText));
                 hud.draw(context);
             }
 
-            if (config.displaySettings.displayHaversackFullIn) {
+            if (MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn) {
                 String timeText = "Full in: " + timeUntilFull;
                 Hud hud = hudState.getHud(Hud.Type.HAVERSACK_FULL);
                 hud.setText(Text.of(timeText));
@@ -158,7 +156,6 @@ public class InventoryEvent {
     }
 
     private void handleDurability(ItemStack stack) {
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         var itemData = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (itemData == null) return;
         NbtCompound nbtData = itemData.copyNbt();
@@ -170,7 +167,7 @@ public class InventoryEvent {
         for (Text lore : loreComponent.lines()) {
             if (!(lore.getContent() instanceof TranslatableTextContent translatableContent)) continue;
             if (id.contains("haversack") && translatableContent.getKey().contains("mbx.items.infinite_bag.amount_inside")) {
-                if (config.durabilitySettings.haversackDurability) {
+                if (MineboxAdditionConfig.get().durabilitySettings.haversackDurability) {
                     handleHaversackDurability(stack, nbtData, translatableContent);
                 }
             }

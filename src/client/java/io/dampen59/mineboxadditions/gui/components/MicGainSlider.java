@@ -23,8 +23,8 @@ public class MicGainSlider extends SliderWidget {
     @Override
     protected void applyValue() {
         AudioDeviceState.micGainDb = (float) (value * 50f - 20f);
-        MineboxAdditions.INSTANCE.config.micGainDb = AudioDeviceState.micGainDb;
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+        MineboxAdditionConfig.get().micGainDb = AudioDeviceState.micGainDb;
+        MineboxAdditionConfig.save();
     }
 }
 

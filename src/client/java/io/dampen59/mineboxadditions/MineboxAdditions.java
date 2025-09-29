@@ -39,8 +39,7 @@ import java.util.stream.Collectors;
 public class MineboxAdditions implements ClientModInitializer {
     public static MineboxAdditions INSTANCE;
     public static final Logger LOGGER = LoggerFactory.getLogger("mineboxadditions");
-    public MineboxAdditionConfig config;
-    public State modState = null;
+    public State state = null;
 
     private static KeyBinding openModSettings;
     private static KeyBinding openAudioSettings;
@@ -50,21 +49,20 @@ public class MineboxAdditions implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        AutoConfig.register(MineboxAdditionConfig.class, GsonConfigSerializer::new);
-        this.config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        this.modState = new State();
+        MineboxAdditionConfig.init();
+        this.state = new State();
 
-        new SocketManager(modState);
-        new ServerEvents(modState);
-        new ShopEventManager(modState);
-        new InventoryEvent(modState);
-        new ContainerOpenEvent(modState);
-        new TooltipEvent(modState);
-        new SkyEvent(modState);
-        new ShinyEvent(modState);
+        new SocketManager(state);
+        new ServerEvents(state);
+        new ShopEventManager(state);
+        new InventoryEvent(state);
+        new ContainerOpenEvent(state);
+        new TooltipEvent(state);
+        new SkyEvent(state);
+        new ShinyEvent(state);
         new WorldRendererEvent();
-        new AudioManager(modState);
-        new HudRenderer(modState);
+        new AudioManager(state);
+        new HudRenderer(state);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
         this.registerKeybinds();
@@ -77,7 +75,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 client.setScreen(new HudEditorScreen());
             }
             if (openAtlas.wasPressed()) {
-                if (MineboxAdditions.INSTANCE.modState.getMbxItems() == null) {
+                if (MineboxAdditions.INSTANCE.state.getMbxItems() == null) {
                     Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
                     return;
                 }
@@ -94,9 +92,9 @@ public class MineboxAdditions implements ClientModInitializer {
             }
         });
 
-        AudioDeviceState.micGainDb = config.micGainDb;
-        AudioDeviceState.selectedInput = AudioUtils.getMixerByName(config.selectedMicName, true);
-        AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(config.selectedSpeakerName, false);
+        AudioDeviceState.micGainDb = MineboxAdditionConfig.get().micGainDb;
+        AudioDeviceState.selectedInput = AudioUtils.getMixerByName(MineboxAdditionConfig.get().selectedMicName, true);
+        AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(MineboxAdditionConfig.get().selectedSpeakerName, false);
 
         INSTANCE = this;
     }
@@ -106,7 +104,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 .then(ClientCommandManager.literal("vc")
                         .then(ClientCommandManager.literal("create")
                                 .executes(context -> {
-                                    this.modState.getSocket().emit("C2SCreateAudioRoom");
+                                    this.state.getSocket().emit("C2SCreateAudioRoom");
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
@@ -119,7 +117,7 @@ public class MineboxAdditions implements ClientModInitializer {
                                 .then(ClientCommandManager.argument("code", StringArgumentType.string())
                                         .executes(context -> {
                                             String code = StringArgumentType.getString(context, "code");
-                                            this.modState.getSocket().emit("C2SJoinAudioRoom", code);
+                                            this.state.getSocket().emit("C2SJoinAudioRoom", code);
                                             return Command.SINGLE_SUCCESS;
                                         })
                                 )
@@ -131,7 +129,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 .then(ClientCommandManager.literal("vc")
                         .then(ClientCommandManager.literal("proximity")
                                 .executes(context -> {
-                                    this.modState.getSocket().emit("C2SToggleProximityAudio");
+                                    this.state.getSocket().emit("C2SToggleProximityAudio");
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
@@ -142,7 +140,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 .then(ClientCommandManager.literal("vc")
                         .then(ClientCommandManager.literal("leave")
                                 .executes(context -> {
-                                    this.modState.getSocket().emit("C2SLeaveAudioRoom");
+                                    this.state.getSocket().emit("C2SLeaveAudioRoom");
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
@@ -154,22 +152,22 @@ public class MineboxAdditions implements ClientModInitializer {
                     .executes(context -> {
                         Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
                         Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
-                        Utils.displayChatInfoMessage("Socket state: " + (this.modState.getSocket().connected() ? "connected (ID : " + this.modState.getSocket().id() + ")" : "disconnected"));
-                        Utils.displayChatInfoMessage("Rain Data: " + this.modState.getWeatherState().getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
-                        Utils.displayChatInfoMessage("Storm Data: " + this.modState.getWeatherState().getStormTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
-                        Utils.displayChatInfoMessage("Shiny Length: " + this.modState.getMbxShiniesUuids().size());
+                        Utils.displayChatInfoMessage("Socket state: " + (this.state.getSocket().connected() ? "connected (ID : " + this.state.getSocket().id() + ")" : "disconnected"));
+                        Utils.displayChatInfoMessage("Rain Data: " + this.state.getWeatherState().getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
+                        Utils.displayChatInfoMessage("Storm Data: " + this.state.getWeatherState().getStormTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
+                        Utils.displayChatInfoMessage("Shiny Length: " + this.state.getMbxShiniesUuids().size());
 
-                        if (this.modState.getMermaidItemOffer().itemTranslationKey != null) {
+                        if (this.state.getMermaidItemOffer().itemTranslationKey != null) {
                             Utils.displayChatInfoMessage(String.format(
                                     "Mermaid Data: {%s, %d}",
-                                    this.modState.getMermaidItemOffer().itemTranslationKey,
-                                    this.modState.getMermaidItemOffer().quantity
+                                    this.state.getMermaidItemOffer().itemTranslationKey,
+                                    this.state.getMermaidItemOffer().quantity
                             ));
                         } else {
                             Utils.displayChatInfoMessage("Mermaid Data: None");
                         }
 
-                        Utils.displayChatInfoMessage("Museum Length: " + this.modState.getMissingMuseumItemIds().size());
+                        Utils.displayChatInfoMessage("Museum Length: " + this.state.getMissingMuseumItemIds().size());
 
                         return Command.SINGLE_SUCCESS;
                     })

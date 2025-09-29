@@ -40,22 +40,22 @@ public class ExtraInventoryUtils {
     public static void storeItemInSlot(int setIndex, int slotId, ItemStack itemStack, String itemUid) {
         if (itemStack != null && !itemStack.isEmpty()) {
             ExtraInventoryItem storedItem = new ExtraInventoryItem(Utils.getMineboxItemId(itemStack), itemStack.getFormattedName().getString(), itemUid);
-            AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig().setItemInSlot(setIndex, slotId, storedItem);
-            AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+            MineboxAdditionConfig.get().setItemInSlot(setIndex, slotId, storedItem);
+            MineboxAdditionConfig.save();
         }
     }
 
     public static ExtraInventoryItem getStoredItem(int setIndex, int slotId) {
-        return AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig().getItemInSlot(setIndex, slotId);
+        return MineboxAdditionConfig.get().getItemInSlot(setIndex, slotId);
     }
 
     public static void setSetName(int setIndex, String name) {
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig().setSetName(setIndex, name);
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+        MineboxAdditionConfig.get().setSetName(setIndex, name);
+        MineboxAdditionConfig.save();
     }
 
     public static String getSetName(int setIndex) {
-        return AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig().getSetName(setIndex);
+        return MineboxAdditionConfig.get().getSetName(setIndex);
     }
 
     public static void equipSet(DefaultedList<Slot> inventorySlots, int setIndex) {
@@ -66,7 +66,7 @@ public class ExtraInventoryUtils {
         List<String> missingItems = new ArrayList<>();
         boolean foundCurrentItem = false;
 
-        for (Map.Entry<Integer, ExtraInventoryItem> entry : AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig().getSet(setIndex).entrySet()) {
+        for (Map.Entry<Integer, ExtraInventoryItem> entry : MineboxAdditionConfig.get().getSet(setIndex).entrySet()) {
             int slotId = entry.getKey();
             ExtraInventoryItem storedItem = entry.getValue();
             String storedItemUuid = storedItem.itemUid;
@@ -115,7 +115,7 @@ public class ExtraInventoryUtils {
     }
 
     public static void saveCurrentSetToSlotId(DefaultedList<Slot> inventorySlots, int setId) {
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig().clearSet(setId);
+        MineboxAdditionConfig.get().clearSet(setId);
         for (Map.Entry<Integer, String> entry : SLOT_CATEGORY_MAP.entrySet()) {
             int slotId = entry.getKey();
 
@@ -128,7 +128,7 @@ public class ExtraInventoryUtils {
             }
         }
 
-        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
+        MineboxAdditionConfig.save();
     }
 
     private static Slot findSlotById(DefaultedList<Slot> inventorySlots, int slotId) {

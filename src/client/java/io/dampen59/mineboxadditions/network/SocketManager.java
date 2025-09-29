@@ -44,8 +44,7 @@ public class SocketManager {
     }
 
     private void initializeSocket() {
-        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
-        URI uri = URI.create(config.socketServerAddress);
+        URI uri = URI.create(MineboxAdditionConfig.get().socketServerAddress);
         IO.Options options = IO.Options.builder().build();
         Socket socket = IO.socket(uri, options);
         modState.setSocket(socket);
@@ -247,14 +246,14 @@ public class SocketManager {
                 AudioManager audioManager = this.modState.getAudioManager();
 
                 Mixer speakerMixer = AudioUtils
-                        .getMixerByName(MineboxAdditions.INSTANCE.config.selectedSpeakerName);
+                        .getMixerByName(MineboxAdditionConfig.get().selectedSpeakerName);
                 if (speakerMixer != null) {
                     audioManager.openSpeaker(speakerMixer);
                 } else {
                     audioManager.openSpeaker();
                 }
 
-                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditions.INSTANCE.config.selectedMicName);
+                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditionConfig.get().selectedMicName);
                 if (micMixer != null) {
                     audioManager.openMicrophone(micMixer);
                 } else {
@@ -279,14 +278,14 @@ public class SocketManager {
                 AudioManager audioManager = this.modState.getAudioManager();
 
                 Mixer speakerMixer = AudioUtils
-                        .getMixerByName(MineboxAdditions.INSTANCE.config.selectedSpeakerName);
+                        .getMixerByName(MineboxAdditionConfig.get().selectedSpeakerName);
                 if (speakerMixer != null) {
                     audioManager.openSpeaker(speakerMixer);
                 } else {
                     audioManager.openSpeaker();
                 }
 
-                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditions.INSTANCE.config.selectedMicName);
+                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditionConfig.get().selectedMicName);
                 if (micMixer != null) {
                     audioManager.openMicrophone(micMixer);
                 } else {
@@ -315,7 +314,7 @@ public class SocketManager {
                 try {
                     if (audioManager.getSpeaker() == null || !audioManager.getSpeaker().isOpen()) {
                         Mixer speakerMixer = AudioUtils
-                                .getMixerByName(MineboxAdditions.INSTANCE.config.selectedSpeakerName);
+                                .getMixerByName(MineboxAdditionConfig.get().selectedSpeakerName);
                         if (speakerMixer != null) {
                             audioManager.openSpeaker(speakerMixer);
                         } else {
@@ -325,7 +324,7 @@ public class SocketManager {
 
                     if (audioManager.getMicrophone() == null || !audioManager.getMicrophone().isOpen()) {
                         Mixer micMixer = AudioUtils
-                                .getMixerByName(MineboxAdditions.INSTANCE.config.selectedMicName);
+                                .getMixerByName(MineboxAdditionConfig.get().selectedMicName);
                         if (micMixer != null) {
                             audioManager.openMicrophone(micMixer);
                         } else {

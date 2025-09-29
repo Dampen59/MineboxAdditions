@@ -39,7 +39,7 @@ public class AudioUtils {
             decodedMono[i] = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, amplified));
         }
 
-        AudioMixer mixer = MineboxAdditions.INSTANCE.modState.getAudioManager().getMixer();
+        AudioMixer mixer = MineboxAdditions.INSTANCE.state.getAudioManager().getMixer();
         if (mixer != null) {
             mixer.push(playerName, decodedMono);
         }
@@ -79,7 +79,7 @@ public class AudioUtils {
             stereoPcm[i * 2 + 1] = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, right));
         }
 
-        AudioMixer mixer = MineboxAdditions.INSTANCE.modState.getAudioManager().getMixer();
+        AudioMixer mixer = MineboxAdditions.INSTANCE.state.getAudioManager().getMixer();
         if (mixer != null) {
             mixer.pushStereo(playerName, stereoPcm);
         }

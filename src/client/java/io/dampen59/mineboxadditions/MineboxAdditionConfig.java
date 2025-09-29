@@ -1,15 +1,28 @@
 package io.dampen59.mineboxadditions;
 
 import io.dampen59.mineboxadditions.minebox.ExtraInventoryItem;
+import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
 import me.shedaniel.autoconfig.annotation.ConfigEntry;
+import me.shedaniel.autoconfig.serializer.GsonConfigSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Config(name = "mineboxadditions")
 public class MineboxAdditionConfig implements ConfigData {
+    public static void init() {
+        AutoConfig.register(MineboxAdditionConfig.class, GsonConfigSerializer::new);
+    }
+
+    public static MineboxAdditionConfig get() {
+        return AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+    }
+
+    public static void save() {
+        MineboxAdditionConfig.save();
+    }
 
     public MineboxAdditionConfig() {
         for (int i = 0; i < 4; i++) {

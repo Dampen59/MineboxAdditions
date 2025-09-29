@@ -36,8 +36,7 @@ public class RaritiesUtils {
         Integer base = RARITY_ARGB.get(rarity.toLowerCase());
         if (base == null) return null;
 
-        double opacityCfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class)
-                .getConfig().displaySettings.itemRaritySettings.backgroundOpacity;
+        double opacityCfg = MineboxAdditionConfig.get().displaySettings.itemRaritySettings.backgroundOpacity;
 
         double opacity = opacityCfg > 1.0 ? (opacityCfg / 100.0) : opacityCfg;
         opacity = Math.max(0.0, Math.min(1.0, opacity));
