@@ -1,9 +1,7 @@
 package io.dampen59.mineboxadditions.events;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
 import io.dampen59.mineboxadditions.state.State;
@@ -15,7 +13,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.debug.DebugRenderer;
@@ -26,7 +23,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.DisplayEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.ActionResult;
@@ -40,11 +36,6 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import java.util.*;
 
@@ -85,11 +76,11 @@ public class WorldRendererEvent {
             for (Entity entity : client.world.getEntities()) {
                 liveUuids.add(entity.getUuid().toString());
             }
-            MineboxAdditionsClient.INSTANCE.modState.cleanStaleEntityTextCache(liveUuids);
+            MineboxAdditions.INSTANCE.modState.cleanStaleEntityTextCache(liveUuids);
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-            ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+            MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
             if (!config.displaySettings.displayItemRange) return ActionResult.PASS;
 
             if (!world.isClient) return ActionResult.PASS;
@@ -150,8 +141,8 @@ public class WorldRendererEvent {
     }
 
     public static void onRender(WorldRenderContext context) {
-        State state = MineboxAdditionsClient.INSTANCE.modState;
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        State state = MineboxAdditions.INSTANCE.modState;
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         MinecraftClient mc = MinecraftClient.getInstance();
 
         if (!state.isConnectedToMinebox())
@@ -189,7 +180,7 @@ public class WorldRendererEvent {
         Identifier worldId = world.getRegistryKey().getValue();
         String islandKeyPath = worldId.getPath();
 
-        var state = MineboxAdditionsClient.INSTANCE.modState;
+        var state = MineboxAdditions.INSTANCE.modState;
         List<MineboxHarvestable> items = state.getMineboxHarvestables(islandKeyPath);
         if (items == null || items.isEmpty()) {
             items = state.getMineboxHarvestables(worldId.toString());
@@ -197,8 +188,8 @@ public class WorldRendererEvent {
                 return;
         }
 
-        ModConfig cfg = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        ModConfig.HarvestablesPrefs prefs = cfg.harvestablesPrefs.get(islandKeyPath);
+        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+        MineboxAdditionConfig.HarvestablesPrefs prefs = cfg.harvestablesPrefs.get(islandKeyPath);
         if (prefs == null)
             return;
 
@@ -485,7 +476,7 @@ public class WorldRendererEvent {
 
     private static String getCachedEntityTextKey(Entity entity) {
         String uuid = entity.getUuid().toString();
-        State state = MineboxAdditionsClient.INSTANCE.modState;
+        State state = MineboxAdditions.INSTANCE.modState;
         if (state.hasEntityTextCached(uuid)) {
             return state.getCachedEntityText(uuid);
         }

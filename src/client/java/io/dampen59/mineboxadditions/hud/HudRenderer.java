@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.hud;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.state.HUDState;
 import io.dampen59.mineboxadditions.state.State;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -23,8 +23,8 @@ public class HudRenderer {
     private void renderHud(DrawContext context, RenderTickCounter tickCounter) {
         if (client == null || client.player == null || client.options.hudHidden) return;
 
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
         if (!config.displaySettings.displayMermaidRequest) return;
 
         if (this.modState.getMermaidItemOffer().itemTranslationKey != null && this.modState.getMermaidItemOffer().quantity > 0) {

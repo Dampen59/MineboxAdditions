@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.minebox;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import net.minecraft.item.Item;
@@ -118,7 +118,7 @@ public class MineboxItem {
                     return Text.translatable("item.minecraft." + id);
                 }
             } else {
-                MineboxItem item = MineboxAdditionsClient.INSTANCE.modState.getItemById(id);
+                MineboxItem item = MineboxAdditions.INSTANCE.modState.getItemById(id);
                 return item != null ? MineboxItem.getDisplayName(item) : Text.literal(id);
             }
         }
@@ -136,7 +136,7 @@ public class MineboxItem {
                 }
                 return Identifier.of("minecraft", "textures/item/" + id + ".png");
             } else {
-                MineboxItem item = MineboxAdditionsClient.INSTANCE.modState.getItemById(id);
+                MineboxItem item = MineboxAdditions.INSTANCE.modState.getItemById(id);
                 return item != null
                         ? ItemListWidget.ItemEntry.getTexture(item.getId())
                         : null;
@@ -145,7 +145,7 @@ public class MineboxItem {
 
 
         public MineboxItem getCustomItem() {
-            return isVanilla() ? null : io.dampen59.mineboxadditions.MineboxAdditionsClient.INSTANCE.modState.getItemById(id);
+            return isVanilla() ? null : MineboxAdditions.INSTANCE.modState.getItemById(id);
         }
 
 

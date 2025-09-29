@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.events;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.hud.Hud;
 import io.dampen59.mineboxadditions.state.HUDState;
 import io.dampen59.mineboxadditions.state.State;
@@ -48,8 +48,8 @@ public class SkyEvent {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null || client.options.hudHidden) return;
 
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
 
         if (isFullMoon() && config.displaySettings.displayFullMoon) {
             hudState.getHud(Hud.Type.FULL_MOON).draw(context);

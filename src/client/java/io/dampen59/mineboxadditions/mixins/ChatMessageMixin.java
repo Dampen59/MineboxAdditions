@@ -1,6 +1,6 @@
-package io.dampen59.mineboxadditions.mixin.client;
+package io.dampen59.mineboxadditions.mixins;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.dampen59.mineboxadditions.utils.WeatherUtils;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -23,7 +23,7 @@ public class ChatMessageMixin {
 
         if (!WeatherUtils.isFullWeatherMessage(rawMessage)) return;
 
-        String lastCommand = MineboxAdditionsClient.INSTANCE.modState.getLastSentCommand();
+        String lastCommand = MineboxAdditions.INSTANCE.modState.getLastSentCommand();
         if (lastCommand == null) return;
 
         if (lastCommand.startsWith("/prediction") || lastCommand.startsWith("/meteo") || lastCommand.startsWith("/forecast") || lastCommand.startsWith("/weather")) {
@@ -41,7 +41,7 @@ public class ChatMessageMixin {
             if (forecastData != null) {
                 try {
                     JSONObject forecastDataJson = WeatherUtils.parseWeatherForecastJson(forecastData);
-                    MineboxAdditionsClient.INSTANCE.modState.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
+                    MineboxAdditions.INSTANCE.modState.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
                 } catch (JSONException e) {
                     System.out.println("Failed to serialize weather forecast data : " + e.getMessage());
                 }

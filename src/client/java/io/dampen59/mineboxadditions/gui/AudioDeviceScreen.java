@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.gui;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.audio.AudioManager;
 import io.dampen59.mineboxadditions.gui.components.MicGainSlider;
 import io.dampen59.mineboxadditions.gui.components.VolumeMultiplierSlider;
@@ -13,7 +13,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
-import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 
 import javax.sound.sampled.*;
@@ -118,7 +117,7 @@ public class AudioDeviceScreen extends Screen {
                 .initially(selected)
                 .build(centerX - WIDGET_WIDTH / 2, y, WIDGET_WIDTH, 20, Text.literal("Device"), (button, value) -> {
 
-                    AudioManager audioManager = MineboxAdditionsClient.INSTANCE.modState.getAudioManager();
+                    AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
 
                     if (isInput) {
                         AudioDeviceState.selectedInput = value;
@@ -131,8 +130,8 @@ public class AudioDeviceScreen extends Screen {
                             }
                         }
 
-                        MineboxAdditionsClient.INSTANCE.config.selectedMicName = value.getName();
-                        AutoConfig.getConfigHolder(ModConfig.class).save();
+                        MineboxAdditions.INSTANCE.config.selectedMicName = value.getName();
+                        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
                         restartMicTestLine();
                     } else {
                         AudioDeviceState.selectedOutput = value;
@@ -145,8 +144,8 @@ public class AudioDeviceScreen extends Screen {
                             }
                         }
 
-                        MineboxAdditionsClient.INSTANCE.config.selectedSpeakerName = value.getName();
-                        AutoConfig.getConfigHolder(ModConfig.class).save();
+                        MineboxAdditions.INSTANCE.config.selectedSpeakerName = value.getName();
+                        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
                     }
                 })
         );
@@ -189,7 +188,7 @@ public class AudioDeviceScreen extends Screen {
             micThread = null;
         }
 
-        AudioManager audioManager = MineboxAdditionsClient.INSTANCE.modState.getAudioManager();
+        AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
         TargetDataLine sharedMic = audioManager != null ? audioManager.getMicrophone() : null;
 
         if (micTestLine != null && micTestLine.isOpen()) {
@@ -215,7 +214,7 @@ public class AudioDeviceScreen extends Screen {
                 DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
                 Mixer mixer = AudioSystem.getMixer(AudioDeviceState.selectedInput);
 
-                AudioManager audioManager = MineboxAdditionsClient.INSTANCE.modState.getAudioManager();
+                AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
                 TargetDataLine sharedMic = audioManager != null ? audioManager.getMicrophone() : null;
 
                 if (sharedMic != null && sharedMic.isOpen()) {
@@ -328,7 +327,7 @@ public class AudioDeviceScreen extends Screen {
             micThread = null;
         }
 
-        AudioManager audioManager = MineboxAdditionsClient.INSTANCE.modState.getAudioManager();
+        AudioManager audioManager = MineboxAdditions.INSTANCE.modState.getAudioManager();
         TargetDataLine sharedMic = audioManager != null ? audioManager.getMicrophone() : null;
 
         if (micTestLine != null && micTestLine.isOpen()) {

@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.utils;
 
 import com.mojang.blaze3d.textures.GpuTexture;
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.*;
 import net.minecraft.util.Identifier;
@@ -16,7 +16,7 @@ import java.util.Base64;
 public class ImageUtils {
     public static Identifier createTextureFromBufferedImage(BufferedImage image, String identifierName) {
         if (image == null) {
-            MineboxAdditionsClient.LOGGER.error("Cannot create texture from null image: {}", identifierName);
+            MineboxAdditions.LOGGER.error("Cannot create texture from null image: {}", identifierName);
             return null;
         }
 
@@ -35,9 +35,9 @@ public class ImageUtils {
                 try {
                     NativeImageBackedTexture tex = new NativeImageBackedTexture(id::toString, nativeImage);
                     MinecraftClient.getInstance().getTextureManager().registerTexture(id, tex);
-                    MineboxAdditionsClient.LOGGER.info("Texture registered: {}", id);
+                    MineboxAdditions.LOGGER.info("Texture registered: {}", id);
                 } catch (Exception e) {
-                    MineboxAdditionsClient.LOGGER.error("Error registering texture {}: ", id, e);
+                    MineboxAdditions.LOGGER.error("Error registering texture {}: ", id, e);
                 }
             };
 
@@ -49,7 +49,7 @@ public class ImageUtils {
 
             return id;
         } catch (Exception e) {
-            MineboxAdditionsClient.LOGGER.error("Error creating texture {}: ", identifierName, e);
+            MineboxAdditions.LOGGER.error("Error creating texture {}: ", identifierName, e);
             return null;
         }
     }
@@ -61,22 +61,22 @@ public class ImageUtils {
             BufferedImage image = decodeBase64ToImage(base64);
             return createTextureFromBufferedImage(image, identifierName);
         } catch (Exception e) {
-            MineboxAdditionsClient.LOGGER.error(e.toString());
-            MineboxAdditionsClient.LOGGER.error(Arrays.toString(e.getStackTrace()));
+            MineboxAdditions.LOGGER.error(e.toString());
+            MineboxAdditions.LOGGER.error(Arrays.toString(e.getStackTrace()));
             return null;
         }
     }
 
     public static BufferedImage decodeBase64ToImage(String base64Image) {
         if (base64Image == null || base64Image.isEmpty()) {
-            MineboxAdditionsClient.LOGGER.error("Base64 image string is null or empty");
+            MineboxAdditions.LOGGER.error("Base64 image string is null or empty");
             return null;
         }
 
         try {
             // Remove the data URL prefix if present
             if (base64Image.startsWith("data:image")) {
-                MineboxAdditionsClient.LOGGER.info("Detected data URL format, extracting base64 content");
+                MineboxAdditions.LOGGER.info("Detected data URL format, extracting base64 content");
                 base64Image = base64Image.split(",")[1];
             }
 
@@ -85,12 +85,12 @@ public class ImageUtils {
             try {
                 imageBytes = Base64.getDecoder().decode(base64Image);
             } catch (IllegalArgumentException e) {
-                MineboxAdditionsClient.LOGGER.error("Failed to decode base64: {}", e.getMessage());
+                MineboxAdditions.LOGGER.error("Failed to decode base64: {}", e.getMessage());
                 return null;
             }
 
             if (imageBytes.length == 0) {
-                MineboxAdditionsClient.LOGGER.error("Decoded base64 resulted in empty byte array");
+                MineboxAdditions.LOGGER.error("Decoded base64 resulted in empty byte array");
                 return null;
             }
 
@@ -99,14 +99,14 @@ public class ImageUtils {
             BufferedImage image = ImageIO.read(bis);
 
             if (image == null) {
-                MineboxAdditionsClient.LOGGER.error("ImageIO could not read the decoded data as an image");
+                MineboxAdditions.LOGGER.error("ImageIO could not read the decoded data as an image");
                 return null;
             }
 
-            MineboxAdditionsClient.LOGGER.info("Successfully created image: {}x{}", image.getWidth(), image.getHeight());
+            MineboxAdditions.LOGGER.info("Successfully created image: {}x{}", image.getWidth(), image.getHeight());
             return image;
         } catch (Exception e) {
-            MineboxAdditionsClient.LOGGER.error("Error decoding base64 to image: {}\n{}", e.getMessage(), e.getStackTrace());
+            MineboxAdditions.LOGGER.error("Error decoding base64 to image: {}\n{}", e.getMessage(), e.getStackTrace());
             return null;
         }
     }
@@ -123,7 +123,7 @@ public class ImageUtils {
             }
             return true;
         } catch (Exception e) {
-            MineboxAdditionsClient.LOGGER.warn("Error checking if texture exists: {}", id, e);
+            MineboxAdditions.LOGGER.warn("Error checking if texture exists: {}", id, e);
             return false;
         }
     }

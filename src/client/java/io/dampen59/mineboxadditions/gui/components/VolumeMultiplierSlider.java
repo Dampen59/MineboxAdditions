@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.gui.components;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -23,7 +23,7 @@ public class VolumeMultiplierSlider extends SliderWidget {
     @Override
     protected void applyValue() {
         AudioDeviceState.speakerVolumeMultiplier = (float) (this.value * 2.0); // 0.0 – 2.0
-        MineboxAdditionsClient.INSTANCE.config.speakerVolumeMultiplier = AudioDeviceState.speakerVolumeMultiplier;
-        AutoConfig.getConfigHolder(ModConfig.class).save();
+        MineboxAdditions.INSTANCE.config.speakerVolumeMultiplier = AudioDeviceState.speakerVolumeMultiplier;
+        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
     }
 }

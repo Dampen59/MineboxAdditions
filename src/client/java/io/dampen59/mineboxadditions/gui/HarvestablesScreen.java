@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.gui;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
 import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
@@ -43,7 +43,7 @@ public class HarvestablesScreen extends Screen {
     private int scrollY = 0;
     private int contentHeight = 0;
 
-    private ModConfig.HarvestablesPrefs prefs;
+    private MineboxAdditionConfig.HarvestablesPrefs prefs;
 
     public HarvestablesScreen() {
         super(Text.literal("Harvestables"));
@@ -57,10 +57,10 @@ public class HarvestablesScreen extends Screen {
                 : Identifier.of("minecraft", "overworld");
         islandKeyPath = worldId.getPath();
 
-        ModConfig cfg = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        prefs = cfg.harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new ModConfig.HarvestablesPrefs());
+        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+        prefs = cfg.harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
 
-        var modState = MineboxAdditionsClient.INSTANCE.modState;
+        var modState = MineboxAdditions.INSTANCE.modState;
         List<MineboxHarvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
         if (raw == null || raw.isEmpty())
             raw = modState.getMineboxHarvestables(worldId.toString());
@@ -237,7 +237,7 @@ public class HarvestablesScreen extends Screen {
                     int iconY = rowY + 2;
 
                     String id = rep.getName() != null ? rep.getName() : "unknown";
-                    var item = MineboxAdditionsClient.INSTANCE.modState.getItemById(id);
+                    var item = MineboxAdditions.INSTANCE.modState.getItemById(id);
 
                     Identifier icon = ItemListWidget.ItemEntry.getTexture(id);
                     if (icon == null) {
@@ -302,8 +302,8 @@ public class HarvestablesScreen extends Screen {
     @Override
     public void close() {
         // save config on close :)
-        ModConfig cfg = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
-        ModConfig.HarvestablesPrefs p = cfg.harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new ModConfig.HarvestablesPrefs());
+        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
+        MineboxAdditionConfig.HarvestablesPrefs p = cfg.harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
         p.categoryEnabled.clear();
         for (String cat : byCategory.keySet()) {
             CheckboxWidget cb = catChecks.get(cat);
@@ -325,7 +325,7 @@ public class HarvestablesScreen extends Screen {
             p.itemColor.put(cat, itemsColor);
         }
 
-        AutoConfig.getConfigHolder(ModConfig.class).save();
+        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
         super.close();
     }
 
@@ -483,7 +483,7 @@ public class HarvestablesScreen extends Screen {
         Identifier cached = ItemListWidget.ItemEntry.getTexture(id);
         if (cached != null) return cached;
 
-        MineboxItem item = MineboxAdditionsClient.INSTANCE.modState.getItemById(id);
+        MineboxItem item = MineboxAdditions.INSTANCE.modState.getItemById(id);
         if (item != null) {
             String b64 = item.getTexture();
             if (b64 != null && !b64.isEmpty()) {
@@ -540,7 +540,7 @@ public class HarvestablesScreen extends Screen {
                     Identifier icon = resolveHarvestableIcon(id);
                     if (icon != null) {
                         cache.put(id, icon);
-                        MineboxItem item = MineboxAdditionsClient.INSTANCE.modState.getItemById(id);
+                        MineboxItem item = MineboxAdditions.INSTANCE.modState.getItemById(id);
                         if (item != null) preloadIngredientTextures(item);
                     }
                 }

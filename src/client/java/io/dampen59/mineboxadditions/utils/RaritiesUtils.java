@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.utils;
 
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -36,7 +36,7 @@ public class RaritiesUtils {
         Integer base = RARITY_ARGB.get(rarity.toLowerCase());
         if (base == null) return null;
 
-        double opacityCfg = AutoConfig.getConfigHolder(ModConfig.class)
+        double opacityCfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class)
                 .getConfig().displaySettings.itemRaritySettings.backgroundOpacity;
 
         double opacity = opacityCfg > 1.0 ? (opacityCfg / 100.0) : opacityCfg;

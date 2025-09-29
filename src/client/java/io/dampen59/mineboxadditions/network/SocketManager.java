@@ -3,8 +3,8 @@ package io.dampen59.mineboxadditions.network;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.maxhenkel.opus4j.OpusDecoder;
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.audio.AudioManager;
 import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
 import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
@@ -23,8 +23,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
 import org.json.JSONArray;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -46,7 +44,7 @@ public class SocketManager {
     }
 
     private void initializeSocket() {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         URI uri = URI.create(config.socketServerAddress);
         IO.Options options = IO.Options.builder().build();
         Socket socket = IO.socket(uri, options);
@@ -144,7 +142,7 @@ public class SocketManager {
 
                 for (MineboxFishingShoal.FishingShoalFish fish : items) {
                     if (fish.getTexture() == null) {
-                        MineboxAdditionsClient.LOGGER.warn("Fish {} has null texture data", fish.getName());
+                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", fish.getName());
                         continue;
                     }
 
@@ -157,7 +155,7 @@ public class SocketManager {
 
                 modState.setMbxFishables(items);
             } catch (JsonProcessingException e) {
-                MineboxAdditionsClient.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
+                MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
                         e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
             }
         });
@@ -249,14 +247,14 @@ public class SocketManager {
                 AudioManager audioManager = this.modState.getAudioManager();
 
                 Mixer speakerMixer = AudioUtils
-                        .getMixerByName(MineboxAdditionsClient.INSTANCE.config.selectedSpeakerName);
+                        .getMixerByName(MineboxAdditions.INSTANCE.config.selectedSpeakerName);
                 if (speakerMixer != null) {
                     audioManager.openSpeaker(speakerMixer);
                 } else {
                     audioManager.openSpeaker();
                 }
 
-                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditionsClient.INSTANCE.config.selectedMicName);
+                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditions.INSTANCE.config.selectedMicName);
                 if (micMixer != null) {
                     audioManager.openMicrophone(micMixer);
                 } else {
@@ -267,7 +265,7 @@ public class SocketManager {
                 this.modState.getSocket().emit("C2SLeaveAudioRoom");
                 Utils.displayChatErrorMessage(
                         "You have left the voice channel because MineboxAdditions was not able to setup your Speakers and/or Microphone. Please check your game logs.");
-                MineboxAdditionsClient.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
+                MineboxAdditions.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
                         e.getMessage());
             }
         });
@@ -281,14 +279,14 @@ public class SocketManager {
                 AudioManager audioManager = this.modState.getAudioManager();
 
                 Mixer speakerMixer = AudioUtils
-                        .getMixerByName(MineboxAdditionsClient.INSTANCE.config.selectedSpeakerName);
+                        .getMixerByName(MineboxAdditions.INSTANCE.config.selectedSpeakerName);
                 if (speakerMixer != null) {
                     audioManager.openSpeaker(speakerMixer);
                 } else {
                     audioManager.openSpeaker();
                 }
 
-                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditionsClient.INSTANCE.config.selectedMicName);
+                Mixer micMixer = AudioUtils.getMixerByName(MineboxAdditions.INSTANCE.config.selectedMicName);
                 if (micMixer != null) {
                     audioManager.openMicrophone(micMixer);
                 } else {
@@ -299,7 +297,7 @@ public class SocketManager {
                 this.modState.getSocket().emit("C2SLeaveAudioRoom");
                 Utils.displayChatErrorMessage(
                         "You have left the voice channel because MineboxAdditions was not able to setup your Speakers and/or Microphone. Please check your game logs.");
-                MineboxAdditionsClient.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
+                MineboxAdditions.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
                         e.getMessage());
             }
 
@@ -317,7 +315,7 @@ public class SocketManager {
                 try {
                     if (audioManager.getSpeaker() == null || !audioManager.getSpeaker().isOpen()) {
                         Mixer speakerMixer = AudioUtils
-                                .getMixerByName(MineboxAdditionsClient.INSTANCE.config.selectedSpeakerName);
+                                .getMixerByName(MineboxAdditions.INSTANCE.config.selectedSpeakerName);
                         if (speakerMixer != null) {
                             audioManager.openSpeaker(speakerMixer);
                         } else {
@@ -327,7 +325,7 @@ public class SocketManager {
 
                     if (audioManager.getMicrophone() == null || !audioManager.getMicrophone().isOpen()) {
                         Mixer micMixer = AudioUtils
-                                .getMixerByName(MineboxAdditionsClient.INSTANCE.config.selectedMicName);
+                                .getMixerByName(MineboxAdditions.INSTANCE.config.selectedMicName);
                         if (micMixer != null) {
                             audioManager.openMicrophone(micMixer);
                         } else {

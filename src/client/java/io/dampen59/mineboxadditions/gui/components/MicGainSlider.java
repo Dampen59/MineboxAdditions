@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.gui.components;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -23,8 +23,8 @@ public class MicGainSlider extends SliderWidget {
     @Override
     protected void applyValue() {
         AudioDeviceState.micGainDb = (float) (value * 50f - 20f);
-        MineboxAdditionsClient.INSTANCE.config.micGainDb = AudioDeviceState.micGainDb;
-        AutoConfig.getConfigHolder(ModConfig.class).save();
+        MineboxAdditions.INSTANCE.config.micGainDb = AudioDeviceState.micGainDb;
+        AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
     }
 }
 

@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.events.inventory;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.hud.Hud;
 import io.dampen59.mineboxadditions.hud.ItemPickupHud;
 import io.dampen59.mineboxadditions.state.HUDState;
@@ -14,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.component.ComponentChanges;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
 import net.minecraft.item.ItemStack;
@@ -47,7 +46,7 @@ public class InventoryEvent {
     }
 
     private void onTick() {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         if (client.player == null || client.world == null || !modState.isConnectedToMinebox()) return;
 
         Stream.of(client.player.getOffHandStack())
@@ -118,7 +117,7 @@ public class InventoryEvent {
     }
 
     private void renderItemsPickups(DrawContext context, RenderTickCounter tickCounter) {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         if (!config.displaySettings.itemPickupSettings.displayItemsPickups) return;
 
         if (config.itemPickupHudX == 0 || config.itemPickupHudY == 0) {
@@ -126,10 +125,10 @@ public class InventoryEvent {
             int screenHeight = client.getWindow().getScaledHeight();
             config.itemPickupHudX = screenWidth / 2 + 10;
             config.itemPickupHudY = screenHeight / 2 - 20;
-            AutoConfig.getConfigHolder(ModConfig.class).save();
+            AutoConfig.getConfigHolder(MineboxAdditionConfig.class).save();
         }
 
-        HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
+        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
         ItemPickupHud pickupHud = (ItemPickupHud) hudState.getHud(Hud.Type.ITEM_PICKUP);
 
         for (int i = 0; i < itemPickupNotifications.size(); i++) {
@@ -159,7 +158,7 @@ public class InventoryEvent {
     }
 
     private void handleDurability(ItemStack stack) {
-        ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        MineboxAdditionConfig config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         var itemData = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (itemData == null) return;
         NbtCompound nbtData = itemData.copyNbt();

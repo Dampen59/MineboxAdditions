@@ -1,10 +1,9 @@
 package io.dampen59.mineboxadditions.gui;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.gui.components.ItemDetailPanel;
 import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
-import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -38,7 +37,7 @@ public class MineboxAtlasScreen extends Screen {
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        int maxTextWidth = MineboxAdditionsClient.INSTANCE.modState.getMbxItems().stream()
+        int maxTextWidth = MineboxAdditions.INSTANCE.modState.getMbxItems().stream()
                 .map(item -> {
                     String line1 = Text.translatable("mbx.items." + item.getId() + ".name").getString();
                     String line2 = "Lvl " + item.getLevel() + " • " + item.getCategory();
@@ -56,7 +55,7 @@ public class MineboxAtlasScreen extends Screen {
         itemList = new ItemListWidget(client, left, top, panelWidth, height, 25);
         this.addDrawableChild(itemList);
 
-        this.allItems = new ArrayList<>(MineboxAdditionsClient.INSTANCE.modState.getMbxItems());
+        this.allItems = new ArrayList<>(MineboxAdditions.INSTANCE.modState.getMbxItems());
 
         updateFilteredItems(searchField.getText());
 
@@ -66,7 +65,7 @@ public class MineboxAtlasScreen extends Screen {
         this.addDrawableChild(itemDetailPanel);
         this.addSelectableChild(itemDetailPanel);
         itemDetailPanel.initLockButton(this);
-        String lockedId = MineboxAdditionsClient.INSTANCE.modState.getLockedItemId();
+        String lockedId = MineboxAdditions.INSTANCE.modState.getLockedItemId();
         if (lockedId != null) {
             MineboxItem locked = allItems.stream()
                     .filter(item -> item.getId().equals(lockedId))

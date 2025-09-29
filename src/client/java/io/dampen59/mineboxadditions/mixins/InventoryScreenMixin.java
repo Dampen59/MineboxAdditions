@@ -1,7 +1,7 @@
-package io.dampen59.mineboxadditions.mixin.client;
+package io.dampen59.mineboxadditions.mixins;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -32,7 +32,7 @@ public abstract class InventoryScreenMixin extends Screen {
             )
     )
     private void renderRarityBackgroundsUnderItems(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        ModConfig cfg = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         if (!cfg.displaySettings.itemRaritySettings.displayItemsRarity) return;
 
         HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
@@ -48,9 +48,9 @@ public abstract class InventoryScreenMixin extends Screen {
 
             int argb = rarity.getRGB();
 
-            if (cfg.displaySettings.itemRaritySettings.displayMode == ModConfig.RaritiesDisplayMode.CIRCLE) {
+            if (cfg.displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.CIRCLE) {
                 drawCircle(context, slot.x, slot.y, argb);
-            } else if (cfg.displaySettings.itemRaritySettings.displayMode == ModConfig.RaritiesDisplayMode.FILL) {
+            } else if (cfg.displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.FILL) {
                 context.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, argb);
             }
         }
@@ -73,14 +73,14 @@ public abstract class InventoryScreenMixin extends Screen {
             )
     )
     private void renderMissingMuseumItemsBorder(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        ModConfig cfg = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        MineboxAdditionConfig cfg = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         if (!cfg.displaySettings.displayMuseumMissingItems) return;
 
         HandledScreen<?> screen = (HandledScreen<?>)(Object)this;
 
-        if (MineboxAdditionsClient.INSTANCE.modState == null) return;
+        if (MineboxAdditions.INSTANCE.modState == null) return;
 
-        List<String> missing = MineboxAdditionsClient.INSTANCE.modState.getMissingMuseumItemIds();
+        List<String> missing = MineboxAdditions.INSTANCE.modState.getMissingMuseumItemIds();
         if (missing == null || missing.isEmpty()) return;
 
         final float hueOffset = ((System.currentTimeMillis() % 6000L) / 6000f);

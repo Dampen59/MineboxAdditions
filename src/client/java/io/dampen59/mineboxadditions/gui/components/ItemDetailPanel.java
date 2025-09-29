@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.gui.components;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.MinecraftClient;
@@ -68,8 +68,8 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             if (isLocked) {
                 lockedItem = itemSupplier.get();
                 if (lockedItem != null) {
-                    MineboxAdditionsClient.INSTANCE.modState.setLockedItemId(lockedItem.getId());
-                    MineboxAdditionsClient.INSTANCE.modState.setLockedItemScrollOffset(scrollOffset);
+                    MineboxAdditions.INSTANCE.modState.setLockedItemId(lockedItem.getId());
+                    MineboxAdditions.INSTANCE.modState.setLockedItemScrollOffset(scrollOffset);
                 }
             } else {
                 unlock();
@@ -90,7 +90,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 if (newQty > 0) {
                     quantity = newQty;
                     if (isLocked && lockedItem != null) {
-                        MineboxAdditionsClient.INSTANCE.modState.setLockedItemQuantity(quantity);
+                        MineboxAdditions.INSTANCE.modState.setLockedItemQuantity(quantity);
                     }
                 }
             } catch (NumberFormatException ignored) {
@@ -108,11 +108,11 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         if (quantityField != null) quantityField.setText("1");
         if (lockButton != null) lockButton.setMessage(Text.of("🔓"));
 
-        MineboxAdditionsClient.INSTANCE.modState.setLockedItemId(null);
-        MineboxAdditionsClient.INSTANCE.modState.setLockedItemScrollOffset(null);
+        MineboxAdditions.INSTANCE.modState.setLockedItemId(null);
+        MineboxAdditions.INSTANCE.modState.setLockedItemScrollOffset(null);
 
         // ⬇️ Optional: clear persisted collapsed state
-        MineboxAdditionsClient.INSTANCE.modState.setLockedCollapsedKeys(Collections.emptySet());
+        MineboxAdditions.INSTANCE.modState.setLockedCollapsedKeys(Collections.emptySet());
     }
 
     public void lock(MineboxItem item) {
@@ -121,17 +121,17 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         if (lockButton != null) lockButton.setMessage(Text.of("🔒"));
 
-        int savedQty = MineboxAdditionsClient.INSTANCE.modState.getLockedItemQuantity();
+        int savedQty = MineboxAdditions.INSTANCE.modState.getLockedItemQuantity();
         quantity = savedQty > 0 ? savedQty : 1;
         if (quantityField != null) quantityField.setText(String.valueOf(quantity));
-        MineboxAdditionsClient.INSTANCE.modState.setLockedItemQuantity(quantity);
+        MineboxAdditions.INSTANCE.modState.setLockedItemQuantity(quantity);
 
-        Integer savedScroll = MineboxAdditionsClient.INSTANCE.modState.getLockedItemScrollOffset();
+        Integer savedScroll = MineboxAdditions.INSTANCE.modState.getLockedItemScrollOffset();
         if (savedScroll != null) pendingScrollOffset = savedScroll;
 
         // ⬇️ Restore collapsed state
         collapsed.clear();
-        collapsed.addAll(MineboxAdditionsClient.INSTANCE.modState.getLockedCollapsedKeys());
+        collapsed.addAll(MineboxAdditions.INSTANCE.modState.getLockedCollapsedKeys());
     }
 
     private boolean playerHasIngredient(MineboxItem.Ingredient ingredient, int multiplier) {
@@ -238,7 +238,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         }
 
         // Used in
-        List<MineboxItem> usedIn = MineboxAdditionsClient.INSTANCE.modState.getMbxItems().stream()
+        List<MineboxItem> usedIn = MineboxAdditions.INSTANCE.modState.getMbxItems().stream()
                 .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
                 .filter(other -> other.getRecipe().getIngredients().stream()
                         .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))
@@ -370,7 +370,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
 
         if (isLocked) {
-            MineboxAdditionsClient.INSTANCE.modState.setLockedItemScrollOffset(scrollOffset);
+            MineboxAdditions.INSTANCE.modState.setLockedItemScrollOffset(scrollOffset);
         }
         return true;
     }
@@ -399,7 +399,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 }
 
                 if (isLocked) {
-                    MineboxAdditionsClient.INSTANCE.modState.setLockedCollapsedKeys(new HashSet<>(collapsed));
+                    MineboxAdditions.INSTANCE.modState.setLockedCollapsedKeys(new HashSet<>(collapsed));
                 }
                 return true;
             }

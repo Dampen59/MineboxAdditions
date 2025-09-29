@@ -36,25 +36,22 @@ import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
-public class MineboxAdditionsClient implements ClientModInitializer {
-
+public class MineboxAdditions implements ClientModInitializer {
+    public static MineboxAdditions INSTANCE;
     public static final Logger LOGGER = LoggerFactory.getLogger("mineboxadditions");
-    public static MineboxAdditionsClient INSTANCE;
+    public MineboxAdditionConfig config;
+    public State modState = null;
 
     private static KeyBinding openModSettings;
     private static KeyBinding openAudioSettings;
     public static KeyBinding openEditMode;
     public static KeyBinding openHarvestables;
-
     public static KeyBinding openAtlas;
-
-    public ModConfig config = null;
-    public State modState = null;
 
     @Override
     public void onInitializeClient() {
-        AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
-        this.config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
+        AutoConfig.register(MineboxAdditionConfig.class, GsonConfigSerializer::new);
+        this.config = AutoConfig.getConfigHolder(MineboxAdditionConfig.class).getConfig();
         this.modState = new State();
 
         new SocketManager(modState);
@@ -80,7 +77,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
                 client.setScreen(new HudEditorScreen());
             }
             if (openAtlas.wasPressed()) {
-                if (MineboxAdditionsClient.INSTANCE.modState.getMbxItems() == null) {
+                if (MineboxAdditions.INSTANCE.modState.getMbxItems() == null) {
                     Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
                     return;
                 }
@@ -91,7 +88,7 @@ public class MineboxAdditionsClient implements ClientModInitializer {
             }
             if (openModSettings.wasPressed()) {
                 if (client.currentScreen == null) {
-                    Screen configScreen = AutoConfig.getConfigScreen(ModConfig.class, client.currentScreen).get();
+                    Screen configScreen = AutoConfig.getConfigScreen(MineboxAdditionConfig.class, client.currentScreen).get();
                     client.setScreen(configScreen);
                 }
             }

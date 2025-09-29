@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.state;
 
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.hud.Hud;
 import io.dampen59.mineboxadditions.hud.ItemPickupHud;
 import me.shedaniel.autoconfig.AutoConfig;
@@ -16,59 +17,59 @@ public class HUDState {
 
     public HUDState() {
         huds.put(Hud.Type.RAIN, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().rainHudX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().rainHudY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().rainHudX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().rainHudY = y,
+                () -> MineboxAdditions.INSTANCE.config.rainHudX,
+                () -> MineboxAdditions.INSTANCE.config.rainHudY,
+                x -> MineboxAdditions.INSTANCE.config.rainHudX = x,
+                y -> MineboxAdditions.INSTANCE.config.rainHudY = y,
                 "rain", Text.of("Next Rain: 00:00:00")));
 
         huds.put(Hud.Type.STORM, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().stormHudX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().stormHudY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().stormHudX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().stormHudY = y,
+                () -> MineboxAdditions.INSTANCE.config.stormHudX,
+                () -> MineboxAdditions.INSTANCE.config.stormHudY,
+                x -> MineboxAdditions.INSTANCE.config.stormHudX = x,
+                y -> MineboxAdditions.INSTANCE.config.stormHudY = y,
                 "storm", Text.of("Next Storm: 00:00:00")));
 
         huds.put(Hud.Type.SHOP, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopHudX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopHudY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopHudX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().shopHudY = y,
+                () -> MineboxAdditions.INSTANCE.config.shopHudX,
+                () -> MineboxAdditions.INSTANCE.config.shopHudY,
+                x -> MineboxAdditions.INSTANCE.config.shopHudX = x,
+                y -> MineboxAdditions.INSTANCE.config.shopHudY = y,
                 "shop", Text.of("Shop Name: Shop Offer")));
 
         huds.put(Hud.Type.FULL_MOON, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().fullMoonHudX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().fullMoonHudY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().fullMoonHudX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().fullMoonHudY = y,
+                () -> MineboxAdditions.INSTANCE.config.fullMoonHudX,
+                () -> MineboxAdditions.INSTANCE.config.fullMoonHudY,
+                x -> MineboxAdditions.INSTANCE.config.fullMoonHudX = x,
+                y -> MineboxAdditions.INSTANCE.config.fullMoonHudY = y,
                 "full_moon"));
 
         huds.put(Hud.Type.HAVERSACK_RATE, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haverSackFillRateY = y,
+                () -> MineboxAdditions.INSTANCE.config.haverSackFillRateX,
+                () -> MineboxAdditions.INSTANCE.config.haverSackFillRateY,
+                x -> MineboxAdditions.INSTANCE.config.haverSackFillRateX = x,
+                y -> MineboxAdditions.INSTANCE.config.haverSackFillRateY = y,
                 "haversack", Text.of("Fill Rate: 0.0/s")));
 
         huds.put(Hud.Type.HAVERSACK_FULL, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().haversackFullInY = y,
+                () -> MineboxAdditions.INSTANCE.config.haversackFullInX,
+                () -> MineboxAdditions.INSTANCE.config.haversackFullInY,
+                x -> MineboxAdditions.INSTANCE.config.haversackFullInX = x,
+                y -> MineboxAdditions.INSTANCE.config.haversackFullInY = y,
                 "haversack", Text.of("Full In: 00:00:00")));
 
         huds.put(Hud.Type.MERMAID_OFFER, new Hud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().mermaidRequestHudX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().getMermaidRequestHudY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().mermaidRequestHudX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().getMermaidRequestHudY = y,
+                () -> MineboxAdditions.INSTANCE.config.mermaidRequestHudX,
+                () -> MineboxAdditions.INSTANCE.config.getMermaidRequestHudY,
+                x -> MineboxAdditions.INSTANCE.config.mermaidRequestHudX = x,
+                y -> MineboxAdditions.INSTANCE.config.getMermaidRequestHudY = y,
                 "mermaid", Text.of("1x Bedrock")));
 
         huds.put(Hud.Type.ITEM_PICKUP, new ItemPickupHud(
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().itemPickupHudX,
-                () -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().itemPickupHudY,
-                x -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().itemPickupHudX = x,
-                y -> AutoConfig.getConfigHolder(ModConfig.class).getConfig().itemPickupHudY = y,
+                () -> MineboxAdditions.INSTANCE.config.itemPickupHudX,
+                () -> MineboxAdditions.INSTANCE.config.itemPickupHudY,
+                x -> MineboxAdditions.INSTANCE.config.itemPickupHudX = x,
+                y -> MineboxAdditions.INSTANCE.config.itemPickupHudY = y,
                 new ItemStack(Items.DIAMOND)));
     }
 

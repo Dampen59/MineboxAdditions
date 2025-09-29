@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.mixin.client;
+package io.dampen59.mineboxadditions.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import net.minecraft.component.DataComponentTypes;

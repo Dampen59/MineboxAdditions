@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Config(name = "mineboxadditions")
-public class ModConfig implements ConfigData {
+public class MineboxAdditionConfig implements ConfigData {
 
-    public ModConfig() {
+    public MineboxAdditionConfig() {
         for (int i = 0; i < 4; i++) {
             storedItemSets.put(i, new HashMap<>());
             setNames.put(i, "Set " + (i + 1));

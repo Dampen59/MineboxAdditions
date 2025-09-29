@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.events.shop;
 
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.hud.Hud;
 import io.dampen59.mineboxadditions.state.HUDState;
 import io.dampen59.mineboxadditions.state.State;
@@ -98,7 +98,7 @@ public class ShopEvent {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.options.hudHidden || client.player == null) return;
 
-        HUDState hudState = MineboxAdditionsClient.INSTANCE.modState.getHUDState();
+        HUDState hudState = MineboxAdditions.INSTANCE.modState.getHUDState();
         Hud hud = hudState.getHud(Hud.Type.SHOP);
         String offer = getCurrentOffer.get();
         if (offer != null) {
