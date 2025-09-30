@@ -1,9 +1,8 @@
-package io.dampen59.mineboxadditions.minebox;
+package io.dampen59.mineboxadditions.features.hud;
 
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.text.OrderedText;

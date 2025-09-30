@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions;
 
-import io.dampen59.mineboxadditions.minebox.ExtraInventoryItem;
+import io.dampen59.mineboxadditions.features.item.ExtraInventoryItem;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;

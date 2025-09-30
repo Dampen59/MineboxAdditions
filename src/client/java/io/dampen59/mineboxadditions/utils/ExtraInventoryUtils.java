@@ -1,8 +1,7 @@
 package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.minebox.ExtraInventoryItem;
-import me.shedaniel.autoconfig.AutoConfig;
+import io.dampen59.mineboxadditions.features.item.ExtraInventoryItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;

@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
@@ -53,6 +54,7 @@ public class MineboxAdditions implements ClientModInitializer {
         this.state = new State();
 
         HudManager.INSTANCE.init();
+        ItemTooltip.init();
 
         new SkyEvent();
 
@@ -61,7 +63,6 @@ public class MineboxAdditions implements ClientModInitializer {
         new ShopEventManager(state);
         new InventoryEvent(state);
         new ContainerOpenEvent(state);
-        new TooltipEvent(state);
         new ShinyEvent(state);
         new WorldRendererEvent();
         new AudioManager(state);

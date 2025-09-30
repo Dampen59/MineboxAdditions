@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.minebox;
+package io.dampen59.mineboxadditions.features.item;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dampen59.mineboxadditions.MineboxAdditions;

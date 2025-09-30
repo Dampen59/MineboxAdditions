@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.minebox;
+package io.dampen59.mineboxadditions.features.item;
 
 public class MineboxStat {
     private Integer min;
