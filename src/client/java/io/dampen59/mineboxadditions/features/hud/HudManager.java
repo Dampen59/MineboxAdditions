@@ -3,9 +3,10 @@ package io.dampen59.mineboxadditions.features.hud;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.hud.huds.HaversackHud;
-import io.dampen59.mineboxadditions.features.hud.huds.ItemPickupHud;
+import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupHud;
 import io.dampen59.mineboxadditions.features.hud.huds.MermaidHud;
 import io.dampen59.mineboxadditions.features.hud.huds.WeatherHud;
+import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupManager;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -22,6 +23,7 @@ public enum HudManager {
 
     public void init() {
         this.initHuds();
+        new ItemPickupManager();
         HudRenderCallback.EVENT.register(this::render);
     }
 
