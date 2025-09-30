@@ -4,6 +4,7 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
+import io.dampen59.mineboxadditions.features.hud.huds.HaversackHud;
 import io.dampen59.mineboxadditions.features.hud.huds.ItemPickupHud;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
@@ -129,19 +130,8 @@ public class InventoryEvent {
         }
 
         if (fillRatePerSecond != 0) {
-            if (MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate) {
-                String rateText = String.format("Fill Rate: %.2f/s", fillRatePerSecond);
-                Hud hud = HudManager.INSTANCE.getHud(Hud.Type.HAVERSACK_RATE);
-                hud.setText(Text.of(rateText));
-                hud.draw(context);
-            }
-
-            if (MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn) {
-                String timeText = "Full in: " + timeUntilFull;
-                Hud hud = HudManager.INSTANCE.getHud(Hud.Type.HAVERSACK_FULL);
-                hud.setText(Text.of(timeText));
-                hud.draw(context);
-            }
+            HaversackHud.RateHud.render(context, fillRatePerSecond);
+            HaversackHud.FullHud.render(context, timeUntilFull);
         }
 
     }

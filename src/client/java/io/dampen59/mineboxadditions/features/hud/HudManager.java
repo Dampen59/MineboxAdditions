@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.features.hud.huds.HaversackHud;
 import io.dampen59.mineboxadditions.features.hud.huds.ItemPickupHud;
 import io.dampen59.mineboxadditions.features.hud.huds.MermaidHud;
 import io.dampen59.mineboxadditions.features.hud.huds.WeatherHud;
@@ -60,24 +61,8 @@ public enum HudManager {
                 y -> MineboxAdditionConfig.get().fullMoonHudY = y,
                 "full_moon"));
 
-        huds.put(Hud.Type.HAVERSACK_RATE, new Hud(
-                () -> MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate,
-                s -> MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate = s,
-                () -> MineboxAdditionConfig.get().haverSackFillRateX,
-                () -> MineboxAdditionConfig.get().haverSackFillRateY,
-                x -> MineboxAdditionConfig.get().haverSackFillRateX = x,
-                y -> MineboxAdditionConfig.get().haverSackFillRateY = y,
-                "haversack", Text.of("Fill Rate: 0.0/s")));
-
-        huds.put(Hud.Type.HAVERSACK_FULL, new Hud(
-                () -> MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn,
-                s -> MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn = s,
-                () -> MineboxAdditionConfig.get().haversackFullInX,
-                () -> MineboxAdditionConfig.get().haversackFullInY,
-                x -> MineboxAdditionConfig.get().haversackFullInX = x,
-                y -> MineboxAdditionConfig.get().haversackFullInY = y,
-                "haversack", Text.of("Full In: 00:00:00")));
-
+        huds.put(Hud.Type.HAVERSACK_RATE, new HaversackHud.RateHud());
+        huds.put(Hud.Type.HAVERSACK_FULL, new HaversackHud.FullHud());
         huds.put(Hud.Type.ITEM_PICKUP, new ItemPickupHud());
     }
 
