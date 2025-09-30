@@ -20,7 +20,6 @@ public class Hud {
     private final Consumer<Integer> onSetY;
     private String icon;
     private Text text;
-    private boolean enabled;
 
     public enum Type {
         RAIN, STORM, SHOP, FULL_MOON, HAVERSACK_RATE, HAVERSACK_FULL, MERMAID_OFFER, ITEM_PICKUP

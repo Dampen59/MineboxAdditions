@@ -12,96 +12,97 @@ import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ItemPickupManager {
     private final MinecraftClient client = MinecraftClient.getInstance();
     private final Map<Integer, Integer> previousInventoryCounts = new HashMap<>();
-    private final List<ItemPickupNotification> itemPickupNotifications = new ArrayList<>();
+    private final Deque<ItemPickupNotification> itemPickupNotifications = new ArrayDeque<>();
 
     public ItemPickupManager() {
-        ClientTickEvents.END_CLIENT_TICK.register(this::handle);
-        HudRenderCallback.EVENT.register(this::render);
+        ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
+        HudRenderCallback.EVENT.register(this::onRender);
     }
 
-    private void handle(MinecraftClient client) {
-        if (MineboxAdditionConfig.get().displaySettings.itemPickupSettings.displayItemsPickups) {
-            int displayDurationTicks = MineboxAdditionConfig.get().displaySettings.itemPickupSettings.pickupNotificationDuration * 20;
-            int maxNotifications = MineboxAdditionConfig.get().displaySettings.itemPickupSettings.maxPickupNotifications;
-            boolean mergeNotifications = MineboxAdditionConfig.get().displaySettings.itemPickupSettings.mergeLines;
-            updateInventorySnapshot(displayDurationTicks, maxNotifications, mergeNotifications);
-            tickItemPickupNotifications();
+    private void onTick(MinecraftClient client) {
+        var settings = MineboxAdditionConfig.get().displaySettings.itemPickupSettings;
+        if (!settings.displayItemsPickups) return;
+
+        int displayDuration = settings.pickupNotificationDuration * 20;
+        updateInventorySnapshot(displayDuration, settings.maxPickupNotifications, settings.mergeLines);
+        tickNotifications();
+    }
+
+    private void onRender(DrawContext context, RenderTickCounter tickCounter) {
+        var hud = (ItemPickupHud) HudManager.INSTANCE.getHud(Hud.Type.ITEM_PICKUP);
+        if (!hud.getState()) return;
+
+        int offsetY = 0;
+        for (ItemPickupNotification notif : itemPickupNotifications) {
+            hud.setItem(notif.stack);
+            hud.setCount(notif.count);
+            hud.drawWithItem(context, offsetY);
+            offsetY += hud.getHeight() + 2;
         }
     }
 
-    private void render(DrawContext context, RenderTickCounter tickCounter) {
-        ItemPickupHud pickupHud = (ItemPickupHud) HudManager.INSTANCE.getHud(Hud.Type.ITEM_PICKUP);
-        if (pickupHud.getState()) {
-            for (int i = 0; i < itemPickupNotifications.size(); i++) {
-                ItemPickupNotification notification = itemPickupNotifications.get(i);
-                int offsetY = (i * (pickupHud.getHeight() + 2));
-                pickupHud.setItem(notification.itemStack);
-                pickupHud.setCount(notification.count);
-                pickupHud.drawWithItem(context, offsetY);
-            }
-        }
-    }
+    private void updateInventorySnapshot(int duration, int max, boolean merge) {
+        if (client.currentScreen != null || client.player == null) return;
 
-    private void updateInventorySnapshot(int notificationDuration, int maxNotifications, boolean mergeNotifications) {
-        if (client.currentScreen != null || client.player == null || client.player.getInventory() == null) return;
-        DefaultedList<ItemStack> currentInventory = client.player.getInventory().getMainStacks();
-        for (int slot = 0; slot < currentInventory.size(); slot++) {
-            ItemStack currentStack = currentInventory.get(slot);
+        DefaultedList<ItemStack> currentInv = client.player.getInventory().getMainStacks();
+        for (int slot = 0; slot < currentInv.size(); slot++) {
+            ItemStack currentStack = currentInv.get(slot);
             int currentCount = currentStack.getCount();
             int previousCount = previousInventoryCounts.getOrDefault(slot, 0);
+
             if (!currentStack.isEmpty() && currentCount > previousCount) {
-                int gainedCount = currentCount - previousCount;
-                addOrUpdateItemPickup(currentStack.copy(), gainedCount, notificationDuration, maxNotifications, mergeNotifications);
+                int gained = currentCount - previousCount;
+                addOrUpdateNotification(currentStack.copy(), gained, duration, max, merge);
             }
         }
-        updatePreviousInventoryCounts(currentInventory);
-    }
 
-    private void tickItemPickupNotifications() {
-        itemPickupNotifications.removeIf(notification -> --notification.displayTicks <= 0);
-    }
-
-    private void updatePreviousInventoryCounts(DefaultedList<ItemStack> currentInventory) {
         previousInventoryCounts.clear();
-        for (int slot = 0; slot < currentInventory.size(); slot++) {
-            previousInventoryCounts.put(slot, currentInventory.get(slot).getCount());
+        for (int i = 0; i < currentInv.size(); i++) {
+            previousInventoryCounts.put(i, currentInv.get(i).getCount());
         }
     }
 
-    private void addOrUpdateItemPickup(ItemStack stack, int count, int duration, int maxNotifications, boolean merge) {
+    private void tickNotifications() {
+        itemPickupNotifications.removeIf(notif -> --notif.displayTicks <= 0);
+    }
+
+    private void addOrUpdateNotification(ItemStack stack, int count, int duration, int max, boolean merge) {
         if (Utils.isInventoryBaseItem(stack)) return;
+
         if (merge) {
             for (ItemPickupNotification notif : itemPickupNotifications) {
-                if (ItemStack.areItemsAndComponentsEqual(notif.itemStack, stack)) {
-                    notif.count += count;
-                    notif.displayTicks = duration;
+                if (ItemStack.areItemsAndComponentsEqual(notif.stack, stack)) {
+                    notif.add(count, duration);
                     return;
                 }
             }
         }
+
         itemPickupNotifications.add(new ItemPickupNotification(stack, count, duration));
-        if (itemPickupNotifications.size() > maxNotifications) {
+        if (itemPickupNotifications.size() > max) {
             itemPickupNotifications.removeFirst();
         }
     }
 
     private static class ItemPickupNotification {
-        final ItemStack itemStack;
+        final ItemStack stack;
         int count;
         int displayTicks;
 
-        ItemPickupNotification(ItemStack itemStack, int count, int displayTicks) {
-            this.itemStack = itemStack;
+        ItemPickupNotification(ItemStack stack, int count, int displayTicks) {
+            this.stack = stack;
             this.count = count;
             this.displayTicks = displayTicks;
+        }
+
+        void add(int more, int resetDuration) {
+            this.count += more;
+            this.displayTicks = resetDuration;
         }
     }
 }
