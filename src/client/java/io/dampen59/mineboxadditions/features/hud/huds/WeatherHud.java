@@ -15,7 +15,10 @@ import java.util.List;
 public class WeatherHud {
     public static class RainHud extends Hud {
         public RainHud() {
-            super(() -> MineboxAdditionConfig.get().rainHudX,
+            super(
+                    () -> MineboxAdditionConfig.get().displaySettings.displayNextRain,
+                    s -> MineboxAdditionConfig.get().displaySettings.displayNextRain = s,
+                    () -> MineboxAdditionConfig.get().rainHudX,
                     () -> MineboxAdditionConfig.get().rainHudY,
                     x -> MineboxAdditionConfig.get().rainHudX = x,
                     y -> MineboxAdditionConfig.get().rainHudY = y,
@@ -23,11 +26,11 @@ public class WeatherHud {
         }
 
         public static void render(DrawContext context, MinecraftClient client) {
-            if (!MineboxAdditionConfig.get().displaySettings.displayNextRain) return;
+            Hud hud = HudManager.INSTANCE.getHud(Hud.Type.RAIN);
+            if (!hud.getState()) return;
             String text = (client.world.isRaining()
                     ? "Now!"
                     : formatNextEventCountdown(MineboxAdditions.INSTANCE.state.getWeatherState().getRainTimestamps()));
-            Hud hud = HudManager.INSTANCE.getHud(Hud.Type.RAIN);
             hud.setText(Text.of(text));
             hud.draw(context);
         }
@@ -35,7 +38,10 @@ public class WeatherHud {
 
     public static class StormHud extends Hud {
         public StormHud() {
-            super(() -> MineboxAdditionConfig.get().stormHudX,
+            super(
+                    () -> MineboxAdditionConfig.get().displaySettings.displayNextStorm,
+                    s -> MineboxAdditionConfig.get().displaySettings.displayNextStorm = s,
+                    () -> MineboxAdditionConfig.get().stormHudX,
                     () -> MineboxAdditionConfig.get().stormHudY,
                     x -> MineboxAdditionConfig.get().stormHudX = x,
                     y -> MineboxAdditionConfig.get().stormHudY = y,
@@ -43,11 +49,11 @@ public class WeatherHud {
         }
 
         public static void render(DrawContext context, MinecraftClient client) {
-            if (!MineboxAdditionConfig.get().displaySettings.displayNextStorm) return;
+            Hud hud = HudManager.INSTANCE.getHud(Hud.Type.STORM);
+            if (!hud.getState()) return;
             String text = (client.world.isThundering()
                     ? "Now!"
                     : formatNextEventCountdown(MineboxAdditions.INSTANCE.state.getWeatherState().getStormTimestamps()));
-            Hud hud = HudManager.INSTANCE.getHud(Hud.Type.STORM);
             hud.setText(Text.of(text));
             hud.draw(context);
         }

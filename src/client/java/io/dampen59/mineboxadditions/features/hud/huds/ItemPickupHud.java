@@ -13,7 +13,10 @@ public class ItemPickupHud extends Hud {
     private int count;
 
     public ItemPickupHud() {
-        super(() -> MineboxAdditionConfig.get().itemPickupHudX,
+        super(
+                () -> MineboxAdditionConfig.get().displaySettings.itemPickupSettings.displayItemsPickups,
+                s -> MineboxAdditionConfig.get().displaySettings.itemPickupSettings.displayItemsPickups = s,
+                () -> MineboxAdditionConfig.get().itemPickupHudX,
                 () -> MineboxAdditionConfig.get().itemPickupHudY,
                 x -> MineboxAdditionConfig.get().itemPickupHudX = x,
                 y -> MineboxAdditionConfig.get().itemPickupHudY = y,
@@ -52,23 +55,27 @@ public class ItemPickupHud extends Hud {
     }
 
     @Override
-    public void draw(DrawContext context) {
+    public void draw(DrawContext context, int color) {
         if (getX() == -50) {
             MinecraftClient client = MinecraftClient.getInstance();
             int screenWidth = client.getWindow().getScaledWidth();
             setX(screenWidth - 4);
             MineboxAdditionConfig.save();
         }
-        this.drawWithItem(context, 0);
+        this.drawWithItem(context, 0, color);
     }
 
     public void drawWithItem(DrawContext context, int offsetY) {
+        drawWithItem(context, offsetY, 0x40000000);
+    }
+
+    public void drawWithItem(DrawContext context, int offsetY, int color) {
         int x = getX();
         int y = getY() + offsetY;
 
         TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
-        this.drawPlate(context, x, y, 18, this.getHeight());
-        this.drawPlate(context, x + 20, y, renderer.getWidth(item.getName()) + 8, this.getHeight());
+        this.drawPlate(context, x, y, 18, this.getHeight(), color);
+        this.drawPlate(context, x + 20, y, renderer.getWidth(item.getName()) + 8, this.getHeight(), color);
         context.drawItem(item, x + 1, y + 1);
 
         String count = String.valueOf(this.count);

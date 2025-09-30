@@ -41,6 +41,7 @@ public enum HudManager {
 
     private void initHuds() {
         huds.put(Hud.Type.SHOP, new Hud(
+                () -> true, s -> {},
                 () -> MineboxAdditionConfig.get().shopHudX,
                 () -> MineboxAdditionConfig.get().shopHudY,
                 x -> MineboxAdditionConfig.get().shopHudX = x,
@@ -51,6 +52,8 @@ public enum HudManager {
         huds.put(Hud.Type.RAIN, new WeatherHud.RainHud());
         huds.put(Hud.Type.STORM, new WeatherHud.StormHud());
         huds.put(Hud.Type.FULL_MOON, new Hud(
+                () -> MineboxAdditionConfig.get().displaySettings.displayFullMoon,
+                s -> MineboxAdditionConfig.get().displaySettings.displayFullMoon = s,
                 () -> MineboxAdditionConfig.get().fullMoonHudX,
                 () -> MineboxAdditionConfig.get().fullMoonHudY,
                 x -> MineboxAdditionConfig.get().fullMoonHudX = x,
@@ -58,6 +61,8 @@ public enum HudManager {
                 "full_moon"));
 
         huds.put(Hud.Type.HAVERSACK_RATE, new Hud(
+                () -> MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate,
+                s -> MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate = s,
                 () -> MineboxAdditionConfig.get().haverSackFillRateX,
                 () -> MineboxAdditionConfig.get().haverSackFillRateY,
                 x -> MineboxAdditionConfig.get().haverSackFillRateX = x,
@@ -65,6 +70,8 @@ public enum HudManager {
                 "haversack", Text.of("Fill Rate: 0.0/s")));
 
         huds.put(Hud.Type.HAVERSACK_FULL, new Hud(
+                () -> MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn,
+                s -> MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn = s,
                 () -> MineboxAdditionConfig.get().haversackFullInX,
                 () -> MineboxAdditionConfig.get().haversackFullInY,
                 x -> MineboxAdditionConfig.get().haversackFullInX = x,

@@ -1,5 +1,6 @@
 package io.dampen59.mineboxadditions.features.hud;
 
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.RenderPipelines;
@@ -11,20 +12,27 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class Hud {
+    private final Supplier<Boolean> onGetState;
+    private final Consumer<Boolean> onSetState;
     private final Supplier<Integer> onGetX;
     private final Supplier<Integer> onGetY;
     private final Consumer<Integer> onSetX;
     private final Consumer<Integer> onSetY;
     private String icon;
     private Text text;
+    private boolean enabled;
 
     public enum Type {
         RAIN, STORM, SHOP, FULL_MOON, HAVERSACK_RATE, HAVERSACK_FULL, MERMAID_OFFER, ITEM_PICKUP
     }
 
-    public Hud(Supplier<Integer> getX, Supplier<Integer> getY,
-        Consumer<Integer> setX, Consumer<Integer> setY,
-        String icon, Text text) {
+    public Hud(
+            Supplier<Boolean> getState, Consumer<Boolean> setState,
+            Supplier<Integer> getX, Supplier<Integer> getY,
+            Consumer<Integer> setX, Consumer<Integer> setY,
+            String icon, Text text) {
+        this.onGetState = getState;
+        this.onSetState = setState;
         this.onGetX = getX;
         this.onGetY = getY;
         this.onSetX = setX;
@@ -33,10 +41,12 @@ public class Hud {
         this.text = text;
     }
 
-    public Hud(Supplier<Integer> getX, Supplier<Integer> getY,
-               Consumer<Integer> setX, Consumer<Integer> setY,
-               String icon) {
-        this(getX, getY, setX, setY, icon, null);
+    public Hud(
+            Supplier<Boolean> getState, Consumer<Boolean> setState,
+            Supplier<Integer> getX, Supplier<Integer> getY,
+            Consumer<Integer> setX, Consumer<Integer> setY,
+            String icon) {
+        this(getState, setState, getX, getY, setX, setY, icon, null);
     }
 
     public int getX() {
@@ -78,17 +88,33 @@ public class Hud {
         this.text = text;
     }
 
-    public void drawPlate(DrawContext context, int x, int y, int w, int h) {
-        context.fill(x + 1, y, x + w - 1, y + 1, 0x40000000);
-        context.fill(x, y + 1, x + w, y + h - 1, 0x40000000);
-        context.fill(x + 1, y + h - 1, x + w - 1, y + h, 0x40000000);
+    public boolean getState() {
+        return onGetState.get();
+    }
+
+    public void setState(boolean state) {
+        onSetState.accept(state);
+    }
+
+    public void drawPlate(DrawContext context, int x, int y, int w, int h, int color) {
+        context.fill(x + 1, y, x + w - 1, y + 1, color);
+        context.fill(x, y + 1, x + w, y + h - 1, color);
+        context.fill(x + 1, y + h - 1, x + w - 1, y + h, color);
+    }
+
+    public void drawDisabled(DrawContext context) {
+        draw(context, 0x40ff0000);
     }
 
     public void draw(DrawContext context) {
+        draw(context, 0x40000000);
+    }
+
+    public void draw(DrawContext context, int color) {
         TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
         int x = getX();
         int y = getY();
-        this.drawPlate(context, x, y, getWidth(), getHeight());
+        this.drawPlate(context, x, y, getWidth(), getHeight(), color);
 
         Identifier icon = Identifier.of("mineboxadditions", "textures/icons/" + this.icon + ".png");
 

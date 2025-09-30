@@ -11,7 +11,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class MermaidHud extends Hud {
     public MermaidHud() {
-        super(() -> MineboxAdditionConfig.get().mermaidRequestHudX,
+        super(
+                () -> MineboxAdditionConfig.get().displaySettings.displayMermaidRequest,
+                s -> MineboxAdditionConfig.get().displaySettings.displayMermaidRequest = s,
+                () -> MineboxAdditionConfig.get().mermaidRequestHudX,
                 () -> MineboxAdditionConfig.get().getMermaidRequestHudY,
                 x -> MineboxAdditionConfig.get().mermaidRequestHudX = x,
                 y -> MineboxAdditionConfig.get().getMermaidRequestHudY = y,
@@ -19,8 +22,8 @@ public class MermaidHud extends Hud {
     }
 
     public static void render(DrawContext context) {
-        if (!MineboxAdditionConfig.get().displaySettings.displayMermaidRequest) return;
         Hud hud = HudManager.INSTANCE.getHud(Hud.Type.MERMAID_OFFER);
+        if (!hud.getState()) return;
         State state = MineboxAdditions.INSTANCE.state;
 
         String mermaidText = "Unknown";

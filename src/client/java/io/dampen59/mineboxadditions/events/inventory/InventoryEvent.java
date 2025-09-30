@@ -117,22 +117,15 @@ public class InventoryEvent {
     private void renderItemsPickups(DrawContext context, RenderTickCounter tickCounter) {
         if (!MineboxAdditionConfig.get().displaySettings.itemPickupSettings.displayItemsPickups) return;
 
-        if (MineboxAdditionConfig.get().itemPickupHudX == 0 || MineboxAdditionConfig.get().itemPickupHudY == 0) {
-            int screenWidth = client.getWindow().getScaledWidth();
-            int screenHeight = client.getWindow().getScaledHeight();
-            MineboxAdditionConfig.get().itemPickupHudX = screenWidth / 2 + 10;
-            MineboxAdditionConfig.get().itemPickupHudY = screenHeight / 2 - 20;
-            MineboxAdditionConfig.save();
-        }
-
         ItemPickupHud pickupHud = (ItemPickupHud) HudManager.INSTANCE.getHud(Hud.Type.ITEM_PICKUP);
-
-        for (int i = 0; i < itemPickupNotifications.size(); i++) {
-            ItemPickupNotification notification = itemPickupNotifications.get(i);
-            int offsetY = (i * (pickupHud.getHeight() + 2));
-            pickupHud.setItem(notification.itemStack);
-            pickupHud.setCount(notification.count);
-            pickupHud.drawWithItem(context, offsetY);
+        if (pickupHud.getState()) {
+            for (int i = 0; i < itemPickupNotifications.size(); i++) {
+                ItemPickupNotification notification = itemPickupNotifications.get(i);
+                int offsetY = (i * (pickupHud.getHeight() + 2));
+                pickupHud.setItem(notification.itemStack);
+                pickupHud.setCount(notification.count);
+                pickupHud.drawWithItem(context, offsetY);
+            }
         }
 
         if (fillRatePerSecond != 0) {

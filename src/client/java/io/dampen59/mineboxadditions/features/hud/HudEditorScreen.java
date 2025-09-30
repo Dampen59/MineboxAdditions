@@ -10,6 +10,7 @@ import java.util.Map;
 
 public class HudEditorScreen extends Screen {
     private Hud.Type dragging = null;
+    private int mouseButton = -1;
     private int offsetX, offsetY;
     private static final int PADDING = 2;
 
@@ -23,18 +24,19 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
-            for (Map.Entry<Hud.Type, Hud> entry : HudManager.INSTANCE.getHuds().entrySet()) {
-                Hud hud = entry.getValue();
-                int hudX = hud.getX();
-                int hudY = hud.getY();
+        for (Map.Entry<Hud.Type, Hud> entry : HudManager.INSTANCE.getHuds().entrySet()) {
+            Hud hud = entry.getValue();
+            int hudX = hud.getX();
+            int hudY = hud.getY();
 
-                if (isInBounds(mouseX, mouseY, hudX, hudY, hud.getWidth(), hud.getHeight())) {
-                    dragging = entry.getKey();
-                    offsetX = (int) mouseX - hudX;
-                    offsetY = (int) mouseY - hudY;
-                    return true;
-                }
+            if (isInBounds(mouseX, mouseY, hudX, hudY, hud.getWidth(), hud.getHeight())) {
+                dragging = entry.getKey();
+                mouseButton = button;
+                offsetX = (int) mouseX - hudX;
+                offsetY = (int) mouseY - hudY;
+
+                if (button == 1) hud.setState(!hud.getState());
+                return true;
             }
         }
         return super.mouseClicked(mouseX, mouseY, button);
@@ -42,7 +44,7 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (dragging != null) {
+        if (mouseButton == 0 && dragging != null) {
             Hud hud = HudManager.INSTANCE.getHud(dragging);
 
             int nextX = (int) mouseX - offsetX;
@@ -108,10 +110,11 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (dragging != null) {
-            dragging = null;
+        if (dragging != null || mouseButton == 1)
             MineboxAdditionConfig.save();
-        }
+
+        if (dragging != null) dragging = null;
+        if (mouseButton != -1) mouseButton = -1;
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
@@ -119,7 +122,11 @@ public class HudEditorScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         for (Hud hud : HudManager.INSTANCE.getHuds().values()) {
-            hud.draw(context);
+            if (hud.getState()) {
+                hud.draw(context);
+            } else {
+                hud.drawDisabled(context);
+            }
         }
     }
 
