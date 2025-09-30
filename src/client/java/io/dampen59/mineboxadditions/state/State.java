@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.state;
 
-import io.dampen59.mineboxadditions.audio.AudioManager;
+import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
 import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;

@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.features.harvestable;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
+import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;

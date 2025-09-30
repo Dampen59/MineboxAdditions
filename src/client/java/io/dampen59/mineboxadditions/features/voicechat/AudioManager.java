@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.audio;
+package io.dampen59.mineboxadditions.features.voicechat;
 
 import de.maxhenkel.opus4j.OpusDecoder;
 import de.maxhenkel.opus4j.OpusEncoder;

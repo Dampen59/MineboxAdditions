@@ -1,8 +1,8 @@
-package io.dampen59.mineboxadditions.gui;
+package io.dampen59.mineboxadditions.features.atlas;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.gui.components.ItemDetailPanel;
-import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
+import io.dampen59.mineboxadditions.features.atlas.widgets.ItemDetailPanel;
+import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

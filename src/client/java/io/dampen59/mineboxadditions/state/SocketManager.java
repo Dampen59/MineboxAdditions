@@ -1,15 +1,14 @@
-package io.dampen59.mineboxadditions.network;
+package io.dampen59.mineboxadditions.state;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.maxhenkel.opus4j.OpusDecoder;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.audio.AudioManager;
+import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
 import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;
-import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.Utils;

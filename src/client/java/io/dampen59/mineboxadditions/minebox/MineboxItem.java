@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.minebox;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.gui.components.ItemListWidget;
+import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

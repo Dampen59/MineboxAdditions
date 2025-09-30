@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.gui.components;
+package io.dampen59.mineboxadditions.features.atlas.widgets;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.minebox.MineboxItem;

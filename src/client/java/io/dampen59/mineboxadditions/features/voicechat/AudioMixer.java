@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.audio;
+package io.dampen59.mineboxadditions.features.voicechat;
 
 import javax.sound.sampled.SourceDataLine;
 import java.util.Map;

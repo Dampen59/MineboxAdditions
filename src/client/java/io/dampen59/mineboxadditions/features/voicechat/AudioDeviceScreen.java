@@ -1,13 +1,11 @@
-package io.dampen59.mineboxadditions.gui;
+package io.dampen59.mineboxadditions.features.voicechat;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.audio.AudioManager;
-import io.dampen59.mineboxadditions.gui.components.MicGainSlider;
-import io.dampen59.mineboxadditions.gui.components.VolumeMultiplierSlider;
+import io.dampen59.mineboxadditions.features.voicechat.widgets.MicGainSlider;
+import io.dampen59.mineboxadditions.features.voicechat.widgets.VolumeMultiplierSlider;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
