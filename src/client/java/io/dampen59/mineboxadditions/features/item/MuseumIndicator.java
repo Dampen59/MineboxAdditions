@@ -1,5 +1,6 @@
 package io.dampen59.mineboxadditions.features.item;
 
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.gui.DrawContext;
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class MuseumIndicator {
     public static void render(DrawContext context, HandledScreen<?> screen) {
+        if (!MineboxAdditionConfig.get().displaySettings.displayMuseumMissingItems) return;
         if (MineboxAdditions.INSTANCE.state == null) return;
         List<String> missing = MineboxAdditions.INSTANCE.state.getMissingMuseumItemIds();
         if (missing == null || missing.isEmpty()) return;

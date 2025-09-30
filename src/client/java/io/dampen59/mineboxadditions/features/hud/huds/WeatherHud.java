@@ -23,6 +23,7 @@ public class WeatherHud {
         }
 
         public static void render(DrawContext context, MinecraftClient client) {
+            if (!MineboxAdditionConfig.get().displaySettings.displayNextRain) return;
             String text = (client.world.isRaining()
                     ? "Now!"
                     : formatNextEventCountdown(MineboxAdditions.INSTANCE.state.getWeatherState().getRainTimestamps()));
@@ -42,6 +43,7 @@ public class WeatherHud {
         }
 
         public static void render(DrawContext context, MinecraftClient client) {
+            if (!MineboxAdditionConfig.get().displaySettings.displayNextStorm) return;
             String text = (client.world.isThundering()
                     ? "Now!"
                     : formatNextEventCountdown(MineboxAdditions.INSTANCE.state.getWeatherState().getStormTimestamps()));

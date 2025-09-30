@@ -12,6 +12,8 @@ import java.awt.*;
 
 public class ItemRarity {
     public static void render(DrawContext context, HandledScreen<?> screen) {
+        if (!MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayItemsRarity) return;
+
         for (Slot slot : screen.getScreenHandler().slots) {
             if (!slot.isEnabled() || !slot.hasStack()) continue;
 

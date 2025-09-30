@@ -29,9 +29,7 @@ public abstract class HandledScreenMixin extends Screen {
     )
     private void mba$drawSlotsBefore(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
-
-        if (MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayItemsRarity)
-            ItemRarity.render(context, screen);
+        ItemRarity.render(context, screen);
     }
 
     @Inject(
@@ -44,8 +42,6 @@ public abstract class HandledScreenMixin extends Screen {
     )
     private void mba$drawSlotsAfter(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         HandledScreen<?> screen = (HandledScreen<?>)(Object)this;
-
-        if (MineboxAdditionConfig.get().displaySettings.displayMuseumMissingItems)
-            MuseumIndicator.render(context, screen);
+        MuseumIndicator.render(context, screen);
     }
 }

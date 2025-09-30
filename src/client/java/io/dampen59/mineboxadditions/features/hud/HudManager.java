@@ -34,14 +34,9 @@ public enum HudManager {
             HudManager.INSTANCE.getHud(Hud.Type.FULL_MOON).draw(context);
         }
 
-        if (config.displaySettings.displayNextRain)
-            WeatherHud.RainHud.render(context, client);
-
-        if (MineboxAdditionConfig.get().displaySettings.displayNextStorm)
-            WeatherHud.StormHud.render(context, client);
-
-        if (MineboxAdditionConfig.get().displaySettings.displayMermaidRequest)
-            MermaidHud.render(context);
+        WeatherHud.RainHud.render(context, client);
+        WeatherHud.StormHud.render(context, client);
+        MermaidHud.render(context);
     }
 
     private void initHuds() {

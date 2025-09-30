@@ -19,6 +19,7 @@ public class MermaidHud extends Hud {
     }
 
     public static void render(DrawContext context) {
+        if (!MineboxAdditionConfig.get().displaySettings.displayMermaidRequest) return;
         Hud hud = HudManager.INSTANCE.getHud(Hud.Type.MERMAID_OFFER);
         State state = MineboxAdditions.INSTANCE.state;
 
