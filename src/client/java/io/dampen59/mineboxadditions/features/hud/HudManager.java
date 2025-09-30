@@ -2,11 +2,12 @@ package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.features.hud.huds.HaversackHud;
-import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupHud;
-import io.dampen59.mineboxadditions.features.hud.huds.MermaidHud;
-import io.dampen59.mineboxadditions.features.hud.huds.WeatherHud;
-import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupManager;
+import io.dampen59.mineboxadditions.features.hud.haversack.HaversackHud;
+import io.dampen59.mineboxadditions.features.hud.haversack.HaversackManager;
+import io.dampen59.mineboxadditions.features.hud.itempickup.ItemPickupHud;
+import io.dampen59.mineboxadditions.features.hud.other.MermaidHud;
+import io.dampen59.mineboxadditions.features.hud.other.WeatherHud;
+import io.dampen59.mineboxadditions.features.hud.itempickup.ItemPickupManager;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -23,6 +24,7 @@ public enum HudManager {
 
     public void init() {
         this.initHuds();
+        new HaversackManager();
         new ItemPickupManager();
         HudRenderCallback.EVENT.register(this::render);
     }

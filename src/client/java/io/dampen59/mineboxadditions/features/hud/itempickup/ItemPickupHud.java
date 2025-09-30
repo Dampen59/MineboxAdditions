@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.features.hud.huds.itempickup;
+package io.dampen59.mineboxadditions.features.hud.itempickup;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;

@@ -6,7 +6,6 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
-import io.dampen59.mineboxadditions.events.inventory.InventoryEvent;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableScreen;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
@@ -61,7 +60,6 @@ public class MineboxAdditions implements ClientModInitializer {
         new SocketManager(state);
         new ServerEvents(state);
         new ShopEventManager(state);
-        new InventoryEvent(state);
         new ContainerOpenEvent(state);
         new ShinyEvent(state);
         new WorldRendererEvent();

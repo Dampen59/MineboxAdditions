@@ -1,9 +1,8 @@
-package io.dampen59.mineboxadditions.features.hud.huds.itempickup;
+package io.dampen59.mineboxadditions.features.hud.itempickup;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
-import io.dampen59.mineboxadditions.features.hud.huds.HaversackHud;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;

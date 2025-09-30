@@ -1,11 +1,7 @@
-package io.dampen59.mineboxadditions.events.inventory;
+package io.dampen59.mineboxadditions.features.hud.haversack;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.features.hud.Hud;
-import io.dampen59.mineboxadditions.features.hud.HudManager;
-import io.dampen59.mineboxadditions.features.hud.huds.HaversackHud;
-import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupHud;
-import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -20,30 +16,22 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.util.collection.DefaultedList;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
-public class InventoryEvent {
-    private final State modState;
-    private final MinecraftClient client = MinecraftClient.getInstance();
-
+public class HaversackManager {
     private int lastAmountInside = -1;
     private long lastCheckTime = System.currentTimeMillis();
     private double fillRatePerSecond = 0.0;
     private String timeUntilFull = "";
-    public InventoryEvent(State modState) {
-        this.modState = modState;
-        HudRenderCallback.EVENT.register(this::renderItemsPickups);
-        ClientTickEvents.END_CLIENT_TICK.register(client -> onTick());
+
+    public HaversackManager() {
+        ClientTickEvents.END_CLIENT_TICK.register(this::handle);
+        HudRenderCallback.EVENT.register(this::render);
     }
 
-    private void onTick() {
-        if (client.player == null || client.world == null || !modState.isConnectedToMinebox()) return;
+    private void handle(MinecraftClient client) {
+        if (client.player == null || client.world == null || !MineboxAdditions.INSTANCE.state.isConnectedToMinebox()) return;
 
         Stream.of(client.player.getOffHandStack())
                 .filter(stack -> !stack.isEmpty())
@@ -61,7 +49,7 @@ public class InventoryEvent {
         }
     }
 
-    private void renderItemsPickups(DrawContext context, RenderTickCounter tickCounter) {
+    private void render(DrawContext context, RenderTickCounter tickCounter) {
         if (fillRatePerSecond != 0) {
             HaversackHud.RateHud.render(context, fillRatePerSecond);
             HaversackHud.FullHud.render(context, timeUntilFull);

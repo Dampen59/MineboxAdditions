@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.features.hud.huds;
+package io.dampen59.mineboxadditions.features.hud.other;
 
 import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
