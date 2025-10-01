@@ -7,7 +7,7 @@
   "mineboxadditions.config.autoIsland.desc": "Automatically teleports you to your island when joining the server",
 
   "mineboxadditions.config.huds": "Huds",
-  "mineboxadditions.config.huds.desc": "Configure the in-game hud elements",
+  "mineboxadditions.config.huds.desc": "Configure the in-game huds",
 
   "mineboxadditions.config.huds.shop": "Shop Hud",
   "mineboxadditions.config.huds.shop.desc": "Configure the shop hud",
