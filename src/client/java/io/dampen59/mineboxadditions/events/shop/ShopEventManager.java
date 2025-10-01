@@ -1,9 +1,8 @@
 package io.dampen59.mineboxadditions.events.shop;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.state.OfferState;
 import io.dampen59.mineboxadditions.state.State;
-import me.shedaniel.autoconfig.AutoConfig;
 
 public class ShopEventManager {
 
@@ -17,7 +16,7 @@ public class ShopEventManager {
                 offers::setBakeryAlertSent,
                 offers::getBakeryOffer,
                 offers::setBakeryOffer,
-                () -> MineboxAdditionConfig.get().shopsAlertsSettings.getBakeryAlerts
+                () -> HudsConfig.shop.bakery
         );
 
         registerShopEvent(
@@ -27,7 +26,7 @@ public class ShopEventManager {
                 offers::setBuckstarAlertSent,
                 offers::getBuckstarOffer,
                 offers::setBuckstarOffer,
-                () -> MineboxAdditionConfig.get().shopsAlertsSettings.getBuckstarAlerts
+                () -> HudsConfig.shop.buckstar
         );
 
         registerShopEvent(
@@ -37,7 +36,7 @@ public class ShopEventManager {
                 offers::setCocktailAlertSent,
                 offers::getCocktailOffer,
                 offers::setCocktailOffer,
-                () -> MineboxAdditionConfig.get().shopsAlertsSettings.getCocktailAlerts
+                () -> HudsConfig.shop.sharkoffe
         );
 
         registerShopEvent(
@@ -47,7 +46,7 @@ public class ShopEventManager {
                 offers::setMouseAlertSent,
                 offers::getMouseOffer,
                 offers::setMouseOffer,
-                () -> MineboxAdditionConfig.get().shopsAlertsSettings.getMouseAlerts
+                () -> HudsConfig.shop.mouse
         );
     }
 

@@ -1,7 +1,8 @@
 package io.dampen59.mineboxadditions.features.hud;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.haversack.HaversackHud;
 import io.dampen59.mineboxadditions.features.hud.haversack.HaversackManager;
 import io.dampen59.mineboxadditions.features.hud.itempickup.ItemPickupHud;
@@ -32,10 +33,9 @@ public enum HudManager {
     private void render(DrawContext context, RenderTickCounter tickCounter) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null || client.options.hudHidden) return;
-        MineboxAdditionConfig config = MineboxAdditionConfig.get();
 
         boolean isFullMoon = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() == 0;
-        if (isFullMoon && config.displaySettings.displayFullMoon) {
+        if (isFullMoon && HudsConfig.fullMoon) {
             HudManager.INSTANCE.getHud(Hud.Type.FULL_MOON).draw(context);
         }
 
@@ -46,23 +46,24 @@ public enum HudManager {
 
     private void initHuds() {
         huds.put(Hud.Type.SHOP, new Hud(
-                () -> true, s -> {},
-                () -> MineboxAdditionConfig.get().shopHudX,
-                () -> MineboxAdditionConfig.get().shopHudY,
-                x -> MineboxAdditionConfig.get().shopHudX = x,
-                y -> MineboxAdditionConfig.get().shopHudY = y,
+                () -> HudsConfig.shop.enabled,
+                s -> HudsConfig.shop.enabled = s,
+                () -> HudPositions.shop.x,
+                () -> HudPositions.shop.y,
+                x -> HudPositions.shop.x = x,
+                y -> HudPositions.shop.y = y,
                 "shop", Text.of("Shop Name: Shop Offer")));
 
         huds.put(Hud.Type.MERMAID_OFFER, new MermaidHud());
         huds.put(Hud.Type.RAIN, new WeatherHud.RainHud());
         huds.put(Hud.Type.STORM, new WeatherHud.StormHud());
         huds.put(Hud.Type.FULL_MOON, new Hud(
-                () -> MineboxAdditionConfig.get().displaySettings.displayFullMoon,
-                s -> MineboxAdditionConfig.get().displaySettings.displayFullMoon = s,
-                () -> MineboxAdditionConfig.get().fullMoonHudX,
-                () -> MineboxAdditionConfig.get().fullMoonHudY,
-                x -> MineboxAdditionConfig.get().fullMoonHudX = x,
-                y -> MineboxAdditionConfig.get().fullMoonHudY = y,
+                () -> HudsConfig.fullMoon,
+                s -> HudsConfig.fullMoon = s,
+                () -> HudPositions.fullMoon.x,
+                () -> HudPositions.fullMoon.y,
+                x -> HudPositions.fullMoon.x = x,
+                y -> HudPositions.fullMoon.y = y,
                 "full_moon"));
 
         huds.put(Hud.Type.HAVERSACK_RATE, new HaversackHud.RateHud());

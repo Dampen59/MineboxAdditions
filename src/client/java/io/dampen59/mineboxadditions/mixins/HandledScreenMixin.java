@@ -1,6 +1,5 @@
 package io.dampen59.mineboxadditions.mixins;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.features.item.ItemRarity;
 import io.dampen59.mineboxadditions.features.item.MuseumIndicator;
 import net.minecraft.client.gui.DrawContext;

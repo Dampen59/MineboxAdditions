@@ -1,7 +1,8 @@
 package io.dampen59.mineboxadditions.features.voicechat;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.voicechat.widgets.MicGainSlider;
 import io.dampen59.mineboxadditions.features.voicechat.widgets.VolumeMultiplierSlider;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
@@ -128,8 +129,8 @@ public class AudioDeviceScreen extends Screen {
                             }
                         }
 
-                        MineboxAdditionConfig.get().selectedMicName = value.getName();
-                        MineboxAdditionConfig.save();
+                        Config.selectedMicName = value.getName();
+                        ConfigManager.save();
                         restartMicTestLine();
                     } else {
                         AudioDeviceState.selectedOutput = value;
@@ -142,8 +143,8 @@ public class AudioDeviceScreen extends Screen {
                             }
                         }
 
-                        MineboxAdditionConfig.get().selectedSpeakerName = value.getName();
-                        MineboxAdditionConfig.save();
+                        Config.selectedSpeakerName = value.getName();
+                        ConfigManager.save();
                     }
                 })
         );

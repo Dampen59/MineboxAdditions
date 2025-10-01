@@ -1,7 +1,8 @@
 package io.dampen59.mineboxadditions.features.hud.other;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import net.minecraft.client.MinecraftClient;
@@ -16,12 +17,12 @@ public class WeatherHud {
     public static class RainHud extends Hud {
         public RainHud() {
             super(
-                    () -> MineboxAdditionConfig.get().displaySettings.displayNextRain,
-                    s -> MineboxAdditionConfig.get().displaySettings.displayNextRain = s,
-                    () -> MineboxAdditionConfig.get().rainHudX,
-                    () -> MineboxAdditionConfig.get().rainHudY,
-                    x -> MineboxAdditionConfig.get().rainHudX = x,
-                    y -> MineboxAdditionConfig.get().rainHudY = y,
+                    () -> HudsConfig.rain,
+                    s -> HudsConfig.rain = s,
+                    () -> HudPositions.rain.x,
+                    () -> HudPositions.rain.y,
+                    x -> HudPositions.rain.x = x,
+                    y -> HudPositions.rain.y = y,
                     "rain", Text.of("00:00:00"));
         }
 
@@ -39,12 +40,12 @@ public class WeatherHud {
     public static class StormHud extends Hud {
         public StormHud() {
             super(
-                    () -> MineboxAdditionConfig.get().displaySettings.displayNextStorm,
-                    s -> MineboxAdditionConfig.get().displaySettings.displayNextStorm = s,
-                    () -> MineboxAdditionConfig.get().stormHudX,
-                    () -> MineboxAdditionConfig.get().stormHudY,
-                    x -> MineboxAdditionConfig.get().stormHudX = x,
-                    y -> MineboxAdditionConfig.get().stormHudY = y,
+                    () -> HudsConfig.storm,
+                    s -> HudsConfig.storm = s,
+                    () -> HudPositions.storm.x,
+                    () -> HudPositions.storm.y,
+                    x -> HudPositions.storm.x = x,
+                    y -> HudPositions.storm.y = y,
                     "storm", Text.of("00:00:00"));
         }
 

@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.features.hud.itempickup;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.utils.Utils;
@@ -25,11 +25,11 @@ public class ItemPickupManager {
     }
 
     private void onTick(MinecraftClient client) {
-        var settings = MineboxAdditionConfig.get().displaySettings.itemPickupSettings;
-        if (!settings.displayItemsPickups) return;
+        var settings = HudsConfig.itempickup;
+        if (!settings.enabled) return;
 
-        int displayDuration = settings.pickupNotificationDuration * 20;
-        updateInventorySnapshot(displayDuration, settings.maxPickupNotifications, settings.mergeLines);
+        int displayDuration = settings.duration * 20;
+        updateInventorySnapshot(displayDuration, settings.count, settings.merge);
         tickNotifications();
     }
 

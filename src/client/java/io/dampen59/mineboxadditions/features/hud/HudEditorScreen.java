@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.features.hud;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.ConfigManager;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -111,7 +111,7 @@ public class HudEditorScreen extends Screen {
         }
 
         if (dirty) {
-            MineboxAdditionConfig.save();
+            ConfigManager.save();
             dirty = false;
         }
         dragContext = null;

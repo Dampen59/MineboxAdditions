@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.features.item;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.gui.DrawContext;
@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class ItemRarity {
     public static void render(DrawContext context, HandledScreen<?> screen) {
-        if (!MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayItemsRarity) return;
+        if (!ItemsConfig.rarity.enabled) return;
 
         for (Slot slot : screen.getScreenHandler().slots) {
             if (!slot.isEnabled() || !slot.hasStack()) continue;
@@ -25,9 +25,9 @@ public class ItemRarity {
 
             int argb = rarity.getRGB();
 
-            if (MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.CIRCLE) {
+            if (ItemsConfig.rarity.mode == io.dampen59.mineboxadditions.config.items.objects.ItemRarity.Mode.CIRCLE) {
                 drawCircle(context, slot.x, slot.y, argb);
-            } else if (MineboxAdditionConfig.get().displaySettings.itemRaritySettings.displayMode == MineboxAdditionConfig.RaritiesDisplayMode.FILL) {
+            } else if (ItemsConfig.rarity.mode == io.dampen59.mineboxadditions.config.items.objects.ItemRarity.Mode.FILL) {
                 context.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, argb);
             }
         }

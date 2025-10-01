@@ -1,7 +1,8 @@
 package io.dampen59.mineboxadditions.features.hud.other;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.state.State;
@@ -12,12 +13,12 @@ import org.jetbrains.annotations.NotNull;
 public class MermaidHud extends Hud {
     public MermaidHud() {
         super(
-                () -> MineboxAdditionConfig.get().displaySettings.displayMermaidRequest,
-                s -> MineboxAdditionConfig.get().displaySettings.displayMermaidRequest = s,
-                () -> MineboxAdditionConfig.get().mermaidRequestHudX,
-                () -> MineboxAdditionConfig.get().getMermaidRequestHudY,
-                x -> MineboxAdditionConfig.get().mermaidRequestHudX = x,
-                y -> MineboxAdditionConfig.get().getMermaidRequestHudY = y,
+                () -> HudsConfig.mermaid,
+                s -> HudsConfig.mermaid = s,
+                () -> HudPositions.mermaid.x,
+                () -> HudPositions.mermaid.y,
+                x -> HudPositions.mermaid.x = x,
+                y -> HudPositions.mermaid.y = y,
                 "mermaid", Text.of("1x Bedrock"));
     }
 
