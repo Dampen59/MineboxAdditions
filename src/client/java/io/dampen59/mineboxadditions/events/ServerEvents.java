@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.events;
 
-import io.dampen59.mineboxadditions.ModConfig;
+import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.state.State;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -22,13 +22,12 @@ public class ServerEvents {
     private void registerServerJoinEvent() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             var serverEntry = client.getCurrentServerEntry();
-            ModConfig config = AutoConfig.getConfigHolder(ModConfig.class).getConfig();
             if (serverEntry != null) {
                 String serverAddress = serverEntry.address;
                 if (isMineboxServer(serverAddress)) {
                     modState.setConnectedToMinebox(true);
                     modState.getSocket().connect();
-                    if (config.autoIslandOnLogin && !modState.isLoginCommandSent()) {
+                    if (MineboxAdditionConfig.get().autoIslandOnLogin && !modState.isLoginCommandSent()) {
                         Objects.requireNonNull(client.getNetworkHandler()).sendPacket(new CommandExecutionC2SPacket("is"));
                         modState.setLoginCommandSent(true);
                     }

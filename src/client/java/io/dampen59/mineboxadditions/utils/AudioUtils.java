@@ -1,8 +1,8 @@
 package io.dampen59.mineboxadditions.utils;
 
 import de.maxhenkel.opus4j.OpusDecoder;
-import io.dampen59.mineboxadditions.MineboxAdditionsClient;
-import io.dampen59.mineboxadditions.audio.AudioMixer;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.features.voicechat.AudioMixer;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,7 +39,7 @@ public class AudioUtils {
             decodedMono[i] = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, amplified));
         }
 
-        AudioMixer mixer = MineboxAdditionsClient.INSTANCE.modState.getAudioManager().getMixer();
+        AudioMixer mixer = MineboxAdditions.INSTANCE.state.getAudioManager().getMixer();
         if (mixer != null) {
             mixer.push(playerName, decodedMono);
         }
@@ -79,7 +79,7 @@ public class AudioUtils {
             stereoPcm[i * 2 + 1] = (short) Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, right));
         }
 
-        AudioMixer mixer = MineboxAdditionsClient.INSTANCE.modState.getAudioManager().getMixer();
+        AudioMixer mixer = MineboxAdditions.INSTANCE.state.getAudioManager().getMixer();
         if (mixer != null) {
             mixer.pushStereo(playerName, stereoPcm);
         }

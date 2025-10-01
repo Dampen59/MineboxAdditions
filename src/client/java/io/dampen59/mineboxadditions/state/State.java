@@ -1,18 +1,16 @@
 package io.dampen59.mineboxadditions.state;
 
-import io.dampen59.mineboxadditions.audio.AudioManager;
-import io.dampen59.mineboxadditions.minebox.MineboxFishingShoal;
-import io.dampen59.mineboxadditions.minebox.MineboxHarvestable;
-import io.dampen59.mineboxadditions.minebox.MineboxItem;
+import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
+import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
+import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
+import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.socket.client.Socket;
-import it.unimi.dsi.fastutil.Hash;
 
 import java.util.*;
 
 public class State {
     private final OfferState offerState = new OfferState();
     private final WeatherState weatherState = new WeatherState();
-    private final HUDState hudState = new HUDState();
 
     private boolean connectedToMinebox = false;
     private boolean loginCommandSent = false;
@@ -20,8 +18,8 @@ public class State {
     private String shopDisplay = null;
     private int currentMoonPhase = -1;
     private List<MineboxItem> mbxItems = null;
-    private Map<String, List<MineboxHarvestable>> mbxHarvestables = new HashMap<>();
-    private List<MineboxFishingShoal.FishingShoalFish> mbxFishables = new ArrayList<>();
+    private Map<String, List<Harvestable>> mbxHarvestables = new HashMap<>();
+    private List<FishingShoal.Item> shoalItems = new ArrayList<>();
     private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
 
     private Socket socket = null;
@@ -54,18 +52,18 @@ public class State {
     public List<MineboxItem> getMbxItems() { return mbxItems; }
     public void setMbxItems(List<MineboxItem> items) { this.mbxItems = items; }
 
-    public List<MineboxHarvestable> getMineboxHarvestables(String islandName) {
+    public List<Harvestable> getMineboxHarvestables(String islandName) {
         return mbxHarvestables.get(islandName);
     }
 
-    public void addMineboxHarvestables(String islandName, List<MineboxHarvestable> data) {
+    public void addMineboxHarvestables(String islandName, List<Harvestable> data) {
         if (mbxHarvestables.containsKey(islandName)) mbxHarvestables.remove(islandName);
         mbxHarvestables.put(islandName, data);
     }
 
-    public List<MineboxFishingShoal.FishingShoalFish> getMbxFishables() { return mbxFishables; }
-    public void setMbxFishables(List<MineboxFishingShoal.FishingShoalFish> fishables) {
-        this.mbxFishables = fishables;
+    public List<FishingShoal.Item> getShoalItems() { return shoalItems; }
+    public void setShoalItems(List<FishingShoal.Item> shoalItems) {
+        this.shoalItems = shoalItems;
     }
 
     public Map<String, Boolean> getMbxShiniesUuids() { return mbxShiniesUuids; }
@@ -80,7 +78,6 @@ public class State {
 
     public OfferState getOfferState() { return offerState; }
     public WeatherState getWeatherState() { return weatherState; }
-    public HUDState getHUDState() { return hudState; }
     public OfferState.MermaidItemOffer getMermaidItemOffer() { return mermaidItemOffer; }
 
     public void setLastSentCommand(String cmd) { this.lastSentCommand = cmd; }

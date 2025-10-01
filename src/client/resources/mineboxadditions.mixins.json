@@ -1,15 +1,14 @@
 {
   "required": true,
-  "package": "io.dampen59.mineboxadditions.mixin.client",
+  "package": "io.dampen59.mineboxadditions.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
     "ChatMessageMixin",
     "ChatScreenMixin",
-    "InventoryScreenMixin",
+    "HandledScreenMixin",
     "ItemStackMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  },
-  "mixins": []
+  }
 }
