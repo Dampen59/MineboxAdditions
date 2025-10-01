@@ -30,7 +30,7 @@ public class ItemDurability {
 
     public static boolean hasDurability(ItemStack item) {
         String[] parts = getDurabilityParts(item);
-        return parts.length == 2;
+        return parts.length == 2 && !parts[0].equals(parts[1]);
     }
 
     public static Integer getDurabilityStep(ItemStack item) {
