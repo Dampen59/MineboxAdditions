@@ -14,7 +14,7 @@ public class ConfigInfoProvider implements ResourcefulConfigInfo {
 
     @Override
     public TranslatableValue description() {
-        return new TranslatableValue("description");
+        return new TranslatableValue("", "mineboxadditions.config.info.desc");
     }
 
     @Override
@@ -23,12 +23,12 @@ public class ConfigInfoProvider implements ResourcefulConfigInfo {
                 ResourcefulConfigLink.create(
                         "https://modrinth.com/mod/mineboxadditions",
                         "modrinth",
-                        new TranslatableValue("Modrinth", "config.info.mineboxadditions.modrinth")
+                        new TranslatableValue("Modrinth", "mineboxadditions.config.info.modrinth")
                 ),
                 ResourcefulConfigLink.create(
                         "https://github.com/Dampen59/MineboxAdditions",
                         "code",
-                        new TranslatableValue("GitHub", "config.info.mineboxadditions.github")
+                        new TranslatableValue("GitHub", "mineboxadditions.config.info.github")
                 )
         };
     }

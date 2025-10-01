@@ -35,7 +35,7 @@ public enum HudManager {
         if (client == null || client.player == null || client.options.hudHidden) return;
 
         boolean isFullMoon = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() == 0;
-        if (isFullMoon && HudsConfig.fullMoon) {
+        if (isFullMoon && HudsConfig.fullmoon) {
             HudManager.INSTANCE.getHud(Hud.Type.FULL_MOON).draw(context);
         }
 
@@ -58,8 +58,8 @@ public enum HudManager {
         huds.put(Hud.Type.RAIN, new WeatherHud.RainHud());
         huds.put(Hud.Type.STORM, new WeatherHud.StormHud());
         huds.put(Hud.Type.FULL_MOON, new Hud(
-                () -> HudsConfig.fullMoon,
-                s -> HudsConfig.fullMoon = s,
+                () -> HudsConfig.fullmoon,
+                s -> HudsConfig.fullmoon = s,
                 () -> HudPositions.fullMoon.x,
                 () -> HudPositions.fullMoon.y,
                 x -> HudPositions.fullMoon.x = x,

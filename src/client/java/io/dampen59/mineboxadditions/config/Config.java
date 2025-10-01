@@ -1,5 +1,6 @@
 package io.dampen59.mineboxadditions.config;
 
+import com.teamresourceful.resourcefulconfig.api.annotations.Comment;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigInfo;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
@@ -47,6 +48,7 @@ public class Config {
         @ConfigEntry(id = "harvestables")
         public static final HarvestablesSettings harvestables = new HarvestablesSettings();
 
-        @ConfigEntry(id = "autoIsland")
+        @ConfigEntry(id = "autoIsland", translation = "mineboxadditions.config.autoIsland")
+        @Comment(value = "", translation = "mineboxadditions.config.autoIsland.desc")
         public static boolean autoIsland = false;
 }

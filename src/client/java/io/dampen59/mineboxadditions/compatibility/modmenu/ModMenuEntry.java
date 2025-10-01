@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 public class ModMenuEntry implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-//        return parent -> AutoConfig.getConfigScreen(MineboxAdditionConfig.class, parent).get();
         return parent -> ResourcefulConfigScreen.getFactory(MineboxAdditions.NAMESPACE).apply(parent);
     }
 }
