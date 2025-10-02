@@ -1,7 +1,8 @@
 package io.dampen59.mineboxadditions.utils;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
-import io.dampen59.mineboxadditions.features.item.ExtraInventoryItem;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.ConfigManager;
+import io.dampen59.mineboxadditions.features.wardrobe.WardrobePreset;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
@@ -36,39 +37,37 @@ public class ExtraInventoryUtils {
         );
     }
 
-    public static void storeItemInSlot(int setIndex, int slotId, ItemStack itemStack, String itemUid) {
-        if (itemStack != null && !itemStack.isEmpty()) {
-            ExtraInventoryItem storedItem = new ExtraInventoryItem(Utils.getMineboxItemId(itemStack), itemStack.getFormattedName().getString(), itemUid);
-            MineboxAdditionConfig.get().setItemInSlot(setIndex, slotId, storedItem);
-            MineboxAdditionConfig.save();
+    public static void storeItemInSlot(int presetId, int slotId, ItemStack item, String itemUid) {
+        if (item != null && !item.isEmpty()) {
+            WardrobePreset.WardrobeItem wardrobeItem = new WardrobePreset.WardrobeItem(Utils.getMineboxItemId(item), itemUid, item.getFormattedName().getString());
+            Config.wardrobe.setPresetItem(presetId, slotId, wardrobeItem);
+            ConfigManager.save();
         }
     }
 
-    public static ExtraInventoryItem getStoredItem(int setIndex, int slotId) {
-        return MineboxAdditionConfig.get().getItemInSlot(setIndex, slotId);
+    public static void setSetName(int presetId, String name) {
+        WardrobePreset preset = Config.wardrobe.getPreset(presetId);
+        preset.name = name;
+        ConfigManager.save();
     }
 
-    public static void setSetName(int setIndex, String name) {
-        MineboxAdditionConfig.get().setSetName(setIndex, name);
-        MineboxAdditionConfig.save();
+    public static String getSetName(int presetId) {
+        WardrobePreset preset = Config.wardrobe.getPreset(presetId);
+        if (preset.name == null) return "Set " + (presetId + 1);
+        return preset.name;
     }
 
-    public static String getSetName(int setIndex) {
-        return MineboxAdditionConfig.get().getSetName(setIndex);
-    }
-
-    public static void equipSet(DefaultedList<Slot> inventorySlots, int setIndex) {
-
+    public static void equipSet(DefaultedList<Slot> inventorySlots, int presetId) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        String setName = getSetName(setIndex);
+        String setName = getSetName(presetId);
         List<String> missingItems = new ArrayList<>();
         boolean foundCurrentItem = false;
 
-        for (Map.Entry<Integer, ExtraInventoryItem> entry : MineboxAdditionConfig.get().getSet(setIndex).entrySet()) {
+        for (Map.Entry<Integer, WardrobePreset.WardrobeItem> entry : Config.wardrobe.getPreset(presetId).items.entrySet()) {
             int slotId = entry.getKey();
-            ExtraInventoryItem storedItem = entry.getValue();
-            String storedItemUuid = storedItem.itemUid;
+            WardrobePreset.WardrobeItem wardrobeItem = entry.getValue();
+            String storedItemUuid = wardrobeItem.uid;
 
             for (Slot slot : inventorySlots) {
 
@@ -93,7 +92,7 @@ public class ExtraInventoryUtils {
             }
 
             if (!foundCurrentItem) {
-                missingItems.add("[" + storedItem.itemName + "]");
+                missingItems.add("[" + wardrobeItem.name + "]");
             } else {
                 foundCurrentItem = false;
             }
@@ -113,8 +112,8 @@ public class ExtraInventoryUtils {
 
     }
 
-    public static void saveCurrentSetToSlotId(DefaultedList<Slot> inventorySlots, int setId) {
-        MineboxAdditionConfig.get().clearSet(setId);
+    public static void saveCurrentSetToSlotId(DefaultedList<Slot> inventorySlots, int presetId) {
+        Config.wardrobe.clearPreset(presetId);
         for (Map.Entry<Integer, String> entry : SLOT_CATEGORY_MAP.entrySet()) {
             int slotId = entry.getKey();
 
@@ -122,12 +121,12 @@ public class ExtraInventoryUtils {
             if (slot != null && slot.hasStack() && Utils.isMineboxItem(slot.getStack())) {
                 String itemUid = Utils.getMineboxItemUid(slot.getStack());
                 if (itemUid != null) {
-                    storeItemInSlot(setId, slotId, slot.getStack(), itemUid);
+                    storeItemInSlot(presetId, slotId, slot.getStack(), itemUid);
                 }
             }
         }
 
-        MineboxAdditionConfig.save();
+        ConfigManager.save();
     }
 
     private static Slot findSlotById(DefaultedList<Slot> inventorySlots, int slotId) {

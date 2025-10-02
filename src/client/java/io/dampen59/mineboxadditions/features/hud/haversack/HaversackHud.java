@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.features.hud.haversack;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import net.minecraft.client.gui.DrawContext;
@@ -10,12 +11,12 @@ public class HaversackHud {
     public static class RateHud extends Hud {
         public RateHud() {
             super(
-                    () -> MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate,
-                    s -> MineboxAdditionConfig.get().displaySettings.displayHaversackFillRate = s,
-                    () -> MineboxAdditionConfig.get().haverSackFillRateX,
-                    () -> MineboxAdditionConfig.get().haverSackFillRateY,
-                    x -> MineboxAdditionConfig.get().haverSackFillRateX = x,
-                    y -> MineboxAdditionConfig.get().haverSackFillRateY = y,
+                    () -> HudsConfig.haversack.rate,
+                    s -> HudsConfig.haversack.rate = s,
+                    () -> HudPositions.haversackRate.x,
+                    () -> HudPositions.haversackRate.y,
+                    x -> HudPositions.haversackRate.x = x,
+                    y -> HudPositions.haversackRate.y = y,
                     "haversack", Text.of("Fill Rate: 0.0/s"));
         }
 
@@ -31,12 +32,12 @@ public class HaversackHud {
     public static class FullHud extends Hud {
         public FullHud() {
             super(
-                    () -> MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn,
-                    s -> MineboxAdditionConfig.get().displaySettings.displayHaversackFullIn = s,
-                    () -> MineboxAdditionConfig.get().haversackFullInX,
-                    () -> MineboxAdditionConfig.get().haversackFullInY,
-                    x -> MineboxAdditionConfig.get().haversackFullInX = x,
-                    y -> MineboxAdditionConfig.get().haversackFullInY = y,
+                    () -> HudsConfig.haversack.full,
+                    s -> HudsConfig.haversack.full = s,
+                    () -> HudPositions.haversackFull.x,
+                    () -> HudPositions.haversackFull.y,
+                    x -> HudPositions.haversackFull.x = x,
+                    y -> HudPositions.haversackFull.y = y,
                     "haversack", Text.of("Full In: 00:00:00"));
         }
 

@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.features.fishingshoal;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
 import io.dampen59.mineboxadditions.state.State;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
@@ -36,7 +36,7 @@ public class FishingShoalDisplay {
     public static void handle(WorldRenderContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
         Box box = client.player.getBoundingBox()
-                .expand(MineboxAdditionConfig.get().displaySettings.fishingSettings.fishDropRadius);
+                .expand(FishingDrops.renderRadius);
         Map<Entity, String> shoals = new HashMap<>();
 
         for (Entity entity : client.world.getOtherEntities(client.player, box,

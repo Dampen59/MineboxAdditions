@@ -8,26 +8,24 @@ import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(ItemStack.class)
 public abstract class ItemStackMixin {
+    private ItemStack self() {
+        return (ItemStack) (Object) this;
+    }
+
     @ModifyReturnValue(method = "isItemBarVisible", at = @At("RETURN"))
     private boolean mba$isItemBarVisible(boolean original) {
-        ItemStack item = (ItemStack)(Object)this;
-        if (ItemDurability.hasDurability(item)) return true;
-        return original;
+        return ItemDurability.hasDurability(self()) || original;
     }
 
     @ModifyReturnValue(method = "getItemBarStep", at = @At("RETURN"))
     private int mba$getItemBarStep(int original) {
-        ItemStack item = (ItemStack)(Object)this;
-        int step = ItemDurability.getDurabilityStep(item);
-        if (step >= 0) return step;
-        return original;
+        int step = ItemDurability.getDurabilityStep(self());
+        return step >= 0 ? step : original;
     }
 
     @ModifyReturnValue(method = "getItemBarColor", at = @At("RETURN"))
     private int mba$getItemBarColor(int original) {
-        ItemStack item = (ItemStack)(Object)this;
-        int color = ItemDurability.getDurabilityColor(item);
-        if (color >= 0) return color;
-        return original;
+        int color = ItemDurability.getDurabilityColor(self());
+        return color >= 0 ? color : original;
     }
 }

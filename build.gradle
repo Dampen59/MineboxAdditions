@@ -16,10 +16,6 @@ repositories {
 		url = "https://maven.terraformersmc.com/releases/"
 	}
 	maven {
-		name = "Cloth Config"
-		url = "https://maven.shedaniel.me/"
-	}
-	maven {
 		name = "DevLogin"
 		url = "https://maven.covers1624.net/"
 	}
@@ -27,10 +23,10 @@ repositories {
 		name = "henkelmax.public"
 		url = "https://maven.maxhenkel.de/repository/public"
 	}
-//	maven {
-//		name = "Resourceful Config"
-//		url = "https://maven.teamresourceful.com/repository/maven-public/"
-//	}
+	maven {
+		name = "Resourceful Config"
+		url = "https://maven.teamresourceful.com/repository/maven-public/"
+	}
 }
 
 dependencies {
@@ -44,12 +40,8 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 	// Mod Menu
 	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
-	// Cloth Config
-	modApi("me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}") {
-		exclude(group: "net.fabricmc.fabric-api")
-	}
-//	// Resourceful Config
-//	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
+	// Resourceful Config
+	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
 
 	implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
 	include "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
@@ -83,7 +75,7 @@ loom {
 		clientLogin {
 			client()
 			ideConfigGenerated true
-			programArgs "--launch_target', 'net.fabricmc.loader.impl.launch.knot.KnotClient"
+			programArgs "--launch_target", "net.fabricmc.loader.impl.launch.knot.KnotClient"
 			mainClass.set "net.covers1624.devlogin.DevLogin"
 		}
 	}

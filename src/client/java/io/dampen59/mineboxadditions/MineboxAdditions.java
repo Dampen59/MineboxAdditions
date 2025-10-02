@@ -3,6 +3,10 @@ package io.dampen59.mineboxadditions;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
+import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigUI;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
@@ -17,7 +21,6 @@ import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
-import me.shedaniel.autoconfig.AutoConfig;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -25,10 +28,10 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +52,7 @@ public class MineboxAdditions implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        MineboxAdditionConfig.init();
+        ConfigManager.init();
         this.state = new State();
 
         HudManager.INSTANCE.init();
@@ -87,15 +90,14 @@ public class MineboxAdditions implements ClientModInitializer {
             }
             if (openModSettings.wasPressed()) {
                 if (client.currentScreen == null) {
-                    Screen configScreen = AutoConfig.getConfigScreen(MineboxAdditionConfig.class, client.currentScreen).get();
-                    client.setScreen(configScreen);
+                    client.setScreen(ResourcefulConfigScreen.make(ConfigManager.configurator, Config.class).build());
                 }
             }
         });
 
-        AudioDeviceState.micGainDb = MineboxAdditionConfig.get().micGainDb;
-        AudioDeviceState.selectedInput = AudioUtils.getMixerByName(MineboxAdditionConfig.get().selectedMicName, true);
-        AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(MineboxAdditionConfig.get().selectedSpeakerName, false);
+        AudioDeviceState.micGainDb = Config.micGainDb;
+        AudioDeviceState.selectedInput = AudioUtils.getMixerByName(Config.selectedMicName, true);
+        AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(Config.selectedSpeakerName, false);
 
         INSTANCE = this;
     }
@@ -215,5 +217,4 @@ public class MineboxAdditions implements ClientModInitializer {
         ));
 
     }
-
 }

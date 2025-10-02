@@ -1,7 +1,9 @@
 package io.dampen59.mineboxadditions.features.harvestable;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.ConfigManager;
+import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
@@ -41,7 +43,7 @@ public class HarvestableScreen extends Screen {
     private int scrollY = 0;
     private int contentHeight = 0;
 
-    private MineboxAdditionConfig.HarvestablesPrefs prefs;
+    private HarvestablesSettings.Harvestable prefs;
 
     public HarvestableScreen() {
         super(Text.literal("Harvestables"));
@@ -55,7 +57,7 @@ public class HarvestableScreen extends Screen {
                 : Identifier.of("minecraft", "overworld");
         islandKeyPath = worldId.getPath();
 
-        prefs = MineboxAdditionConfig.get().harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
+        prefs = Config.harvestables.harvestables.computeIfAbsent(islandKeyPath, k -> new HarvestablesSettings.Harvestable());
 
         var modState = MineboxAdditions.INSTANCE.state;
         List<Harvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
@@ -99,7 +101,7 @@ public class HarvestableScreen extends Screen {
         int curY = startY;
 
         for (String cat : sortedCategories()) {
-            boolean catChecked = prefs.categoryEnabled.getOrDefault(cat, true);
+            boolean catChecked = prefs.categories.getOrDefault(cat, true);
 
             CheckboxWidget catCb = CheckboxWidget.builder(Text.literal(cat), this.textRenderer)
                     .pos(PADDING + 16, curY)
@@ -111,11 +113,11 @@ public class HarvestableScreen extends Screen {
 
             for (var rep : byCategory.get(cat)) {
                 String name = rep.getName() != null ? rep.getName() : "unknown";
-                boolean itemChecked = prefs.itemEnabled
+                boolean itemChecked = prefs.items
                         .getOrDefault(cat, Collections.emptyMap())
                         .getOrDefault(name, true);
 
-                int savedColor = prefs.itemColor
+                int savedColor = prefs.colors
                         .getOrDefault(cat, Collections.emptyMap())
                         .getOrDefault(name, 0xFFFFFFFF); // default white
 
@@ -141,7 +143,7 @@ public class HarvestableScreen extends Screen {
                                     savedColorOrCurrent(rep),
                                     picked -> {
                                         currentColors.put(rep, picked);
-                                        prefs.itemColor
+                                        prefs.colors
                                              .computeIfAbsent(cat, k -> new HashMap<>())
                                              .put(name, picked);
                                         this.client.setScreen(this);
@@ -299,14 +301,14 @@ public class HarvestableScreen extends Screen {
     @Override
     public void close() {
         // save config on close :)
-        MineboxAdditionConfig.HarvestablesPrefs p = MineboxAdditionConfig.get().harvestablesPrefs.computeIfAbsent(islandKeyPath, k -> new MineboxAdditionConfig.HarvestablesPrefs());
-        p.categoryEnabled.clear();
+        HarvestablesSettings.Harvestable p = Config.harvestables.harvestables.computeIfAbsent(islandKeyPath, k -> new HarvestablesSettings.Harvestable());
+        p.categories.clear();
         for (String cat : byCategory.keySet()) {
             CheckboxWidget cb = catChecks.get(cat);
-            if (cb != null) p.categoryEnabled.put(cat, cb.isChecked());
+            if (cb != null) p.categories.put(cat, cb.isChecked());
         }
-        p.itemEnabled.clear();
-        p.itemColor.clear();
+        p.items.clear();
+        p.colors.clear();
         for (String cat : byCategory.keySet()) {
             Map<String, Boolean> itemsChecked = new HashMap<>();
             Map<String, Integer> itemsColor = new HashMap<>();
@@ -317,11 +319,11 @@ public class HarvestableScreen extends Screen {
                 int col = currentColors.getOrDefault(rep, 0xFFFFFFFF);
                 itemsColor.put(name, col);
             }
-            p.itemEnabled.put(cat, itemsChecked);
-            p.itemColor.put(cat, itemsColor);
+            p.items.put(cat, itemsChecked);
+            p.colors.put(cat, itemsColor);
         }
 
-        MineboxAdditionConfig.save();
+        ConfigManager.save();
         super.close();
     }
 

@@ -1,6 +1,5 @@
 package io.dampen59.mineboxadditions.features.hud.haversack;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -68,9 +67,7 @@ public class HaversackManager {
         for (Text lore : loreComponent.lines()) {
             if (!(lore.getContent() instanceof TranslatableTextContent translatableContent)) continue;
             if (id.contains("haversack") && translatableContent.getKey().contains("mbx.items.infinite_bag.amount_inside")) {
-                if (MineboxAdditionConfig.get().durabilitySettings.haversackDurability) {
-                    handleHaversackDurability(stack, nbtData, translatableContent);
-                }
+                handleHaversackDurability(stack, nbtData, translatableContent);
             }
         }
     }

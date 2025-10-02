@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableBeam;
 import io.dampen59.mineboxadditions.utils.Utils;
@@ -63,7 +63,7 @@ public class WorldRendererEvent {
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-            if (!MineboxAdditionConfig.get().displaySettings.displayItemRange) return ActionResult.PASS;
+//            if (!MineboxAdditionConfig.get().displaySettings.displayItemRange) return ActionResult.PASS;
 
             if (!world.isClient) return ActionResult.PASS;
             if (!(player instanceof ClientPlayerEntity)) return ActionResult.PASS;
@@ -127,7 +127,7 @@ public class WorldRendererEvent {
         if (client.player == null || client.world == null) return;
         if (!MineboxAdditions.INSTANCE.state.isConnectedToMinebox()) return;
 
-        if (MineboxAdditionConfig.get().displaySettings.fishingSettings.showFishDrops)
+        if (FishingDrops.enabled)
             FishingShoalDisplay.handle(context);
 
         HarvestableBeam.render(context);

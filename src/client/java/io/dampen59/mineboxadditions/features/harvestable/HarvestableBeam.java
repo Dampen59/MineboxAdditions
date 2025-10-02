@@ -1,7 +1,8 @@
 package io.dampen59.mineboxadditions.features.harvestable;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
@@ -35,7 +36,7 @@ public class HarvestableBeam {
                 return;
         }
 
-        MineboxAdditionConfig.HarvestablesPrefs prefs = MineboxAdditionConfig.get().harvestablesPrefs.get(islandKeyPath);
+        HarvestablesSettings.Harvestable prefs = Config.harvestables.harvestables.get(islandKeyPath);
         if (prefs == null)
             return;
 
@@ -62,17 +63,17 @@ public class HarvestableBeam {
             String cat = it.getCategory() != null ? it.getCategory() : "misc";
             String name = it.getName() != null ? it.getName() : "unknown";
 
-            boolean catOn = prefs.categoryEnabled.getOrDefault(cat, false);
+            boolean catOn = prefs.categories.getOrDefault(cat, false);
             if (!catOn)
                 continue;
 
-            boolean itemOn = prefs.itemEnabled
+            boolean itemOn = prefs.items
                     .getOrDefault(cat, Collections.emptyMap())
                     .getOrDefault(name, false);
             if (!itemOn)
                 continue;
 
-            int rgb = prefs.itemColor
+            int rgb = prefs.colors
                     .getOrDefault(cat, Collections.emptyMap())
                     .getOrDefault(name, 0xFFFFFFFF);
 

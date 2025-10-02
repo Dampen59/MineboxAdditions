@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.features.voicechat.widgets;
 
-import io.dampen59.mineboxadditions.MineboxAdditionConfig;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
@@ -21,8 +22,8 @@ public class MicGainSlider extends SliderWidget {
     @Override
     protected void applyValue() {
         AudioDeviceState.micGainDb = (float) (value * 50f - 20f);
-        MineboxAdditionConfig.get().micGainDb = AudioDeviceState.micGainDb;
-        MineboxAdditionConfig.save();
+        Config.micGainDb = AudioDeviceState.micGainDb;
+        ConfigManager.save();
     }
 }
 
