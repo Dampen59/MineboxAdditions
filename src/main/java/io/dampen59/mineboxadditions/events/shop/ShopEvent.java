@@ -55,7 +55,7 @@ public class ShopEvent {
     private void onTick(MinecraftClient client) {
         if (!state.isConnectedToMinebox() || client.world == null) return;
 
-        ShopHud hud = (ShopHud) HudManager.INSTANCE.getHud(Hud.Type.SHOP);
+        var hud = HudManager.INSTANCE.get(ShopHud.class);
         TextElement hudText = hud.getNamedElement("text", TextElement.class);
 
         String offer = getCurrentOffer.get();

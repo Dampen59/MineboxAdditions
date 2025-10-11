@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.features.hud.huds.haversack;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -50,8 +51,13 @@ public class HaversackManager {
 
     private void render(DrawContext context, RenderTickCounter tickCounter) {
         if (fillRatePerSecond != 0) {
-            HaversackHud.RateHud.render(context, fillRatePerSecond);
-            HaversackHud.FullHud.render(context, timeUntilFull);
+            var rate = HudManager.INSTANCE.get(HaversackHud.RateHud.class);
+            rate.update(fillRatePerSecond);
+            if (rate.getState()) rate.draw(context);
+
+            var full = HudManager.INSTANCE.get(HaversackHud.FullHud.class);
+            full.update(timeUntilFull);
+            if (full.getState()) full.draw(context);
         }
     }
 

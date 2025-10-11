@@ -3,6 +3,7 @@
   "package": "io.dampen59.mineboxadditions.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "BossBarHudMixin",
     "ChatMessageMixin",
     "ChatScreenMixin",
     "HandledScreenMixin",

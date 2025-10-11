@@ -44,12 +44,9 @@ public class HaversackHud {
             return new VStackElement().add(new SpacerElement(2), hstack, new SpacerElement(2));
         }
 
-        public static void render(DrawContext context, double rate) {
-            Hud hud = HudManager.INSTANCE.getHud(Hud.Type.HAVERSACK_RATE);
-            if (!hud.getState()) return;
+        public void update(double rate) {
             String text = String.format("%.2f/s", rate);
-            hud.getNamedElement("text", TextElement.class).setText(Text.of(text));
-            hud.draw(context);
+            getNamedElement("text", TextElement.class).setText(Text.of(text));
         }
     }
 
@@ -82,11 +79,8 @@ public class HaversackHud {
             return new VStackElement().add(new SpacerElement(2), hstack, new SpacerElement(2));
         }
 
-        public static void render(DrawContext context, String time) {
-            Hud hud = HudManager.INSTANCE.getHud(Hud.Type.HAVERSACK_FULL);
-            if (!hud.getState()) return;
-            hud.getNamedElement("text", TextElement.class).setText(Text.of(time));
-            hud.draw(context);
+        public void update(String time) {
+            getNamedElement("text", TextElement.class).setText(Text.of(time));
         }
     }
 }

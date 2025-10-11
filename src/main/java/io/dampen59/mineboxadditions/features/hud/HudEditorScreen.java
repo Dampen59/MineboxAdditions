@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.config.ConfigManager;
+import io.dampen59.mineboxadditions.config.huds.objects.ItemPickupHud;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
@@ -34,9 +35,8 @@ public class HudEditorScreen extends Screen {
         boolean collision;
         do {
             collision = false;
-            for (Map.Entry<Hud.Type, Hud> entry : HudManager.INSTANCE.getHuds().entrySet()) {
-                if (entry.getKey() == dragContext.type) continue;
-                Hud otherHud = entry.getValue();
+            for (Hud otherHud : HudManager.INSTANCE.getAll()) {
+                if (otherHud.getClass() == dragContext.type) continue;
                 Bounds otherBounds = new Bounds(
                         otherHud.getX() - PADDING,
                         otherHud.getY() - PADDING,
@@ -60,13 +60,12 @@ public class HudEditorScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        for (Map.Entry<Hud.Type, Hud> entry : HudManager.INSTANCE.getHuds().entrySet()) {
-            Hud hud = entry.getValue();
+        for (Hud hud : HudManager.INSTANCE.getAll()) {
             int hudX = hud.getX();
             int hudY = hud.getY();
 
             if (isInBounds(mouseX, mouseY, hudX, hudY, hud.getWidth(), hud.getHeight())) {
-                dragContext = new DragContext(entry.getKey(), button, (int) mouseX - hudX, (int) mouseY - hudY);
+                dragContext = new DragContext(hud.getClass(), button, (int) mouseX - hudX, (int) mouseY - hudY);
                 if (button == 1) {
                     hud.setState(!hud.getState());
                     dirty = true;
@@ -80,11 +79,11 @@ public class HudEditorScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (dragContext != null && dragContext.button == 0) {
-            Hud hud = HudManager.INSTANCE.getHud(dragContext.type);
+            Hud hud = HudManager.INSTANCE.get(dragContext.type);
             Point clamped = clampToScreen(hud, (int)mouseX - dragContext.offsetX, (int)mouseY - dragContext.offsetY);
             Point resolved = resolveCollisions(hud, clamped.x, clamped.y);
 
-            if (dragContext.type == Hud.Type.ITEM_PICKUP && resolved.x > this.width / 2) {
+            if (dragContext.type.equals(ItemPickupHud.class) && resolved.x > this.width / 2) {
                 hud.setX(resolved.x + hud.getWidth());
             } else {
                 hud.setX(resolved.x);
@@ -99,7 +98,7 @@ public class HudEditorScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (dragContext != null) {
-            Hud hud = HudManager.INSTANCE.getHud(dragContext.type);
+            Hud hud = HudManager.INSTANCE.get(dragContext.type);
             boolean outOfBounds = hud.getX() < 0 || hud.getX() + hud.getWidth() > this.width ||
                     hud.getY() < 0 || hud.getY() + hud.getHeight() > this.height;
 
@@ -121,7 +120,7 @@ public class HudEditorScreen extends Screen {
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
-        for (Hud hud : HudManager.INSTANCE.getHuds().values()) {
+        for (Hud hud : HudManager.INSTANCE.getAll()) {
             if (hud.getState()) hud.draw(context);
             else hud.drawDisabled(context);
         }
@@ -133,11 +132,11 @@ public class HudEditorScreen extends Screen {
     }
 
     private static class DragContext {
-        final Hud.Type type;
+        final Class<? extends Hud> type;
         final int button;
         final int offsetX, offsetY;
 
-        DragContext(Hud.Type type, int button, int offsetX, int offsetY) {
+        DragContext(Class<? extends Hud> type, int button, int offsetX, int offsetY) {
             this.type = type;
             this.button = button;
             this.offsetX = offsetX;

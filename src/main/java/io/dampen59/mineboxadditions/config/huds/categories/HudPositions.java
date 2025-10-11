@@ -9,6 +9,18 @@ import io.dampen59.mineboxadditions.config.huds.HudPosition;
 @ConfigOption.Hidden
 public class HudPositions {
     @ConfigOption.Hidden
+    @ConfigEntry(id = "island")
+    public static final HudPosition island = new HudPosition(100, 4);
+
+    @ConfigOption.Hidden
+    @ConfigEntry(id = "time")
+    public static final HudPosition time = new HudPosition(100, 4);
+
+    @ConfigOption.Hidden
+    @ConfigEntry(id = "vote")
+    public static final HudPosition vote = new HudPosition(120, 4);
+
+    @ConfigOption.Hidden
     @ConfigEntry(id = "shop")
     public static final HudPosition shop = new HudPosition(4, 4);
 

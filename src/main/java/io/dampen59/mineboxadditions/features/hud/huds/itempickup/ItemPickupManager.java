@@ -36,7 +36,7 @@ public class ItemPickupManager {
     }
 
     private void onRender(DrawContext context, RenderTickCounter tickCounter) {
-        var hud = (ItemPickupHud) HudManager.INSTANCE.getHud(Hud.Type.ITEM_PICKUP);
+        var hud = HudManager.INSTANCE.get(ItemPickupHud.class);
         int offsetY = 0;
         for (ItemPickupNotification notif : itemPickupNotifications) {
             ItemStack item = notif.stack.copy();

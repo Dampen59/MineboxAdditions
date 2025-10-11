@@ -19,10 +19,6 @@ public abstract class Hud {
     public final StackElement mainStack;
     private final Map<String, Element> namedElements = new HashMap<>();
 
-    public enum Type {
-        RAIN, STORM, SHOP, FULL_MOON, HAVERSACK_RATE, HAVERSACK_FULL, MERMAID_OFFER, ITEM_PICKUP
-    }
-
     public Hud(
             Supplier<Boolean> getState, Consumer<Boolean> setState,
             Supplier<Integer> getX, Consumer<Integer> setX,
