@@ -122,11 +122,8 @@ public class HudEditorScreen extends Screen {
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
         for (Hud hud : HudManager.INSTANCE.getHuds().values()) {
-            if (hud.getState()) {
-                hud.draw(context);
-            } else {
-                hud.drawDisabled(context);
-            }
+            if (hud.getState()) hud.draw(context);
+            else hud.drawDisabled(context);
         }
     }
 

@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.features.hud.haversack;
+package io.dampen59.mineboxadditions.features.hud.huds.haversack;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.Utils;

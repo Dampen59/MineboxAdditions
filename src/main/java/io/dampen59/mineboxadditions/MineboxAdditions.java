@@ -24,6 +24,7 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -52,13 +53,15 @@ public class MineboxAdditions implements ClientModInitializer {
     public void onInitializeClient() {
         ConfigManager.init();
         this.state = new State();
+        new SocketManager(state);
 
-        HudManager.INSTANCE.init();
+        ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
+            HudManager.INSTANCE.init();
+        });
+
         ItemTooltip.init();
 
         new SkyEvent();
-
-        new SocketManager(state);
         new ServerEvents(state);
         new ShopEventManager(state);
         new ContainerOpenEvent(state);

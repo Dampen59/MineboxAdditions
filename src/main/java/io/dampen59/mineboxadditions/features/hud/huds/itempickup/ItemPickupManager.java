@@ -1,8 +1,10 @@
-package io.dampen59.mineboxadditions.features.hud.itempickup;
+package io.dampen59.mineboxadditions.features.hud.huds.itempickup;
 
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
+import io.dampen59.mineboxadditions.features.hud.elements.ItemStackElement;
+import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
@@ -35,13 +37,13 @@ public class ItemPickupManager {
 
     private void onRender(DrawContext context, RenderTickCounter tickCounter) {
         var hud = (ItemPickupHud) HudManager.INSTANCE.getHud(Hud.Type.ITEM_PICKUP);
-        if (!hud.getState()) return;
-
         int offsetY = 0;
         for (ItemPickupNotification notif : itemPickupNotifications) {
-            hud.setItem(notif.stack);
-            hud.setCount(notif.count);
-            hud.drawWithItem(context, offsetY);
+            ItemStack item = notif.stack.copy();
+            item.setCount(notif.count);
+            hud.getNamedElement("item", ItemStackElement.class).setItem(item);
+            hud.getNamedElement("name", TextElement.class).setText(item.getName());
+            if (hud.getState()) hud.draw(context, offsetY);
             offsetY += hud.getHeight() + 2;
         }
     }

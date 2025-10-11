@@ -1,19 +1,18 @@
 package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
-import io.dampen59.mineboxadditions.features.hud.haversack.HaversackHud;
-import io.dampen59.mineboxadditions.features.hud.haversack.HaversackManager;
-import io.dampen59.mineboxadditions.features.hud.itempickup.ItemPickupHud;
-import io.dampen59.mineboxadditions.features.hud.other.MermaidHud;
-import io.dampen59.mineboxadditions.features.hud.other.WeatherHud;
-import io.dampen59.mineboxadditions.features.hud.itempickup.ItemPickupManager;
+import io.dampen59.mineboxadditions.features.hud.huds.ShopHud;
+import io.dampen59.mineboxadditions.features.hud.huds.haversack.HaversackHud;
+import io.dampen59.mineboxadditions.features.hud.huds.haversack.HaversackManager;
+import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupHud;
+import io.dampen59.mineboxadditions.features.hud.huds.MermaidHud;
+import io.dampen59.mineboxadditions.features.hud.huds.WeatherHud;
+import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupManager;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.text.Text;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -34,38 +33,29 @@ public enum HudManager {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client == null || client.player == null || client.options.hudHidden) return;
 
-        boolean isFullMoon = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() == 0;
-        if (isFullMoon && HudsConfig.fullmoon) {
-            HudManager.INSTANCE.getHud(Hud.Type.FULL_MOON).draw(context);
-        }
+        ShopHud shop = (ShopHud) getHud(Hud.Type.SHOP);
+        if (shop.getState()) shop.draw(context);
 
-        WeatherHud.RainHud.render(context, client);
-        WeatherHud.StormHud.render(context, client);
-        MermaidHud.render(context);
+        MermaidHud mermaid = (MermaidHud) getHud(Hud.Type.MERMAID_OFFER);
+        if (mermaid.getState()) mermaid.draw(context);
+
+        WeatherHud.RainHud rain = (WeatherHud.RainHud) getHud(Hud.Type.RAIN);
+        if (rain.getState()) rain.draw(context);
+
+        WeatherHud.StormHud storm = (WeatherHud.StormHud) getHud(Hud.Type.STORM);
+        if (storm.getState()) storm.draw(context);
+
+        WeatherHud.FullMoonHud fullMoon = (WeatherHud.FullMoonHud) getHud(Hud.Type.FULL_MOON);
+        boolean isFullMoon = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() == 0;
+        if (isFullMoon && fullMoon.getState()) fullMoon.draw(context);
     }
 
     private void initHuds() {
-        huds.put(Hud.Type.SHOP, new Hud(
-                () -> HudsConfig.shop.enabled,
-                s -> HudsConfig.shop.enabled = s,
-                () -> HudPositions.shop.x,
-                () -> HudPositions.shop.y,
-                x -> HudPositions.shop.x = x,
-                y -> HudPositions.shop.y = y,
-                "shop", Text.of("Shop Name: Shop Offer")));
-
+        huds.put(Hud.Type.SHOP, new ShopHud());
         huds.put(Hud.Type.MERMAID_OFFER, new MermaidHud());
         huds.put(Hud.Type.RAIN, new WeatherHud.RainHud());
         huds.put(Hud.Type.STORM, new WeatherHud.StormHud());
-        huds.put(Hud.Type.FULL_MOON, new Hud(
-                () -> HudsConfig.fullmoon,
-                s -> HudsConfig.fullmoon = s,
-                () -> HudPositions.fullMoon.x,
-                () -> HudPositions.fullMoon.y,
-                x -> HudPositions.fullMoon.x = x,
-                y -> HudPositions.fullMoon.y = y,
-                "full_moon"));
-
+        huds.put(Hud.Type.FULL_MOON, new WeatherHud.FullMoonHud());
         huds.put(Hud.Type.HAVERSACK_RATE, new HaversackHud.RateHud());
         huds.put(Hud.Type.HAVERSACK_FULL, new HaversackHud.FullHud());
         huds.put(Hud.Type.ITEM_PICKUP, new ItemPickupHud());

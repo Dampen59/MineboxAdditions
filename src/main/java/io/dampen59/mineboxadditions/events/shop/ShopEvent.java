@@ -3,6 +3,8 @@ package io.dampen59.mineboxadditions.events.shop;
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
+import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
+import io.dampen59.mineboxadditions.features.hud.huds.ShopHud;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -47,12 +49,18 @@ public class ShopEvent {
         this.setCurrentOffer = setCurrentOffer;
         this.isConfigEnabled = isConfigEnabled;
 
-        HudRenderCallback.EVENT.register(this::onRenderHud);
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
     }
 
     private void onTick(MinecraftClient client) {
         if (!state.isConnectedToMinebox() || client.world == null) return;
+
+        ShopHud hud = (ShopHud) HudManager.INSTANCE.getHud(Hud.Type.SHOP);
+        TextElement hudText = hud.getNamedElement("text", TextElement.class);
+
+        String offer = getCurrentOffer.get();
+        if (offer != null) hudText.setText(Text.of(offer));
+        else if (isShopOpen) hudText.setText(Text.translatable(shop.getToastTitleKey()));
 
         long worldTime = client.world.getTimeOfDay() % 24000;
         boolean withinShopTime = worldTime >= shop.getStartTime() && worldTime <= shop.getStopTime();
@@ -92,21 +100,5 @@ public class ShopEvent {
         );
         Utils.playSound(SoundEvents.BLOCK_BELL_USE);
         setAlertSent.accept(true);
-    }
-
-    private void onRenderHud(DrawContext context, RenderTickCounter tickCounter) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.options.hudHidden || client.player == null) return;
-        if (!HudsConfig.shop.enabled) return;
-
-        Hud hud = HudManager.INSTANCE.getHud(Hud.Type.SHOP);
-        String offer = getCurrentOffer.get();
-        if (offer != null) {
-            hud.setText(Text.of(offer));
-            hud.draw(context);
-        } else if (isShopOpen) {
-            hud.setText(Text.translatable(shop.getToastTitleKey()));
-            hud.draw(context);
-        }
     }
 }
