@@ -19,7 +19,7 @@
 			"io.dampen59.mineboxadditions.MineboxAdditions"
 		],
 		"modmenu": [
-			"io.dampen59.mineboxadditions.compatibility.modmenu.ModMenuEntry"
+			"io.dampen59.mineboxadditions.compatibility.ModMenuCompat"
 		]
 	},
 	"depends": {
