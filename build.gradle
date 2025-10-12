@@ -1,112 +1,121 @@
 plugins {
-	id "fabric-loom" version "${loom_version}"
-	id "maven-publish"
+    id "fabric-loom" version "${loom_version}"
+    id "maven-publish"
 }
 
 version = "${project.mod_version}+${project.minecraft_version}"
 group = project.maven_group
 
 base {
-	archivesName = project.archives_base_name
+    archivesName = project.archives_base_name
 }
 
 repositories {
-	maven {
-		name = "Mod Menu"
-		url = "https://maven.terraformersmc.com/releases/"
-	}
-	maven {
-		name = "DevLogin"
-		url = "https://maven.covers1624.net/"
-	}
-	maven {
-		name = "henkelmax.public"
-		url = "https://maven.maxhenkel.de/repository/public"
-	}
-	maven {
-		name = "Resourceful Config"
-		url = "https://maven.teamresourceful.com/repository/maven-public/"
-	}
+    mavenLocal()
+
+    maven {
+        name = "Minecraft Chromium Embedded Framework"
+        url = "https://mcef-download.cinemamod.com/repositories/releases/"
+        content {
+            excludeGroup "com.cinemamod"
+        }
+    }
+
+    maven {
+        name = "Mod Menu"
+        url = "https://maven.terraformersmc.com/releases/"
+    }
+    maven {
+        name = "DevLogin"
+        url = "https://maven.covers1624.net/"
+    }
+    maven {
+        name = "henkelmax.public"
+        url = "https://maven.maxhenkel.de/repository/public"
+    }
+    maven {
+        name = "Resourceful Config"
+        url = "https://maven.teamresourceful.com/repository/maven-public/"
+    }
 }
 
 dependencies {
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.layered {
-		mappings("net.fabricmc:yarn:${project.yarn_mappings}:v2")
-	}
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.layered {
+        mappings("net.fabricmc:yarn:${project.yarn_mappings}:v2")
+    }
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	// Fabric API
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	// Mod Menu
-	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
-	// Resourceful Config
-	modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
 
-	implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
-	include "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+    def mcefLocal = "com.cinemamod:mcef-fabric:${project.mcef_version}"
+    modImplementation mcefLocal
+    include mcefLocal
 
-	implementation "io.socket:socket.io-client:2.1.1"
-	include "io.socket:socket.io-client:2.1.1"
-	include "io.socket:engine.io-client:2.1.0"
-	include "com.squareup.okhttp3:okhttp:3.12.12"
-	// include "org.json:json:20090211"
-	include "org.json:json:20231013"
-	// include "com.squareup.okio:okio:1.15.0"
-	include "com.squareup.okio:okio:3.4.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+    include "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
 
-	implementation "de.maxhenkel.opus4j:opus4j:2.0.2"
-	include "de.maxhenkel.opus4j:opus4j:2.0.2"
+    implementation "io.socket:socket.io-client:2.1.1"
+    include "io.socket:socket.io-client:2.1.1"
+    include "io.socket:engine.io-client:2.1.0"
+    include "com.squareup.okhttp3:okhttp:3.12.12"
+    include "org.json:json:20231013"
+    include "com.squareup.okio:okio:3.4.0"
 
-	localRuntime "net.covers1624:DevLogin:${project.devlogin_version}"
+    implementation "de.maxhenkel.opus4j:opus4j:2.0.2"
+    include "de.maxhenkel.opus4j:opus4j:2.0.2"
+
+    localRuntime "net.covers1624:DevLogin:${project.devlogin_version}"
 }
 
 loom {
-	splitEnvironmentSourceSets()
-	accessWidenerPath = file("src/main/resources/mineboxadditions.accesswidener")
-	mods {
-		"mineboxadditions" {
-			sourceSet sourceSets.main
-			sourceSet sourceSets.client
-		}
-	}
+    splitEnvironmentSourceSets()
+    accessWidenerPath = file("src/main/resources/mineboxadditions.accesswidener")
+    mods {
+        "mineboxadditions" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
 
-	runs {
-		clientLogin {
-			client()
-			ideConfigGenerated true
-			programArgs "--launch_target", "net.fabricmc.loader.impl.launch.knot.KnotClient"
-			mainClass.set "net.covers1624.devlogin.DevLogin"
-		}
-	}
+    runs {
+        clientLogin {
+            client()
+            ideConfigGenerated true
+            programArgs "--launch_target", "net.fabricmc.loader.impl.launch.knot.KnotClient"
+            mainClass.set "net.covers1624.devlogin.DevLogin"
+        }
+    }
 }
 
 processResources {
-	inputs.property "version", project.version
-	inputs.property "minecraft_version", project.minecraft_version
-	inputs.property "loader_version", project.loader_version
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    inputs.property "loader_version", project.loader_version
 
-	filesMatching("fabric.mod.json") {
-		expand "version": inputs.properties.version,
-				"minecraft_version": inputs.properties.minecraft_version,
-				"loader_version": inputs.properties.loader_version
-	}
+    filesMatching("fabric.mod.json") {
+        expand "version": inputs.properties.version,
+                "minecraft_version": inputs.properties.minecraft_version,
+                "loader_version": inputs.properties.loader_version
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-	it.options.release = 21
+    it.options.release = 21
 }
 
 java {
-	withSourcesJar()
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
-	inputs.property "archivesName", project.base.archivesName
+    inputs.property "archivesName", project.base.archivesName
 
-	from("LICENSE") {
-		rename { "${it}_${inputs.properties.archivesName}"}
-	}
+    from("LICENSE") {
+        rename { "${it}_${inputs.properties.archivesName}"}
+    }
 }

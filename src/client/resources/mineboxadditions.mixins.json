@@ -6,7 +6,8 @@
     "ChatMessageMixin",
     "ChatScreenMixin",
     "HandledScreenMixin",
-    "ItemStackMixin"
+    "ItemStackMixin",
+    "BrowserTextureMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -100,7 +100,7 @@ public class ItemListWidget extends EntryListWidget<ItemListWidget.ItemEntry> {
         }
 
         @Nullable
-        private static Identifier loadTexture(String id, String base64) {
+        public static Identifier loadTexture(String id, String base64) {
             try {
                 String textureName = "textures/items/" + id + ".png";
                 return ImageUtils.createTextureFromBase64(base64, textureName);
@@ -111,7 +111,7 @@ public class ItemListWidget extends EntryListWidget<ItemListWidget.ItemEntry> {
             }
         }
 
-        private void preloadIngredientTextures(MineboxItem item) {
+        public void preloadIngredientTextures(MineboxItem item) {
             if (item.getRecipe() == null || item.getRecipe().getIngredients() == null) return;
 
             for (MineboxItem.Ingredient ingredient : item.getRecipe().getIngredients()) {

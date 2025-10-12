@@ -7,6 +7,7 @@ import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigUI;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
+import io.dampen59.mineboxadditions.features.harvestable.HarvestableMapScreen;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
@@ -86,7 +87,8 @@ public class MineboxAdditions implements ClientModInitializer {
                 client.setScreen(new MineboxAtlasScreen());
             }
             if (openHarvestables.wasPressed()) {
-                client.setScreen(new HarvestableScreen());
+                //client.setScreen(new HarvestableScreen());
+                client.setScreen(new HarvestableMapScreen());
             }
             if (openModSettings.wasPressed()) {
                 if (client.currentScreen == null) {

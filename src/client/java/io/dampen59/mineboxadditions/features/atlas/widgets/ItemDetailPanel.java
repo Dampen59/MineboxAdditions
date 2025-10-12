@@ -37,10 +37,20 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     private Integer pendingScrollOffset = null;
     private ButtonWidget lockButton;
     private TextFieldWidget quantityField;
+    private ButtonWidget clipboardButton;
     private int quantity = 1;
     private final Set<String> collapsed = new HashSet<>();
     private final Map<String, ClickRegion> toggleRegions = new HashMap<>();
 
+    private static final int UI_PADDING = 6;
+    private static final int CTRL_H = 14;
+    private static final int HEADER_H = CTRL_H + UI_PADDING * 2;
+    private final Map<String, List<MineboxItem>> usedInCache = new HashMap<>();
+
+    private java.util.function.Consumer<MineboxItem> onNavigate;
+    private final List<ClickRegionUsedIn> usedInRegions = new ArrayList<>();
+
+    private String lastPreloadedItemId = null;
 
     public ItemDetailPanel(Supplier<MineboxItem> itemSupplier, int x, int y, int width, int height) {
         this.itemSupplier = itemSupplier;
@@ -56,34 +66,30 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         boolean contains(double mx, double my) { return mx >= x && mx <= x+w && my >= y && my <= y+h; }
     }
 
+    private static final class ClickRegionUsedIn {
+        final ClickRegion region;
+        final MineboxItem target;
+        ClickRegionUsedIn(ClickRegion r, MineboxItem t) { region = r; target = t; }
+    }
+
+    public void setOnNavigate(java.util.function.Consumer<MineboxItem> onNavigate) {
+        this.onNavigate = onNavigate;
+    }
+
     public void initLockButton(Screen parent) {
-        int buttonWidth = 12;
-        int buttonHeight = 12;
-        int buttonX = x + width - buttonWidth - 6;
-        int buttonY = y - buttonHeight - 4;
+        int btnW = 16;
+        int btnH = 16;
+        int rowY = y + UI_PADDING + (HEADER_H - CTRL_H) / 2;
 
-        lockButton = ButtonWidget.builder(Text.of("🔒"), btn -> {
-            isLocked = !isLocked;
-            lockButton.setMessage(Text.of(isLocked ? "🔒" : "🔓"));
-            if (isLocked) {
-                lockedItem = itemSupplier.get();
-                if (lockedItem != null) {
-                    MineboxAdditions.INSTANCE.state.setLockedItemId(lockedItem.getId());
-                    MineboxAdditions.INSTANCE.state.setLockedItemScrollOffset(scrollOffset);
-                }
-            } else {
-                unlock();
-            }
-        }).dimensions(buttonX, buttonY, buttonWidth, buttonHeight).build();
-
-        parent.addDrawableChild(lockButton);
+        TextRenderer tr = MinecraftClient.getInstance().textRenderer;
+        int fieldW = Math.max(36, tr.getWidth("0000") + 10);
 
         quantityField = new TextFieldWidget(
-                MinecraftClient.getInstance().textRenderer,
-                x + 6, y - 16, 40, 12,
+                tr,
+                x + UI_PADDING, rowY, fieldW, CTRL_H,
                 Text.of("Qty"));
         quantityField.setMaxLength(4);
-        quantityField.setText("1");
+        quantityField.setText(String.valueOf(quantity));
         quantityField.setChangedListener(text -> {
             try {
                 int newQty = Integer.parseInt(text.trim());
@@ -93,12 +99,74 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                         MineboxAdditions.INSTANCE.state.setLockedItemQuantity(quantity);
                     }
                 }
-            } catch (NumberFormatException ignored) {
-                // bah alors chef, t'es défoncé pour pas savoir écrire un chiffre ?
-            }
+            } catch (NumberFormatException ignored) {}
         });
-
         parent.addDrawableChild(quantityField);
+
+        int buttonX = x + width - btnW - UI_PADDING;
+        int buttonY = rowY;
+        lockButton = ButtonWidget.builder(Text.of(isLocked ? "🔒" : "🔓"), btn -> {
+            isLocked = !isLocked;
+            lockButton.setMessage(Text.of(isLocked ? "🔒" : "🔓"));
+            if (isLocked) {
+                lockedItem = itemSupplier.get();
+                if (lockedItem != null) {
+                    MineboxAdditions.INSTANCE.state.setLockedItemId(lockedItem.getId());
+                    MineboxAdditions.INSTANCE.state.setLockedItemScrollOffset(scrollOffset);
+                    MineboxAdditions.INSTANCE.state.setLockedItemQuantity(quantity);
+                }
+            } else {
+                unlock();
+            }
+        }).dimensions(buttonX, buttonY, btnW, btnH).build();
+        parent.addDrawableChild(lockButton);
+
+        clipboardButton = ButtonWidget.builder(Text.of("📋"), btn -> {
+            MineboxItem item = isLocked ? lockedItem : itemSupplier.get();
+            if (item == null || item.getRecipe() == null || item.getRecipe().getIngredients() == null) return;
+            Map<String, Integer> flat = new HashMap<>();
+            for (MineboxItem.Ingredient ing : item.getRecipe().getIngredients()) {
+                collectBaseIngredients(ing, quantity, flat);
+            }
+            List<String> lines = new ArrayList<>();
+            for (var entry : flat.entrySet()) {
+                String[] parts = entry.getKey().split(":", 2);
+                boolean isVanilla = "v".equals(parts[0]);
+                String id = parts[1];
+                String name;
+                if (isVanilla) {
+                    Identifier rid = Identifier.of("minecraft", id);
+                    Item mcItem = Registries.ITEM.get(rid);
+                    name = Text.translatable(mcItem.getTranslationKey()).getString();
+                } else {
+                    name = MineboxItem.getDisplayName(MineboxAdditions.INSTANCE.state.getItemById(id)).getString();
+                }
+                lines.add("- " + entry.getValue() + "x " + name);
+            }
+            lines.sort(String::compareToIgnoreCase);
+            MinecraftClient.getInstance().keyboard.setClipboard(String.join("\n", lines));
+            Utils.showToastNotification("Copied to clipboard", "The recipe has been copied to your clipboard!");
+        }).dimensions(x + UI_PADDING, rowY, 16, 16).build();
+        parent.addDrawableChild(clipboardButton);
+    }
+
+    private void collectBaseIngredients(MineboxItem.Ingredient ing, int multiplier, Map<String, Integer> out) {
+        int amount = ing.getAmount() * multiplier;
+
+        boolean hasSubRecipe = !ing.isVanilla()
+                && ing.getCustomItem() != null
+                && ing.getCustomItem().getRecipe() != null
+                && ing.getCustomItem().getRecipe().getIngredients() != null
+                && !ing.getCustomItem().getRecipe().getIngredients().isEmpty();
+
+        if (hasSubRecipe) {
+            for (MineboxItem.Ingredient sub : ing.getCustomItem().getRecipe().getIngredients()) {
+                collectBaseIngredients(sub, amount, out);
+            }
+        } else {
+            String key = (ing.isVanilla() ? "v:" : "c:") + ing.getId();
+            out.merge(key, amount, Integer::sum);
+        }
     }
 
     public void unlock() {
@@ -111,7 +179,6 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         MineboxAdditions.INSTANCE.state.setLockedItemId(null);
         MineboxAdditions.INSTANCE.state.setLockedItemScrollOffset(null);
 
-        // ⬇️ Optional: clear persisted collapsed state
         MineboxAdditions.INSTANCE.state.setLockedCollapsedKeys(Collections.emptySet());
     }
 
@@ -129,7 +196,6 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         Integer savedScroll = MineboxAdditions.INSTANCE.state.getLockedItemScrollOffset();
         if (savedScroll != null) pendingScrollOffset = savedScroll;
 
-        // ⬇️ Restore collapsed state
         collapsed.clear();
         collapsed.addAll(MineboxAdditions.INSTANCE.state.getLockedCollapsedKeys());
     }
@@ -147,48 +213,122 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             if (stack.isEmpty())
                 continue;
 
-            if (ingredient.isVanilla()) {
+            if (Utils.isMineboxItem(stack)) {
+                String mbxItemIdRaw = Utils.getMineboxItemId(stack);
+                String mbxItemId = Utils.processIdMismatch(mbxItemIdRaw);
+                if (mbxItemId != null && mbxItemId.equals(ingredient.getId())) {
+                    totalCount += stack.getCount();
+                    if (totalCount >= requiredAmount)
+                        return true;
+                }
+            } else if (ingredient.isVanilla()) {
                 Item ingredientItem = Registries.ITEM.get(Identifier.of("minecraft", ingredient.getId()));
                 if (stack.getItem() == ingredientItem) {
                     totalCount += stack.getCount();
                     if (totalCount >= requiredAmount)
                         return true;
                 }
-            } else {
-                if (Utils.isMineboxItem(stack)) {
-                    String mbxItemId = Utils.getMineboxItemId(stack);
-                    if (mbxItemId != null && mbxItemId.equals(ingredient.getId())) {
-                        totalCount += stack.getCount();
-                        if (totalCount >= requiredAmount)
-                            return true;
-                    }
-                }
             }
+
         }
 
         return false;
     }
 
+    private int playerIngredientCount(MineboxItem.Ingredient ingredient) {
+        if (MinecraftClient.getInstance().player == null)
+            return -1;
+
+        var inventory = MinecraftClient.getInstance().player.getInventory();
+        int totalCount = 0;
+
+        for (int i = 0; i < inventory.size(); i++) {
+            var stack = inventory.getStack(i);
+            if (stack.isEmpty())
+                continue;
+
+            if (Utils.isMineboxItem(stack)) {
+                String mbxItemIdRaw = Utils.getMineboxItemId(stack);
+                String mbxItemId = Utils.processIdMismatch(mbxItemIdRaw);
+                if (mbxItemId != null && mbxItemId.equals(ingredient.getId())) {
+                    totalCount += stack.getCount();
+                }
+            } else if (ingredient.isVanilla()) {
+                Item ingredientItem = Registries.ITEM.get(Identifier.of("minecraft", ingredient.getId()));
+                if (stack.getItem() == ingredientItem) {
+                    totalCount += stack.getCount();
+                }
+            }
+
+        }
+        return totalCount;
+    }
+
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         toggleRegions.clear();
+        usedInRegions.clear();
         MineboxItem item = isLocked ? lockedItem : itemSupplier.get();
-        if (item == null)
-            return;
+        if (item == null) return;
+        if (!item.getId().equals(lastPreloadedItemId)) {
+            preloadUsedInTextures(item);
+        }
 
-        if (pendingScrollOffset != null)
+        if (pendingScrollOffset != null) {
             scrollOffset = Math.max(0, pendingScrollOffset);
+        }
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
         final int lineHeight = 12;
-        final int leftMargin = x + 6;
+        final int leftMargin = x + UI_PADDING;
 
         context.getMatrices().pushMatrix();
         context.fill(x - 6, y - 6, x + width + 6, y + height, 0xAA000000);
-        context.enableScissor(x, y, x + width, y + height);
+
+        int headerBottom = y + HEADER_H;
+        context.fill(x, y, x + width, headerBottom, 0x66000000);
+
+        String label = "Qty:";
+        int labelW = textRenderer.getWidth(label);
+        int fieldW = Math.max(36, textRenderer.getWidth("0000") + 10);
+        if (quantityField != null) quantityField.setWidth(fieldW);
+        int lockW = (lockButton != null) ? lockButton.getWidth() : 16;
+        int clipW = (clipboardButton != null) ? clipboardButton.getWidth() : 16;
+        int spacer = 6;
+
+        int rowY = y + (HEADER_H - CTRL_H) / 2;
+
+        int totalW = labelW + spacer + fieldW + spacer + lockW + spacer + clipW;
+        int startX = x + (width - totalW) / 2;
+
+        // Quantity label
+        int labelX = startX;
+        int labelY = y + (HEADER_H - textRenderer.fontHeight) / 2;
+        context.drawText(textRenderer, Text.of(label), labelX, labelY, 0xFFFFFFFF, false);
+
+        // Quantity text field
+        if (quantityField != null) {
+            quantityField.setX(labelX + labelW + spacer);
+            quantityField.setY(rowY);
+        }
+
+        // Lock
+        if (lockButton != null) {
+            lockButton.setX(quantityField.getX() + fieldW + spacer);
+            lockButton.setY(rowY);
+        }
+
+        // Set clip btn
+        if (clipboardButton != null) {
+            clipboardButton.setX(lockButton.getX() + lockW + spacer);
+            clipboardButton.setY(rowY);
+        }
+
+
+        context.enableScissor(x, y + HEADER_H, x + width, y + height);
         context.getMatrices().translate(0f, (float) -scrollOffset);
 
-        int drawY = y + 5;
+        int drawY = y + HEADER_H + 5;
 
         // Icon
         Identifier icon = ItemListWidget.ItemEntry.getTexture(item.getId());
@@ -237,26 +377,6 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             }
         }
 
-        // Used in
-        List<MineboxItem> usedIn = MineboxAdditions.INSTANCE.state.getMbxItems().stream()
-                .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
-                .filter(other -> other.getRecipe().getIngredients().stream()
-                        .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))
-                .toList();
-
-        if (!usedIn.isEmpty()) {
-            context.drawText(textRenderer, Text.of("Used in:"), leftMargin, drawY, 0xFFFFD700, false);
-            drawY += lineHeight;
-
-            for (MineboxItem parent : usedIn) {
-                context.drawText(textRenderer, Text.literal("→ ").append(MineboxItem.getDisplayName(parent)),
-                        leftMargin + 8, drawY, 0xFFFFFFFF, false);
-                drawY += lineHeight;
-            }
-
-            drawY += 4;
-        }
-
         // Recipe
         if (item.getRecipe() != null && item.getRecipe().getIngredients() != null) {
             context.drawText(textRenderer, Text.of("Recipe:"), leftMargin, drawY, 0xFFFFD700, false);
@@ -264,13 +384,63 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             List<MineboxItem.Ingredient> ingredients = item.getRecipe().getIngredients();
             for (int i = 0; i < ingredients.size(); i++) {
                 boolean isLast = i == ingredients.size() - 1;
-                drawY = renderRecipeIngredient(context, textRenderer, ingredients.get(i),
-                        leftMargin, drawY, 0, quantity, isLast, "root");
+                drawY = renderRecipeIngredient(
+                        context, textRenderer, ingredients.get(i),
+                        leftMargin, drawY, 0, quantity, isLast, "root"
+                );
             }
+            drawY += 4;
         }
 
-        contentHeight = drawY - y;
-        maxScroll = Math.max(0, contentHeight - height);
+        // Used in
+        List<MineboxItem> usedIn = usedInCache.computeIfAbsent(item.getId(), key ->
+                MineboxAdditions.INSTANCE.state.getMbxItems().stream()
+                        .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
+                        .filter(other -> other.getRecipe().getIngredients().stream()
+                                .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))
+                        .toList()
+        );
+
+        if (!usedIn.isEmpty()) {
+            context.drawText(textRenderer, Text.of("Used in:"), leftMargin, drawY, 0xFFFFD700, false);
+            drawY += lineHeight;
+
+            int iconSizeUsedIn = 16;
+            int rowSpacing = 6;
+            int textOffset = iconSizeUsedIn + 4;
+
+            for (MineboxItem parent : usedIn) {
+                Identifier parentIcon = ItemListWidget.ItemEntry.getTexture(parent.getId());
+
+                if (parentIcon != null) {
+                    context.drawTexture(
+                            RenderPipelines.GUI_TEXTURED,
+                            parentIcon,
+                            leftMargin, drawY,
+                            0, 0,
+                            iconSizeUsedIn, iconSizeUsedIn,
+                            iconSizeUsedIn, iconSizeUsedIn
+                    );
+                }
+
+                Text name = MineboxItem.getDisplayName(parent);
+                context.drawText(textRenderer, name, leftMargin + textOffset, drawY + (iconSizeUsedIn - textRenderer.fontHeight) / 2, 0xFFFFFFFF, false);
+
+                int clickableWidth = textOffset + textRenderer.getWidth(name);
+                usedInRegions.add(new ClickRegionUsedIn(
+                        new ClickRegion(leftMargin, drawY, clickableWidth, iconSizeUsedIn),
+                        parent
+                ));
+
+                drawY += iconSizeUsedIn + rowSpacing;
+            }
+
+            drawY += 4;
+        }
+
+
+        contentHeight = drawY - (y + HEADER_H);
+        maxScroll = Math.max(0, contentHeight - (height - HEADER_H));
 
         if (pendingScrollOffset != null) {
             scrollOffset = Math.max(0, Math.min(pendingScrollOffset, maxScroll));
@@ -290,6 +460,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         int amount = ingredient.getAmount() * amountMultiplier;
         boolean hasItem = playerHasIngredient(ingredient, amountMultiplier);
+        int ingredientCount = playerIngredientCount(ingredient);
         int stacks = amount / 64;
         int remainder = amount % 64;
         int iconX = x + indent;
@@ -303,7 +474,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         String key = nodeKey(path, ingredient);
 
         if (expandable) {
-            boolean isCollapsed = collapsed.contains(key);
+            boolean isCollapsed = !collapsed.contains(key);
             String twisty = isCollapsed ? "▶" : "▼";
             int twistyX = iconX - 10;
             int twistyY = y + (iconSize - textRenderer.fontHeight) / 2;
@@ -338,7 +509,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         amountText.append(Text.literal(" × "))
                 .append(ingredient.getDisplayName())
-                .append(Text.literal(hasItem ? " ✅" : " ❌")
+                .append(Text.literal(hasItem ? " ✅" : " ❌ ("+ ingredientCount + "/" + amount + ")")
                         .styled(style -> style.withColor(hasItem ? 0xFF55FF55 : 0xFFFF5555)));
 
         context.drawText(textRenderer, amountText, textX, textY, 0xFFFFFFFF, false);
@@ -346,7 +517,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         y += iconSize + spacing;
 
         // Sub ing
-        if (expandable && !collapsed.contains(key)) {
+        if (expandable && collapsed.contains(key)) {
             MineboxItem subItem = ingredient.getCustomItem();
             var subs = subItem.getRecipe().getIngredients();
 
@@ -364,14 +535,9 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double h, double v) {
-        if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height)
-            return false;
-        scrollOffset -= v * SCROLL_STEP;
-        scrollOffset = Math.max(0, Math.min(scrollOffset, maxScroll));
-
-        if (isLocked) {
-            MineboxAdditions.INSTANCE.state.setLockedItemScrollOffset(scrollOffset);
-        }
+        if (mouseX < x || mouseX > x + width || mouseY < y + HEADER_H || mouseY > y + height) return false;
+        scrollOffset = Math.max(0, Math.min(scrollOffset - (int)(v * SCROLL_STEP), maxScroll));
+        if (isLocked) MineboxAdditions.INSTANCE.state.setLockedItemScrollOffset(scrollOffset);
         return true;
     }
 
@@ -404,6 +570,18 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 return true;
             }
         }
+
+        for (ClickRegionUsedIn ui : usedInRegions) {
+            if (ui.region.contains(mouseX, adjY)) {
+                preloadTextures(ui.target);
+                if (onNavigate != null) {
+                    onNavigate.accept(ui.target);
+                }
+                pendingScrollOffset = 0;
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -427,4 +605,73 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
     @Override
     public SelectionType getType() { return SelectionType.HOVERED; }
+
+    public void setControlsVisible(boolean visible) {
+        if (quantityField != null) quantityField.setVisible(visible);
+        if (lockButton != null) lockButton.visible = visible;
+        if (clipboardButton != null) clipboardButton.visible = visible;
+    }
+
+    private void preloadTextures(MineboxItem item) {
+        if (item == null) return;
+
+        ItemListWidget.ItemEntry.getTextureCache()
+                .computeIfAbsent(item.getId(),
+                        id -> ItemListWidget.ItemEntry.loadTexture(item.getId(), item.getTexture()));
+
+        if (item.getRecipe() != null && item.getRecipe().getIngredients() != null) {
+            for (MineboxItem.Ingredient ing : item.getRecipe().getIngredients()) {
+                preloadIngredientTextures(ing);
+            }
+        }
+    }
+
+    private void preloadIngredientTextures(MineboxItem.Ingredient ing) {
+        if (ing.isVanilla()) {
+            Identifier vanillaId = Identifier.of("minecraft", "textures/item/" + ing.getId() + ".png");
+            ItemListWidget.ItemEntry.getTextureCache().putIfAbsent(ing.getId(), vanillaId);
+            return;
+        }
+
+        MineboxItem sub = ing.getCustomItem();
+        if (sub != null) {
+            ItemListWidget.ItemEntry.getTextureCache()
+                    .computeIfAbsent(sub.getId(),
+                            id -> ItemListWidget.ItemEntry.loadTexture(sub.getId(), sub.getTexture()));
+
+            if (sub.getRecipe() != null && sub.getRecipe().getIngredients() != null) {
+                for (MineboxItem.Ingredient subIng : sub.getRecipe().getIngredients()) {
+                    preloadIngredientTextures(subIng);
+                }
+            }
+        }
+    }
+
+    private void preloadUsedInTextures(MineboxItem item) {
+        if (item == null) return;
+        if (item.getId().equals(lastPreloadedItemId)) return;
+        lastPreloadedItemId = item.getId();
+
+        List<MineboxItem> usedIn = usedInCache.computeIfAbsent(item.getId(), key ->
+                MineboxAdditions.INSTANCE.state.getMbxItems().stream()
+                        .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
+                        .filter(other -> other.getRecipe().getIngredients().stream()
+                                .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))
+                        .toList()
+        );
+
+        for (MineboxItem parent : usedIn) {
+            ItemListWidget.ItemEntry.getTextureCache()
+                    .computeIfAbsent(parent.getId(),
+                            id -> ItemListWidget.ItemEntry.loadTexture(parent.getId(), parent.getTexture()));
+
+            if (parent.getRecipe() != null && parent.getRecipe().getIngredients() != null) {
+                for (MineboxItem.Ingredient ing : parent.getRecipe().getIngredients()) {
+                    preloadIngredientTextures(ing);
+                }
+            }
+        }
+    }
+
+
 }

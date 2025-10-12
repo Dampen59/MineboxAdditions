@@ -64,7 +64,9 @@ public class MineboxAtlasScreen extends Screen {
         itemDetailPanel = new ItemDetailPanel(this::getSelectedItem, detailX, 20, this.width - panelWidth - 50, height + 70);
         this.addDrawableChild(itemDetailPanel);
         this.addSelectableChild(itemDetailPanel);
+        itemDetailPanel.setOnNavigate(this::setSelectedItem);
         itemDetailPanel.initLockButton(this);
+        itemDetailPanel.setControlsVisible(false);
         String lockedId = MineboxAdditions.INSTANCE.state.getLockedItemId();
         if (lockedId != null) {
             MineboxItem locked = allItems.stream()
@@ -74,6 +76,7 @@ public class MineboxAtlasScreen extends Screen {
             if (locked != null) {
                 selectedItem = locked;
                 itemDetailPanel.lock(locked);
+                itemDetailPanel.setControlsVisible(true);
             }
         }
 
@@ -109,7 +112,7 @@ public class MineboxAtlasScreen extends Screen {
 
     public void setSelectedItem(MineboxItem item) {
         this.selectedItem = item;
-
+        itemDetailPanel.setControlsVisible(true);
         if (itemDetailPanel != null) {
             itemDetailPanel.unlock();
         }
