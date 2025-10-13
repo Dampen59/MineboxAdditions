@@ -33,15 +33,12 @@ public class HarvestableMapScreen extends Screen {
     private static final String BASE_URL = "http://localhost:8100/";
     private static final String MAP_HASH = "#island_main:175:0:-28:500:0:0:0:1:flat";
 
-
     protected BrowserTexture browserTexture;
-    private final MinecraftClient minecraft = MinecraftClient.getInstance();
     private MCEFBrowser browser = null;
     private static final Identifier MCEF_TEX_ID = Identifier.of("mineboxadditions", "mceftex");
 
     private final MinecraftClient mc = MinecraftClient.getInstance();
     private String islandKeyPath;
-    private List<Harvestable> data = List.of();
 
     private final Map<String, List<Harvestable>> byCategory = new HashMap<>();
     private final Map<Harvestable, List<Harvestable>> groupMembers = new HashMap<>();
@@ -65,7 +62,6 @@ public class HarvestableMapScreen extends Screen {
         super(Text.literal("Harvestables Map"));
     }
 
-
     @Override
     protected void init() {
         super.init();
@@ -80,7 +76,7 @@ public class HarvestableMapScreen extends Screen {
         List<Harvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
         if (raw == null || raw.isEmpty())
             raw = modState.getMineboxHarvestables(worldId.toString());
-        data = raw != null ? raw : List.of();
+        List<Harvestable> data = raw != null ? raw : List.of();
 
         Map<String, Map<String, List<Harvestable>>> grouped = new HashMap<>();
         for (var h : data) {
@@ -98,7 +94,7 @@ public class HarvestableMapScreen extends Screen {
             List<Harvestable> reps = new ArrayList<>();
             for (var nameEntry : e.getValue().entrySet()) {
                 List<Harvestable> members = nameEntry.getValue();
-                Harvestable rep = members.get(0);
+                Harvestable rep = members.getFirst();
                 reps.add(rep);
                 groupMembers.put(rep, members);
             }
@@ -179,29 +175,10 @@ public class HarvestableMapScreen extends Screen {
             MCEF.getSettings().setUseCache(false);
             browser = MCEF.createBrowser(fullUrl, false);
             resizeBrowser();
-            MinecraftClient.getInstance().getTextureManager().registerTexture(MCEF_TEX_ID, this.browserTexture);
+            mc.getTextureManager().registerTexture(MCEF_TEX_ID, this.browserTexture);
         } else {
             browser.loadURL(fullUrl);
         }
-    }
-
-    private String buildInitialUrl() {
-        List<String> params = new ArrayList<>();
-
-        for (Map.Entry<String, CheckboxWidget> e : catChecks.entrySet()) {
-            if (!e.getValue().isChecked()) {
-                params.add("cat." + e.getKey() + "=false");
-            }
-        }
-        for (Map.Entry<Harvestable, CheckboxWidget> e : itemChecks.entrySet()) {
-            String id = e.getKey().getName() != null ? e.getKey().getName() : "unknown";
-            if (!e.getValue().isChecked()) {
-                params.add(id + "=false");
-            }
-        }
-
-        String query = params.isEmpty() ? "" : "?" + String.join("&", params);
-        return BASE_URL + query + MAP_HASH;
     }
 
     @Override
@@ -214,7 +191,7 @@ public class HarvestableMapScreen extends Screen {
             Boolean prev = lastCatState.get(cat);
             if (prev == null || prev != cur) {
                 lastCatState.put(cat, cur);
-                js("if(window.mbxSetCategory){ window.mbxSetCategory(" + jsString(cat) + ", " + cur + "); }");
+                applyCategoryVisibilityToItems(cat, cur);
             }
         }
 
@@ -224,45 +201,15 @@ public class HarvestableMapScreen extends Screen {
             Boolean prev = lastItemState.get(rep);
             if (prev == null || prev != cur) {
                 lastItemState.put(rep, cur);
+
                 String id = rep.getName() != null ? rep.getName() : "unknown";
-                js("if(window.mbxSetItem){ window.mbxSetItem(" + jsString(id) + ", " + cur + "); }");
-            }
-        }
-    }
+                String cat = repToCategory.get(rep);
+                boolean catChecked = true;
+                CheckboxWidget catCb = (cat != null) ? catChecks.get(cat) : null;
+                if (catCb != null) catChecked = catCb.isChecked();
 
-    private int browserLeft() {
-        return SIDEBAR_WIDTH + PADDING;
-    }
-    private int browserTop() {
-        return PADDING;
-    }
-    private int browserWidth() {
-        return Math.max(0, this.width - (SIDEBAR_WIDTH + 2 * PADDING));
-    }
-    private int browserHeight() {
-        return Math.max(0, this.height - 2 * PADDING);
-    }
-
-    private boolean isInBrowser(double x, double y) {
-        return x >= browserLeft() && y >= browserTop()
-                && x < browserLeft() + browserWidth()
-                && y < browserTop() + browserHeight();
-    }
-
-    private int mouseXForBrowser(double x) {
-        return (int) ((x - browserLeft()) * minecraft.getWindow().getScaleFactor());
-    }
-
-    private int mouseYForBrowser(double y) {
-        return (int) ((y - browserTop()) * minecraft.getWindow().getScaleFactor());
-    }
-
-    private void resizeBrowser() {
-        if (browser != null) {
-            int scaledW = (int) (browserWidth() * minecraft.getWindow().getScaleFactor());
-            int scaledH = (int) (browserHeight() * minecraft.getWindow().getScaleFactor());
-            if (scaledW > 0 && scaledH > 0) {
-                browser.resize(scaledW, scaledH);
+                boolean shouldShow = catChecked && cur;
+                js("if (window.mbxSetItem) { window.mbxSetItem(" + jsString(id) + ", " + shouldShow + "); }");
             }
         }
     }
@@ -300,13 +247,6 @@ public class HarvestableMapScreen extends Screen {
 
         if (browser != null) browser.close();
         super.close();
-    }
-
-    private void updateFrame() {
-        if (browser == null) return;
-        browserTexture.setId(browser.getRenderer().getTextureID());
-        browserTexture.setWidth(this.width);
-        browserTexture.setHeight(this.height);
     }
 
     @Override
@@ -515,6 +455,88 @@ public class HarvestableMapScreen extends Screen {
     @Override
     public boolean shouldPause() {
         return false;
+    }
+
+    private String buildInitialUrl() {
+        List<String> params = new ArrayList<>();
+
+        for (Map.Entry<Harvestable, CheckboxWidget> e : itemChecks.entrySet()) {
+            Harvestable rep = e.getKey();
+            String id = rep.getName() != null ? rep.getName() : "unknown";
+
+            String cat = repToCategory.get(rep);
+            boolean catChecked = true;
+            CheckboxWidget catCb = (cat != null) ? catChecks.get(cat) : null;
+            if (catCb != null) catChecked = catCb.isChecked();
+
+            boolean itemChecked = e.getValue().isChecked();
+            boolean visible = catChecked && itemChecked;
+
+            if (!visible) {
+                params.add(id + "=false");
+            }
+        }
+
+        String query = params.isEmpty() ? "" : "?" + String.join("&", params);
+        return BASE_URL + query + MAP_HASH;
+    }
+
+    private void applyCategoryVisibilityToItems(String cat, boolean catChecked) {
+        List<Harvestable> reps = byCategory.getOrDefault(cat, List.of());
+        for (Harvestable rep : reps) {
+            CheckboxWidget itCb = itemChecks.get(rep);
+            if (itCb == null) continue;
+
+            boolean itemChecked = itCb.isChecked();
+            boolean shouldShow = catChecked && itemChecked;
+
+            String id = rep.getName() != null ? rep.getName() : "unknown";
+            js("if (window.mbxSetItem) { window.mbxSetItem(" + jsString(id) + ", " + shouldShow + "); }");
+        }
+    }
+
+    private int browserLeft() {
+        return SIDEBAR_WIDTH + PADDING;
+    }
+    private int browserTop() {
+        return PADDING;
+    }
+    private int browserWidth() {
+        return Math.max(0, this.width - (SIDEBAR_WIDTH + 2 * PADDING));
+    }
+    private int browserHeight() {
+        return Math.max(0, this.height - 2 * PADDING);
+    }
+
+    private boolean isInBrowser(double x, double y) {
+        return x >= browserLeft() && y >= browserTop()
+                && x < browserLeft() + browserWidth()
+                && y < browserTop() + browserHeight();
+    }
+
+    private int mouseXForBrowser(double x) {
+        return (int) ((x - browserLeft()) * mc.getWindow().getScaleFactor());
+    }
+
+    private int mouseYForBrowser(double y) {
+        return (int) ((y - browserTop()) * mc.getWindow().getScaleFactor());
+    }
+
+    private void resizeBrowser() {
+        if (browser != null) {
+            int scaledW = (int) (browserWidth() * mc.getWindow().getScaleFactor());
+            int scaledH = (int) (browserHeight() * mc.getWindow().getScaleFactor());
+            if (scaledW > 0 && scaledH > 0) {
+                browser.resize(scaledW, scaledH);
+            }
+        }
+    }
+
+    private void updateFrame() {
+        if (browser == null) return;
+        browserTexture.setId(browser.getRenderer().getTextureID());
+        browserTexture.setWidth(this.width);
+        browserTexture.setHeight(this.height);
     }
 
     private List<String> sortedCategories() {
