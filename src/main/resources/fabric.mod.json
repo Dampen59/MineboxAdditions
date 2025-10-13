@@ -1,45 +1,45 @@
 {
-	"schemaVersion": 1,
-	"id": "mineboxadditions",
-	"version": "${version}",
-	"name": "MineboxAdditions",
-	"description": "Minebox quality-of-life features",
-	"authors": ["Dampen59"],
-	"contributors": ["Amianthus", "Kraineff"],
-	"contact": {
-		"homepage": "https://modrinth.com/mod/mineboxadditions",
-		"sources": "https://github.com/Dampen59/MineboxAdditions",
-		"issues": "https://github.com/Dampen59/MineboxAdditions/issues"
-	},
-	"license": "GPL-3.0",
-	"icon": "assets/mineboxadditions/icon.png",
-	"environment": "client",
-	"entrypoints": {
-		"client": [
-			"io.dampen59.mineboxadditions.MineboxAdditions"
-		],
-		"modmenu": [
-			"io.dampen59.mineboxadditions.compatibility.ModMenuCompat"
-		]
-	},
-	"depends": {
-		"fabricloader": ">=${loader_version}",
-		"fabric-api": "*",
-		"minecraft": "~${minecraft_version}",
-		"java": ">=21"
-	},
-	"accessWidener": "mineboxadditions.accesswidener",
-	"mixins": [
-		{
-			"config": "mineboxadditions.mixins.json",
-			"environment": "client"
-		}
-	],
-	"custom": {
-		"modmenu": {
-			"links": {
-				"modmenu.modrinth": "https://modrinth.com/mod/mineboxadditions"
-			}
-		}
-	}
+  "schemaVersion": 1,
+  "id": "mineboxadditions",
+  "version": "${version}",
+  "name": "MineboxAdditions",
+  "description": "Minebox quality-of-life features",
+  "authors": ["Dampen59"],
+  "contributors": ["Amianthus", "Kraineff"],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/mineboxadditions",
+    "sources": "https://github.com/Dampen59/MineboxAdditions",
+    "issues": "https://github.com/Dampen59/MineboxAdditions/issues"
+  },
+  "license": "GPL-3.0",
+  "icon": "assets/mineboxadditions/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "io.dampen59.mineboxadditions.MineboxAdditions"
+    ],
+    "modmenu": [
+      "io.dampen59.mineboxadditions.compatibility.ModMenuCompat"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=21"
+  },
+  "accessWidener": "mineboxadditions.accesswidener",
+  "mixins": [
+    {
+      "config": "mineboxadditions.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.modrinth": "https://modrinth.com/mod/mineboxadditions"
+      }
+    }
+  }
 }
