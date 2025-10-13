@@ -6,16 +6,11 @@ plugins {
 version = "${project.mod_version}+${project.minecraft_version}"
 group = project.maven_group
 
-base {
-    archivesName = project.archives_base_name
-}
-
 repositories {
     maven {
         name = "Minecraft Chromium Embedded Framework"
         url = "https://maven.dampen59.io/"
     }
-
     maven {
         name = "Mod Menu"
         url = "https://maven.terraformersmc.com/releases/"
@@ -41,10 +36,13 @@ dependencies {
     }
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
+    // Fabric API
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    // Mod Menu
+    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    // Resourceful Config
     modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
-
+    // MCEF
     def mcefLocal = "com.cinemamod:mcef-fabric:${project.mcef_version}"
     modImplementation mcefLocal
     include mcefLocal
@@ -62,19 +60,12 @@ dependencies {
     implementation "de.maxhenkel.opus4j:opus4j:2.0.2"
     include "de.maxhenkel.opus4j:opus4j:2.0.2"
 
-    localRuntime "net.covers1624:DevLogin:${project.devlogin_version}"
+    // Dev Login
+    localRuntime "net.covers1624:DevLogin:0.1.0.5"
 }
 
 loom {
-    splitEnvironmentSourceSets()
     accessWidenerPath = file("src/main/resources/mineboxadditions.accesswidener")
-    mods {
-        "mineboxadditions" {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
-
     runs {
         clientLogin {
             client()
@@ -83,6 +74,10 @@ loom {
             mainClass.set "net.covers1624.devlogin.DevLogin"
         }
     }
+}
+
+base {
+    archivesName = project.archives_base_name
 }
 
 processResources {
@@ -108,9 +103,7 @@ java {
 }
 
 jar {
-    inputs.property "archivesName", project.base.archivesName
-
     from("LICENSE") {
-        rename { "${it}_${inputs.properties.archivesName}"}
+        rename { "${it}_${base.archivesName.get()}" }
     }
 }
