@@ -19,14 +19,19 @@ import java.util.regex.Pattern;
 @Mixin(BossBar.class)
 public abstract class BossBarMixin {
     @Unique
-    private final Pattern ZONE_PATTERN = Pattern.compile("끫\\s*([^]+?)");
+    private static final Pattern ZONE_PATTERN = Pattern.compile("끫\\s*([^]+?)");
     @Unique
-    private final Pattern TIME_PATTERN = Pattern.compile("끪\\s*([^]+?)");
+    private static final Pattern TIME_PATTERN = Pattern.compile("끪\\s*([^]+?)");
     @Unique
-    private final Pattern SKILL_PATTERN = Pattern.compile("^(.+?)\\s*\\|\\s*.*?(\\d+)\\s*\\((\\d+)\\s*/\\s*(\\d+)\\)$");
+    private static final Pattern SKILL_PATTERN = Pattern.compile("^(.+?)\\s*\\|\\s*.*?(\\d+)\\s*\\((\\d+)\\s*/\\s*(\\d+)\\)$");
 
     @Inject(method = "setName", at = @At("HEAD"))
     private void mbx$setName(Text name, CallbackInfo ci) {
+        Matcher timeMatch = TIME_PATTERN.matcher(name.getString());
+        if (timeMatch.find()) {
+            Utils.updateTime(timeMatch.group(1));
+        }
+
         Matcher matcher = SKILL_PATTERN.matcher(name.getString());
         if (matcher.find()) {
             for (Skill skill : Skill.values()) {

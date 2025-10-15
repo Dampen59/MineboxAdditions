@@ -19,17 +19,17 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalTime;
 import java.util.*;
 
 public class Utils {
     private static boolean isOnMinebox = false;
 
+    private static LocalTime time = LocalTime.parse("00:00");
     private static Location previousLocation = Location.UNKNOWN;
     private static Location location = Location.UNKNOWN;
     private static final Map<Skill, SkillData> skills = new EnumMap<>(Skill.class);
@@ -68,6 +68,10 @@ public class Utils {
 
     public static Location getPreviousLocation() { return previousLocation; }
 
+    public static LocalTime getTime() {
+        return time;
+    }
+
     public static Location getLocation() {
         return location;
     }
@@ -94,6 +98,10 @@ public class Utils {
         isOnMinebox = false;
         previousLocation = Location.UNKNOWN;
         location = Location.UNKNOWN;
+    }
+
+    public static void updateTime(String timeStr) {
+        time = LocalTime.parse(timeStr);
     }
 
     public static void updateLocation(@Nullable Text footer) {

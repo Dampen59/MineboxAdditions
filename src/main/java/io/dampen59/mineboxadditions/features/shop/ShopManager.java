@@ -28,13 +28,12 @@ public class ShopManager {
     private static void tick(MinecraftClient client) {
         if (!Utils.isOnMinebox() || client.world == null) return;
 
-        long time = client.world.getTimeOfDay() % 24000;
         TextElement text = HudManager.INSTANCE.get(ShopHud.class)
                 .getNamedElement("text", TextElement.class);
 
         boolean allClosed = true;
         for (Shop shop : Shop.values()) {
-            if (shop.isOpen(time)) {
+            if (shop.isOpen()) {
                 allClosed = false;
                 if (!shop.isEnabled()) continue;
                 if (!shop.isAlerted()) {
@@ -61,7 +60,7 @@ public class ShopManager {
                 .findFirst()
                 .orElse(null);
 
-        if (shop != null) {
+        if (shop != null && shop.getOffer() == null) {
             shop.setOffer(itemName);
             showToast(shop, shop.getOffer());
         }
