@@ -2,9 +2,16 @@ package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.features.hud.MineboxToast;
+import io.dampen59.mineboxadditions.utils.models.Location;
+import io.dampen59.mineboxadditions.utils.models.Skill;
+import io.dampen59.mineboxadditions.utils.models.SkillData;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -17,10 +24,82 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 public class Utils {
+    private static boolean isOnMinebox = false;
+
+    private static Location location = Location.UNKNOWN;
+    private static final Map<Skill, SkillData> skills = new EnumMap<>(Skill.class);
+
+    public static boolean isOnMinebox() {
+        return isOnMinebox;
+    }
+
+    public static boolean isInSpawn() {
+        return location == Location.SPAWN;
+    }
+
+    public static boolean isInHome() {
+        return location == Location.HOME;
+    }
+
+    public static boolean isInKokoko() {
+        return location == Location.KOKOKO;
+    }
+
+    public static boolean isInQuadraPlains() {
+        return location == Location.QUADRA_PLAINS;
+    }
+
+    public static boolean isInBambooPeak() {
+        return location == Location.BAMBOO_PEAK;
+    }
+
+    public static boolean isInFrostbiteFortress() {
+        return location == Location.FROSTBITE_FORTRESS;
+    }
+
+    public static boolean isInSandwhisperDunes() {
+        return location == Location.SANDWHISPER_DUNES;
+    }
+
+    public static Location getLocation() {
+        return location;
+    }
+
+    public static SkillData getSkill(Skill skill) {
+        return skills.computeIfAbsent(skill, SkillData::new);
+    }
+
+    public static void init() {
+        ClientPlayConnectionEvents.JOIN.register(Utils::onJoin);
+        ClientPlayConnectionEvents.DISCONNECT.register(Utils::onDisconnect);
+    }
+
+    private static void onJoin(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+        ServerInfo server = handler.getServerInfo();
+
+        if (server != null) {
+            String address = server.address.toLowerCase();
+            isOnMinebox = address.contains("minebox.co") || address.contains("minebox.fr");
+        } else isOnMinebox = false;
+    }
+
+    private static void onDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+        isOnMinebox = false;
+        location = Location.UNKNOWN;
+    }
+
+    public static void updateLocation(@Nullable Text footer) {
+        if (!isOnMinebox) return;
+        if (footer == null || footer.getSiblings().isEmpty()) return;
+
+        String serverId = footer.getSiblings().getLast().getString().replaceAll("\\r?\\n", "");
+        location = Location.from(serverId);
+    }
 
     public static void showShopToastNotification(String prmShopName, String prmTitle, String prmDescription) {
 

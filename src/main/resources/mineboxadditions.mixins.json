@@ -3,12 +3,14 @@
   "package": "io.dampen59.mineboxadditions.mixins",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "BossBarMixin",
+    "BrowserTextureMixin",
     "ChatMessageMixin",
     "ChatScreenMixin",
     "HandledScreenMixin",
     "InGameHudMixin",
     "ItemStackMixin",
-    "BrowserTextureMixin"
+    "PlayerListHudMixin"
   ],
   "injectors": {
     "defaultRequire": 1

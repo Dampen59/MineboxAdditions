@@ -11,7 +11,6 @@ import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
-import io.dampen59.mineboxadditions.features.harvestable.HarvestableScreen;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceScreen;
 import io.dampen59.mineboxadditions.features.hud.HudEditorScreen;
@@ -20,6 +19,7 @@ import io.dampen59.mineboxadditions.state.SocketManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
+import io.dampen59.mineboxadditions.utils.Scheduler;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
@@ -39,11 +39,11 @@ import org.slf4j.LoggerFactory;
 import java.util.stream.Collectors;
 
 public class MineboxAdditions implements ClientModInitializer {
+    public static final Logger LOGGER = LoggerFactory.getLogger("mineboxadditions");
     public static final String NAMESPACE = "mineboxadditions";
     public static MineboxAdditions INSTANCE;
-    public static final Logger LOGGER = LoggerFactory.getLogger("mineboxadditions");
-    public State state = null;
 
+    public State state = null;
     private static KeyBinding openModSettings;
     private static KeyBinding openAudioSettings;
     public static KeyBinding openEditMode;
@@ -52,7 +52,10 @@ public class MineboxAdditions implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        ClientTickEvents.END_CLIENT_TICK.register(this::tick);
         ConfigManager.init();
+        Utils.init();
+
         this.state = new State();
         new SocketManager(state);
 
@@ -73,36 +76,38 @@ public class MineboxAdditions implements ClientModInitializer {
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
         this.registerKeybinds();
 
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            while (openAudioSettings.wasPressed()) {
-                MinecraftClient.getInstance().setScreen(new AudioDeviceScreen());
-            }
-            if (openEditMode.wasPressed()) {
-                client.setScreen(new HudEditorScreen());
-            }
-            if (openAtlas.wasPressed()) {
-                if (MineboxAdditions.INSTANCE.state.getMbxItems() == null) {
-                    Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
-                    return;
-                }
-                client.setScreen(new MineboxAtlasScreen());
-            }
-            if (openHarvestables.wasPressed()) {
-                //client.setScreen(new HarvestableScreen());
-                client.setScreen(new HarvestableMapScreen());
-            }
-            if (openModSettings.wasPressed()) {
-                if (client.currentScreen == null) {
-                    client.setScreen(ResourcefulConfigScreen.make(ConfigManager.configurator, Config.class).build());
-                }
-            }
-        });
-
         AudioDeviceState.micGainDb = Config.micGainDb;
         AudioDeviceState.selectedInput = AudioUtils.getMixerByName(Config.selectedMicName, true);
         AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(Config.selectedSpeakerName, false);
 
         INSTANCE = this;
+    }
+
+    public void tick(MinecraftClient client) {
+        Scheduler.INSTANCE.tick();
+
+        while (openAudioSettings.wasPressed()) {
+            MinecraftClient.getInstance().setScreen(new AudioDeviceScreen());
+        }
+        if (openEditMode.wasPressed()) {
+            client.setScreen(new HudEditorScreen());
+        }
+        if (openAtlas.wasPressed()) {
+            if (MineboxAdditions.INSTANCE.state.getMbxItems() == null) {
+                Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
+                return;
+            }
+            client.setScreen(new MineboxAtlasScreen());
+        }
+        if (openHarvestables.wasPressed()) {
+            //client.setScreen(new HarvestableScreen());
+            client.setScreen(new HarvestableMapScreen());
+        }
+        if (openModSettings.wasPressed()) {
+            if (client.currentScreen == null) {
+                client.setScreen(ResourcefulConfigScreen.make(ConfigManager.configurator, Config.class).build());
+            }
+        }
     }
 
     private void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
