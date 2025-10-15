@@ -10,6 +10,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
@@ -116,6 +117,21 @@ public class Utils {
                         Text.literal(prmDescription)
                 )
         );
+    }
+
+    public static Text getPlayerServerName(String playerName) {
+        MinecraftClient client = MinecraftClient.getInstance();
+
+        if (client != null && client.player != null) {
+            Collection<PlayerListEntry> entries = client.player.networkHandler.getPlayerList();
+            for (PlayerListEntry entry : entries) {
+                if (!entry.getProfile().getName().equals(playerName)) continue;
+                if (entry.getDisplayName() == null) break;
+                return entry.getDisplayName();
+            }
+        }
+
+        return Text.of(playerName);
     }
 
     public static boolean itemHaveStats(ItemStack itemStack) {

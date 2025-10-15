@@ -9,7 +9,6 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallba
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.decoration.DisplayEntity;
@@ -47,11 +46,12 @@ public class ShinyTracker {
         shinyUuids.put(shinyUuid, true);
 
         Text player = Text.literal(playerName)
-                .setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true));
-        Text shiny = Text.translatable(shinyKey)
+                .setStyle(Style.EMPTY.withColor(Formatting.GRAY).withBold(true));
+        Text shiny = Text.translatable("mineboxadditions.shiny", Text.translatable(shinyKey))
                 .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
         Text message = Text.translatable("mineboxadditions.shiny.notify.message", player, shiny)
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
+                .setStyle(Style.EMPTY
+                        .withColor(0x578EC7)
                         .withClickEvent(new ClickEvent.RunCommand("/tpa " + playerName)));
 
         MinecraftClient client = MinecraftClient.getInstance();
@@ -85,12 +85,12 @@ public class ShinyTracker {
                 shinyUuids.put(lastShinyUuid, false);
 
                 if (Config.shinyNotify == Config.ShinyNotify.MANUAL) {
-                    Text shiny = Text.translatable(lastShinyKey)
+                    Text shiny = Text.translatable("mineboxadditions.shiny", Text.translatable(lastShinyKey))
                             .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
                     Text message = Text.translatable("mineboxadditions.shiny.found", shiny)
-                            .setStyle(Style.EMPTY.withColor(Formatting.GREEN)
-                                    .withClickEvent(new ClickEvent.RunCommand("/mbaSendShinyAlert"))
-                            );
+                            .setStyle(Style.EMPTY
+                                    .withColor(0x578EC7)
+                                    .withClickEvent(new ClickEvent.RunCommand("/mbaSendShinyAlert")));
                     client.player.sendMessage(message, false);
                 } else if (Config.shinyNotify == Config.ShinyNotify.AUTO) {
                     client.player.networkHandler.sendPacket(new CommandExecutionC2SPacket("mbaSendShinyAlert"));
@@ -109,19 +109,20 @@ public class ShinyTracker {
             Text message;
             if (!shinyExists()) {
                 message = Text.translatable("mineboxadditions.shiny.notify.not_exists")
-                        .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
+                        .setStyle(Style.EMPTY.withColor(0xFF2034));
             } else if (shinyUuids.get(lastShinyUuid) == false) {
                 shinyUuids.replace(lastShinyUuid, true);
 
-                Text text = Text.translatable("mineboxadditions.shiny.found.message", Text.translatable(lastShinyKey));
+                Text text = Text.translatable("mineboxadditions.shiny.found.message",
+                        Text.translatable("mineboxadditions.shiny", Text.translatable(lastShinyKey)));
                 client.player.networkHandler.sendChatMessage(text.getString());
                 SocketManager.getSocket().emit("C2SShinyEvent", lastShinyUuid, lastShinyKey);
 
                 message = Text.translatable("mineboxadditions.shiny.notify")
-                        .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
+                        .setStyle(Style.EMPTY.withColor(0x00FD72));
             } else {
                 message = Text.translatable("mineboxadditions.shiny.notify.error")
-                        .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
+                        .setStyle(Style.EMPTY.withColor(0xFF2034));
             }
 
             if (Config.shinyNotify == Config.ShinyNotify.MANUAL)
