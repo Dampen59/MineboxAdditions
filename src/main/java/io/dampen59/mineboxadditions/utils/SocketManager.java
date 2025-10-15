@@ -33,6 +33,11 @@ public class SocketManager {
     private static Socket socket;
     private static final int protocol = 10;
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static List<MineboxItem> items = new ArrayList<>();
+
+    public static List<MineboxItem> getItems() {
+        return items;
+    }
 
     @NotNull
     public static Socket getSocket() {
@@ -60,49 +65,11 @@ public class SocketManager {
         socket.on("S2CMineboxItemsStats", args -> {
             String jsonData = (String) args[0];
             try {
-                List<MineboxItem> items = mapper.readValue(jsonData,
+                items = mapper.readValue(jsonData,
                         mapper.getTypeFactory().constructCollectionType(List.class, MineboxItem.class));
-                MineboxAdditions.INSTANCE.state.setMbxItems(items);
             } catch (JsonProcessingException e) {
                 System.out.println("[SocketManager] Failed to load Minebox Items Stats JSON: " + e.getMessage());
             }
-        });
-
-        socket.on("S2CMineboxFishables", args -> {
-            String jsonData = (String) args[0];
-
-            try {
-                List<FishingShoal.Item> items = mapper.readValue(jsonData,
-                        mapper.getTypeFactory().constructCollectionType(List.class,
-                                FishingShoal.Item.class));
-
-                for (FishingShoal.Item item : items) {
-                    if (item.getTexture() == null) {
-                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
-                        continue;
-                    }
-
-                    String textureName = "textures/fish/" + item.getName() + ".png";
-                    Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
-                    if (resource != null)
-                        item.setResource(resource);
-                }
-
-                MineboxAdditions.INSTANCE.state.setShoalItems(items);
-            } catch (JsonProcessingException e) {
-                MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
-                        e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
-            }
-        });
-
-        socket.on("S2CShinyEvent", args -> {
-            String playerName = (String) args[0];
-            String mobKey = (String) args[1];
-            String mobUuid = (String) args[2];
-
-            MineboxAdditions.INSTANCE.state.getMbxShiniesUuids().put(mobUuid, true);
-            String mobName = Text.translatable(mobKey).getString();
-            Utils.shinyFoundAlert(playerName, mobName);
         });
 
         socket.on("S2CAudioData", args -> {

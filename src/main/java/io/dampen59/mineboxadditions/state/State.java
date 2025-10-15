@@ -36,9 +36,6 @@ public class State {
     public int getCurrentMoonPhase() { return currentMoonPhase; }
     public void setCurrentMoonPhase(int phase) { this.currentMoonPhase = phase; }
 
-    public List<MineboxItem> getMbxItems() { return mbxItems; }
-    public void setMbxItems(List<MineboxItem> items) { this.mbxItems = items; }
-
     public List<Harvestable> getMineboxHarvestables(String islandName) {
         return mbxHarvestables.get(islandName);
     }
@@ -46,11 +43,6 @@ public class State {
     public void addMineboxHarvestables(String islandName, List<Harvestable> data) {
         if (mbxHarvestables.containsKey(islandName)) mbxHarvestables.remove(islandName);
         mbxHarvestables.put(islandName, data);
-    }
-
-    public List<FishingShoal.Item> getShoalItems() { return shoalItems; }
-    public void setShoalItems(List<FishingShoal.Item> shoalItems) {
-        this.shoalItems = shoalItems;
     }
 
     public Map<String, Boolean> getMbxShiniesUuids() { return mbxShiniesUuids; }
@@ -124,7 +116,6 @@ public class State {
         ShopManager.reset();
         setShopDisplay(null);
         setCurrentMoonPhase(-1);
-        setMbxItems(null);
         resetShinyList();
         weatherState.clear();
         missingMuseumItemIds.clear();

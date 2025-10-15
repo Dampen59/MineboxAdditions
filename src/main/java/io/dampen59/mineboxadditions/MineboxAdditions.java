@@ -7,6 +7,8 @@ import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.AutoIsland;
+import io.dampen59.mineboxadditions.features.ShinyTracker;
+import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableMapScreen;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
@@ -17,7 +19,7 @@ import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceScreen;
 import io.dampen59.mineboxadditions.features.hud.HudEditorScreen;
 import io.dampen59.mineboxadditions.features.atlas.MineboxAtlasScreen;
 import io.dampen59.mineboxadditions.utils.SocketManager;
-import io.dampen59.mineboxadditions.state.AudioDeviceState;
+import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
 import io.dampen59.mineboxadditions.utils.Scheduler;
@@ -70,13 +72,14 @@ public class MineboxAdditions implements ClientModInitializer {
         });
 
         AutoIsland.init();
+        FishingShoalDisplay.init();
+        ShinyTracker.init();
         ShopManager.init();
         ItemTooltip.init();
 
         new SkyEvent();
         new ServerEvents(state);
         new ContainerOpenEvent(state);
-        new ShinyEvent(state);
         new WorldRendererEvent();
         new AudioManager(state);
 
@@ -100,7 +103,7 @@ public class MineboxAdditions implements ClientModInitializer {
             client.setScreen(new HudEditorScreen());
         }
         if (openAtlas.wasPressed()) {
-            if (MineboxAdditions.INSTANCE.state.getMbxItems() == null) {
+            if (SocketManager.getItems().isEmpty()) {
                 Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
                 return;
             }
@@ -173,7 +176,7 @@ public class MineboxAdditions implements ClientModInitializer {
                         Utils.displayChatInfoMessage("Socket state: " + (SocketManager.getSocket().connected() ? "connected (ID : " + SocketManager.getSocket().id() + ")" : "disconnected"));
                         Utils.displayChatInfoMessage("Rain Data: " + this.state.getWeatherState().getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
                         Utils.displayChatInfoMessage("Storm Data: " + this.state.getWeatherState().getStormTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
-                        Utils.displayChatInfoMessage("Shiny Length: " + this.state.getMbxShiniesUuids().size());
+                        Utils.displayChatInfoMessage("Shiny Length: " + ShinyTracker.getShinyCount());
 
                         if (ShopManager.getMermaid().itemTranslationKey != null) {
                             Utils.displayChatInfoMessage(String.format(

@@ -2,7 +2,6 @@ package io.dampen59.mineboxadditions.features.voicechat;
 
 import de.maxhenkel.opus4j.OpusDecoder;
 import de.maxhenkel.opus4j.OpusEncoder;
-import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 
@@ -49,7 +48,7 @@ public class AudioManager {
         AudioFormat format = new AudioFormat(48000.0f, 16, 1, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
-        Mixer.Info selectedMic = io.dampen59.mineboxadditions.state.AudioDeviceState.selectedInput;
+        Mixer.Info selectedMic = AudioDeviceState.selectedInput;
         Mixer mixer = selectedMic != null ? AudioSystem.getMixer(selectedMic) : AudioSystem.getMixer(null);
 
         microphone = (TargetDataLine) mixer.getLine(info);
@@ -71,7 +70,7 @@ public class AudioManager {
         AudioFormat format = new AudioFormat(48000.0f, 16, 2, true, false);
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 
-        Mixer.Info selectedOutput = io.dampen59.mineboxadditions.state.AudioDeviceState.selectedOutput;
+        Mixer.Info selectedOutput = AudioDeviceState.selectedOutput;
         Mixer mixer = selectedOutput != null ? AudioSystem.getMixer(selectedOutput) : AudioSystem.getMixer(null);
 
         speaker = (SourceDataLine) mixer.getLine(info);

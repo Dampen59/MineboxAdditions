@@ -118,19 +118,6 @@ public class Utils {
         );
     }
 
-    public static void playSound(SoundEvent prmSound) {
-        MinecraftClient client = MinecraftClient.getInstance();
-
-        if (client.player == null) return;
-
-        client.player.playSound(
-                prmSound,
-                1.0f,
-                1.0f
-        );
-
-    }
-
     public static boolean itemHaveStats(ItemStack itemStack) {
         LoreComponent loresList = itemStack.get(DataComponentTypes.LORE);
         if (loresList == null) return false;
@@ -401,34 +388,6 @@ public class Utils {
             }
         }
         return null;
-    }
-
-    public static void shinyFoundAlert(String prmPlayerName, String prmMobName) {
-
-        MinecraftClient client = MinecraftClient.getInstance();
-
-        Text baseMessage = Text.literal("The player ")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-
-        Text playerText = Text.literal(prmPlayerName)
-                .setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true));
-
-        Text baseMessageNext = Text.literal(" found a shiny ")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-
-        Text mobText = Text.literal("[" + prmMobName + "]")
-                .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
-
-        Text endMessage = Text.literal(" ! Click on this message to send a teleport request.")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
-                        .withClickEvent(new ClickEvent.RunCommand("/tpa " + prmPlayerName)));
-
-
-        Text message = baseMessage.copy().append(playerText).append(baseMessageNext).append(mobText).append(endMessage);
-
-        client.player.sendMessage(message, false);
-
-        playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
     }
 
     public static void displayChatErrorMessage(String prmMessage) {

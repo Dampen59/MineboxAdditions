@@ -82,6 +82,13 @@
   "mineboxadditions.strings.update.content": "A new version of MineboxAdditions is available, some network features may not function anymore in your current version!",
 
 
+  "mineboxadditions.shiny.found": "You just found a Shiny %1$s! (Click to notify)",
+  "mineboxadditions.shiny.found.message": "Shiny %1$s on me! [tpa]",
+  "mineboxadditions.shiny.notify": "All players have been notified. Thank you!",
+  "mineboxadditions.shiny.notify.message": "The player %1$s found a Shiny %2$s! (Click to teleport)",
+  "mineboxadditions.shiny.notify.not_exists": "The shiny isn't near or is already dead!",
+  "mineboxadditions.shiny.notify.error": "You've already notified players!",
+
   "mineboxadditions.buckstar": "Buckstar",
   "mineboxadditions.buckstar.toast": "Need a caffeine shot? Buckstar just opened!",
   "mineboxadditions.buckstar.toast.offer": "Come and grab your %1$s at the Buckstar Cafe!",

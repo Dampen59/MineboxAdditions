@@ -1,8 +1,12 @@
 package io.dampen59.mineboxadditions.features.fishingshoal;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.ImageUtils;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -25,14 +29,45 @@ import net.minecraft.world.World;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static io.dampen59.mineboxadditions.utils.ImageUtils.textureExists;
 
 public class FishingShoalDisplay {
+    private static List<FishingShoal.Item> shoalItems = new ArrayList<>();
+
+    public static void init() {
+        SocketManager.getSocket().on("S2CMineboxFishables", FishingShoalDisplay::update);
+    }
+
+    private static void update(Object[] args) {
+        String jsonData = (String) args[0];
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            List<FishingShoal.Item> items = mapper.readValue(jsonData,
+                    mapper.getTypeFactory().constructCollectionType(List.class,
+                            FishingShoal.Item.class));
+
+            for (FishingShoal.Item item : items) {
+                if (item.getTexture() == null) {
+                    MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
+                    continue;
+                }
+
+                String textureName = "textures/fish/" + item.getName() + ".png";
+                Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
+                if (resource != null)
+                    item.setResource(resource);
+            }
+
+            shoalItems = items;
+        } catch (JsonProcessingException e) {
+            MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
+                    e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+        }
+    }
+
     public static void handle(WorldRenderContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
         Box box = client.player.getBoundingBox()
@@ -145,7 +180,6 @@ public class FishingShoalDisplay {
 
     private static List<Identifier> getTexture(String shoal, World world) {
         State state = MineboxAdditions.INSTANCE.state;
-        List<FishingShoal.Item> shoalItems = state.getShoalItems();
         List<Identifier> textures = new ArrayList<>();
         boolean isRaining = world.isRaining();
         boolean isStorming = world.isThundering();

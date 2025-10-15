@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.features.voicechat.widgets;
 
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
-import io.dampen59.mineboxadditions.state.AudioDeviceState;
+import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceState;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 

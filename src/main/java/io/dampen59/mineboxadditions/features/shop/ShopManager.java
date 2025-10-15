@@ -52,7 +52,7 @@ public class ShopManager {
         }
     }
 
-    public static void update(Object[] args) {
+    private static void update(Object[] args) {
         String shopName = (String) args[0];
         String itemName = (String) args[1];
 
@@ -78,7 +78,7 @@ public class ShopManager {
     }
     public static void showToast(Shop shop, Text offer) {
         MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
+        if (client == null || client.player == null) return;
 
         Text text = offer != null
                 ? Text.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast.offer", offer)
@@ -90,7 +90,7 @@ public class ShopManager {
                 shop.getName(),
                 text
         ));
-        Utils.playSound(SoundEvents.BLOCK_BELL_USE);
+        client.player.playSound(SoundEvents.BLOCK_BELL_USE, 1.0f, 1.0f);
     }
 
     public static class MermaidItemOffer {
