@@ -10,8 +10,8 @@ import java.util.function.Supplier;
 public enum Shop {
     BUCKSTAR(LocalTime.parse("06:00"), LocalTime.parse("12:00"), () -> HudsConfig.shop.buckstar),
     BAKERY(LocalTime.parse("12:00"), LocalTime.parse("18:00"), () -> HudsConfig.shop.bakery),
-    SHARKOFFE(LocalTime.parse("18:00"), LocalTime.parse("17:30"), () -> HudsConfig.shop.sharkoffe),
-    MOUSE(LocalTime.parse("17:30"), LocalTime.parse("02:00"), () -> HudsConfig.shop.mouse);
+    SHARKOFFE(LocalTime.parse("18:00"), LocalTime.parse("19:30"), () -> HudsConfig.shop.sharkoffe),
+    MOUSE(LocalTime.parse("19:30"), LocalTime.parse("02:00"), () -> HudsConfig.shop.mouse);
 
     private final Supplier<Boolean> state;
     private final LocalTime start;
@@ -35,8 +35,8 @@ public enum Shop {
 
     public boolean isOpen() {
         LocalTime server = Utils.getTime();
-        return (server.equals(start) || server.isAfter(start)) &&
-                (server.equals(end) || server.isBefore(end));
+        if (end.isBefore(start)) return !server.isBefore(start) || !server.isAfter(end);
+        return !server.isBefore(start) && !server.isAfter(end);
     }
 
     public boolean isAlerted() {

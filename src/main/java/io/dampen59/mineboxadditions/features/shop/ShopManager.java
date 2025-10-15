@@ -6,11 +6,13 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.features.hud.huds.ShopHud;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
+import io.dampen59.mineboxadditions.utils.models.Location;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 
 public class ShopManager {
@@ -27,6 +29,7 @@ public class ShopManager {
 
     private static void tick(MinecraftClient client) {
         if (!Utils.isOnMinebox() || client.world == null) return;
+        if (Utils.getTime() == LocalTime.MIDNIGHT) return;
 
         TextElement text = HudManager.INSTANCE.get(ShopHud.class)
                 .getNamedElement("text", TextElement.class);
@@ -47,7 +50,7 @@ public class ShopManager {
         }
 
         if (allClosed) {
-            text.setText(Text.of("All Closed"));
+            text.setText(Text.translatable("mineboxadditions.shop.all_closed"));
         }
     }
 

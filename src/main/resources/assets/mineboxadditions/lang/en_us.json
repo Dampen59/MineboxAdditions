@@ -6,6 +6,9 @@
   "mineboxadditions.config.autoIsland": "Auto Join Island",
   "mineboxadditions.config.autoIsland.desc": "Automatically teleports you to your island when joining the server",
 
+  "mineboxadditions.config.shinyNotify": "Shiny Notifier",
+  "mineboxadditions.config.shinyNotify.desc": "Alert players when a Shiny mob is nearby",
+
   "mineboxadditions.config.huds": "Huds",
   "mineboxadditions.config.huds.desc": "Configure the in-game huds",
 
@@ -90,6 +93,7 @@
   "mineboxadditions.shiny.notify.not_exists": "􀀀 The shiny isn't near or is already dead!",
   "mineboxadditions.shiny.notify.error": "􀀀 You've already notified players!",
 
+  "mineboxadditions.shop.all_closed": "All Closed",
   "mineboxadditions.buckstar": "Buckstar",
   "mineboxadditions.buckstar.toast": "Need a caffeine shot? Buckstar just opened!",
   "mineboxadditions.buckstar.toast.offer": "Come and grab your %1$s at the Buckstar Cafe!",

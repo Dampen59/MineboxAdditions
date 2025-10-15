@@ -34,9 +34,9 @@ public enum HudManager {
     }
 
     private void initHuds() {
-        add(new IslandHud());
-        add(new TimeHud());
-        add(new VoteHud());
+//        add(new IslandHud());
+//        add(new TimeHud());
+//        add(new VoteHud());
         add(new ShopHud());
         add(new MermaidHud());
         add(new WeatherHud.RainHud());
