@@ -4,6 +4,7 @@ import de.maxhenkel.opus4j.OpusDecoder;
 import de.maxhenkel.opus4j.OpusEncoder;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 
 import javax.sound.sampled.*;
 import java.util.HashMap;
@@ -189,7 +190,7 @@ public class AudioManager {
                             }
 
                             byte[] encoded = encoder.encode(rawAudio);
-                            modState.getSocket().emit("C2SAudioData", encoded);
+                            SocketManager.getSocket().emit("C2SAudioData", encoded);
 
                             pcmOffset = 0;
 

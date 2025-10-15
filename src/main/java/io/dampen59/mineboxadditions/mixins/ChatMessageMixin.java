@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.mixins;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.dampen59.mineboxadditions.utils.WeatherUtils;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -41,7 +42,7 @@ public class ChatMessageMixin {
             if (forecastData != null) {
                 try {
                     JSONObject forecastDataJson = WeatherUtils.parseWeatherForecastJson(forecastData);
-                    MineboxAdditions.INSTANCE.state.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
+                    SocketManager.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
                 } catch (JSONException e) {
                     System.out.println("Failed to serialize weather forecast data : " + e.getMessage());
                 }

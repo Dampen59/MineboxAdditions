@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
 
@@ -24,25 +25,16 @@ public class ServerEvents {
             if (serverEntry != null) {
                 String serverAddress = serverEntry.address;
                 if (isMineboxServer(serverAddress)) {
-                    modState.setConnectedToMinebox(true);
-                    modState.getSocket().connect();
-                    if (Config.autoIsland && !modState.isLoginCommandSent()) {
-                        Objects.requireNonNull(client.getNetworkHandler()).sendPacket(new CommandExecutionC2SPacket("is"));
-                        modState.setLoginCommandSent(true);
-                    }
-                } else {
-                    modState.setConnectedToMinebox(false);
+                    SocketManager.getSocket().connect();
                 }
-            } else {
-                modState.setConnectedToMinebox(false);
             }
         });
     }
 
     private void registerServerLeaveEvent() {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            if (modState.getSocket().connected()) {
-                modState.getSocket().disconnect();
+            if (SocketManager.getSocket().connected()) {
+                SocketManager.getSocket().disconnect();
                 this.modState.getAudioManager().closeMicrophoneAndSpeaker();
             }
             modState.reset();

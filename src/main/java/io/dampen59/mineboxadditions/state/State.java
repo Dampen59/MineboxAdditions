@@ -1,19 +1,15 @@
 package io.dampen59.mineboxadditions.state;
 
+import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
 import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
-import io.socket.client.Socket;
 
 import java.util.*;
 
 public class State {
-    private final OfferState offerState = new OfferState();
     private final WeatherState weatherState = new WeatherState();
-
-    private boolean connectedToMinebox = false;
-    private boolean loginCommandSent = false;
 
     private String shopDisplay = null;
     private int currentMoonPhase = -1;
@@ -22,7 +18,6 @@ public class State {
     private List<FishingShoal.Item> shoalItems = new ArrayList<>();
     private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
 
-    private Socket socket = null;
     private AudioManager audioManager = null;
 
     private String lastSentCommand = null;
@@ -34,14 +29,6 @@ public class State {
     private List<String> missingMuseumItemIds = new ArrayList<>();
 
     private final Map<String, String> entityTextCache = new HashMap<>();
-
-    private final OfferState.MermaidItemOffer mermaidItemOffer = new OfferState.MermaidItemOffer();
-
-    public boolean isConnectedToMinebox() { return connectedToMinebox; }
-    public void setConnectedToMinebox(boolean value) { this.connectedToMinebox = value; }
-
-    public boolean isLoginCommandSent() { return loginCommandSent; }
-    public void setLoginCommandSent(boolean value) { this.loginCommandSent = value; }
 
     public String getShopDisplay() { return shopDisplay; }
     public void setShopDisplay(String display) { this.shopDisplay = display; }
@@ -70,15 +57,10 @@ public class State {
     public void resetShinyList() { mbxShiniesUuids.clear(); }
     public void addShinyUuid(String uuid) { mbxShiniesUuids.put(uuid, false); }
 
-    public Socket getSocket() { return socket; }
-    public void setSocket(Socket socket) { this.socket = socket; }
-
     public AudioManager getAudioManager() { return audioManager; }
     public void setAudioManager(AudioManager audioManager) { this.audioManager = audioManager; }
 
-    public OfferState getOfferState() { return offerState; }
     public WeatherState getWeatherState() { return weatherState; }
-    public OfferState.MermaidItemOffer getMermaidItemOffer() { return mermaidItemOffer; }
 
     public void setLastSentCommand(String cmd) { this.lastSentCommand = cmd; }
     public String getLastSentCommand() { return lastSentCommand; }
@@ -139,9 +121,7 @@ public class State {
     }
 
     public void reset() {
-        setConnectedToMinebox(false);
-        setLoginCommandSent(false);
-        offerState.reset();
+        ShopManager.reset();
         setShopDisplay(null);
         setCurrentMoonPhase(-1);
         setMbxItems(null);

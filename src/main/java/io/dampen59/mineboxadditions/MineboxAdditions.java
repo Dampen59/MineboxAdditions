@@ -6,16 +6,17 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
+import io.dampen59.mineboxadditions.features.AutoIsland;
+import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableMapScreen;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
-import io.dampen59.mineboxadditions.events.shop.ShopEventManager;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceScreen;
 import io.dampen59.mineboxadditions.features.hud.HudEditorScreen;
 import io.dampen59.mineboxadditions.features.atlas.MineboxAtlasScreen;
-import io.dampen59.mineboxadditions.state.SocketManager;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
@@ -32,6 +33,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,6 +52,10 @@ public class MineboxAdditions implements ClientModInitializer {
     public static KeyBinding openHarvestables;
     public static KeyBinding openAtlas;
 
+    public static Identifier id(String path) {
+        return Identifier.of(NAMESPACE, path);
+    }
+
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
@@ -57,17 +63,18 @@ public class MineboxAdditions implements ClientModInitializer {
         Utils.init();
 
         this.state = new State();
-        new SocketManager(state);
+        SocketManager.init();
 
         ClientLifecycleEvents.CLIENT_STARTED.register(client -> {
             HudManager.INSTANCE.init();
         });
 
+        AutoIsland.init();
+        ShopManager.init();
         ItemTooltip.init();
 
         new SkyEvent();
         new ServerEvents(state);
-        new ShopEventManager(state);
         new ContainerOpenEvent(state);
         new ShinyEvent(state);
         new WorldRendererEvent();
@@ -115,7 +122,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 .then(ClientCommandManager.literal("vc")
                         .then(ClientCommandManager.literal("create")
                                 .executes(context -> {
-                                    this.state.getSocket().emit("C2SCreateAudioRoom");
+                                    SocketManager.getSocket().emit("C2SCreateAudioRoom");
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
@@ -128,7 +135,7 @@ public class MineboxAdditions implements ClientModInitializer {
                                 .then(ClientCommandManager.argument("code", StringArgumentType.string())
                                         .executes(context -> {
                                             String code = StringArgumentType.getString(context, "code");
-                                            this.state.getSocket().emit("C2SJoinAudioRoom", code);
+                                            SocketManager.getSocket().emit("C2SJoinAudioRoom", code);
                                             return Command.SINGLE_SUCCESS;
                                         })
                                 )
@@ -140,7 +147,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 .then(ClientCommandManager.literal("vc")
                         .then(ClientCommandManager.literal("proximity")
                                 .executes(context -> {
-                                    this.state.getSocket().emit("C2SToggleProximityAudio");
+                                    SocketManager.getSocket().emit("C2SToggleProximityAudio");
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
@@ -151,7 +158,7 @@ public class MineboxAdditions implements ClientModInitializer {
                 .then(ClientCommandManager.literal("vc")
                         .then(ClientCommandManager.literal("leave")
                                 .executes(context -> {
-                                    this.state.getSocket().emit("C2SLeaveAudioRoom");
+                                    SocketManager.getSocket().emit("C2SLeaveAudioRoom");
                                     return Command.SINGLE_SUCCESS;
                                 })
                         )
@@ -163,16 +170,16 @@ public class MineboxAdditions implements ClientModInitializer {
                     .executes(context -> {
                         Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
                         Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
-                        Utils.displayChatInfoMessage("Socket state: " + (this.state.getSocket().connected() ? "connected (ID : " + this.state.getSocket().id() + ")" : "disconnected"));
+                        Utils.displayChatInfoMessage("Socket state: " + (SocketManager.getSocket().connected() ? "connected (ID : " + SocketManager.getSocket().id() + ")" : "disconnected"));
                         Utils.displayChatInfoMessage("Rain Data: " + this.state.getWeatherState().getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
                         Utils.displayChatInfoMessage("Storm Data: " + this.state.getWeatherState().getStormTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
                         Utils.displayChatInfoMessage("Shiny Length: " + this.state.getMbxShiniesUuids().size());
 
-                        if (this.state.getMermaidItemOffer().itemTranslationKey != null) {
+                        if (ShopManager.getMermaid().itemTranslationKey != null) {
                             Utils.displayChatInfoMessage(String.format(
                                     "Mermaid Data: {%s, %d}",
-                                    this.state.getMermaidItemOffer().itemTranslationKey,
-                                    this.state.getMermaidItemOffer().quantity
+                                    ShopManager.getMermaid().itemTranslationKey,
+                                    ShopManager.getMermaid().quantity
                             ));
                         } else {
                             Utils.displayChatInfoMessage("Mermaid Data: None");

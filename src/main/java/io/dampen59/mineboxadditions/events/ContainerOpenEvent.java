@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.ExtraInventoryUtils;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -51,7 +52,7 @@ public class ContainerOpenEvent {
 
         if (translationKey != null) {
             if (slotsCount <= 45) {
-                modState.getSocket().emit("C2SShopOfferEvent", translationKey);
+                SocketManager.getSocket().emit("C2SShopOfferEvent", translationKey);
             }
         } else {
             String containerTitleString = containerTitle.getString();
@@ -119,7 +120,7 @@ public class ContainerOpenEvent {
                         targetResourceKey = targetResource.getKey();
                     }
 
-                    this.modState.getSocket().emit("C2SMermaidRequest", itemId, requestedItemQuantity,
+                    SocketManager.getSocket().emit("C2SMermaidRequest", itemId, requestedItemQuantity,
                             requestedItemTranslationKey, targetResourceKey);
 
                 });

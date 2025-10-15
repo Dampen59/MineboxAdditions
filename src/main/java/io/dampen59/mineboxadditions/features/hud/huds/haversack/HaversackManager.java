@@ -31,7 +31,7 @@ public class HaversackManager {
     }
 
     private void handle(MinecraftClient client) {
-        if (client.player == null || client.world == null || !MineboxAdditions.INSTANCE.state.isConnectedToMinebox()) return;
+        if (client.player == null || client.world == null || !Utils.isOnMinebox()) return;
 
         Stream.of(client.player.getOffHandStack())
                 .filter(stack -> !stack.isEmpty())

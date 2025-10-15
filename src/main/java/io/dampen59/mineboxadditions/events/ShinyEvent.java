@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions.events;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -39,7 +40,7 @@ public class ShinyEvent {
                 message = Text.literal("❌ The shiny isn't near or is already dead !")
                         .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
             } else if (!this.modState.getMbxShiniesUuids().get(shinyUuid)) {
-                this.modState.getSocket().emit("C2SShinyEvent", this.shinyUuid, this.mobNameKey);
+                SocketManager.getSocket().emit("C2SShinyEvent", this.shinyUuid, this.mobNameKey);
                 this.modState.getMbxShiniesUuids().replace(shinyUuid, true);
                 message = Text.literal("✔ Both MineboxAdditions users and current chat channel have been notified. Thank you !")
                         .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));

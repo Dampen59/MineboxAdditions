@@ -1,7 +1,6 @@
 package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
-import io.dampen59.mineboxadditions.features.hud.MineboxToast;
 import io.dampen59.mineboxadditions.utils.models.Location;
 import io.dampen59.mineboxadditions.utils.models.Skill;
 import io.dampen59.mineboxadditions.utils.models.SkillData;
@@ -23,7 +22,6 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -31,6 +29,7 @@ import java.util.*;
 public class Utils {
     private static boolean isOnMinebox = false;
 
+    private static Location previousLocation = Location.UNKNOWN;
     private static Location location = Location.UNKNOWN;
     private static final Map<Skill, SkillData> skills = new EnumMap<>(Skill.class);
 
@@ -66,6 +65,8 @@ public class Utils {
         return location == Location.SANDWHISPER_DUNES;
     }
 
+    public static Location getPreviousLocation() { return previousLocation; }
+
     public static Location getLocation() {
         return location;
     }
@@ -90,6 +91,7 @@ public class Utils {
 
     private static void onDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
         isOnMinebox = false;
+        previousLocation = Location.UNKNOWN;
         location = Location.UNKNOWN;
     }
 
@@ -98,23 +100,8 @@ public class Utils {
         if (footer == null || footer.getSiblings().isEmpty()) return;
 
         String serverId = footer.getSiblings().getLast().getString().replaceAll("\\r?\\n", "");
+        previousLocation = location;
         location = Location.from(serverId);
-    }
-
-    public static void showShopToastNotification(String prmShopName, String prmTitle, String prmDescription) {
-
-        String texturePath = shopNameToTexture(prmShopName);
-        if (texturePath == null) return;
-
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
-
-        client.getToastManager().add(new MineboxToast(
-                client.textRenderer,
-                Identifier.of("mineboxadditions", texturePath),
-                Text.of(prmTitle),
-                Text.of(prmDescription)
-        ));
     }
 
     public static void showToastNotification(String prmTitle, String prmDescription) {
@@ -442,21 +429,6 @@ public class Utils {
         client.player.sendMessage(message, false);
 
         playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
-    }
-
-    public static String shopNameToTexture(String prmShopName) {
-        String sanitizedName = prmShopName.toLowerCase().trim();
-        String returnVal = "textures/toasts/shops/";
-
-        switch (sanitizedName) {
-            case "bakery" -> returnVal += "bakery.png";
-            case "mouse" -> returnVal += "mouse.png";
-            case "cocktail" -> returnVal += "cocktail.png";
-            case "buckstar" -> returnVal += "buckstar.png";
-            default -> returnVal = null;
-        }
-
-        return returnVal;
     }
 
     public static void displayChatErrorMessage(String prmMessage) {
