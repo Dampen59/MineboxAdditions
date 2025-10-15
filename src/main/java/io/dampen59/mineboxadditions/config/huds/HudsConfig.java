@@ -19,6 +19,18 @@ import io.dampen59.mineboxadditions.config.huds.objects.ShopHud;
         descriptionTranslation = "mineboxadditions.config.huds.desc"
 )
 public class HudsConfig {
+    @ConfigEntry(id = "island", translation = "mineboxadditions.config.huds.island")
+    @Comment(value = "", translation = "mineboxadditions.config.huds.island.desc")
+    public static boolean island = true;
+
+    @ConfigEntry(id = "time", translation = "mineboxadditions.config.huds.time")
+    @Comment(value = "", translation = "mineboxadditions.config.huds.time.desc")
+    public static boolean time = true;
+
+    @ConfigEntry(id = "vote", translation = "mineboxadditions.config.huds.vote")
+    @Comment(value = "", translation = "mineboxadditions.config.huds.vote.desc")
+    public static boolean vote = true;
+
     @ConfigEntry(id = "shop", translation = "mineboxadditions.config.huds.shop")
     @Comment(value = "", translation = "mineboxadditions.config.huds.shop.desc")
     public static final ShopHud shop = new ShopHud();

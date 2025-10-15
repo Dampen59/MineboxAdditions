@@ -26,7 +26,7 @@ public abstract class HandledScreenMixin extends Screen {
                     shift = At.Shift.BEFORE
             )
     )
-    private void mba$drawSlotsBefore(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void mbx$drawSlotsBefore(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         HandledScreen<?> screen = (HandledScreen<?>) (Object) this;
         ItemRarity.render(context, screen);
     }
@@ -39,7 +39,7 @@ public abstract class HandledScreenMixin extends Screen {
                     shift = At.Shift.AFTER
             )
     )
-    private void mba$drawSlotsAfter(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+    private void mbx$drawSlotsAfter(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         HandledScreen<?> screen = (HandledScreen<?>)(Object)this;
         MuseumIndicator.render(context, screen);
     }

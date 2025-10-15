@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChatScreenMixin {
 
     @Inject(method = "sendMessage", at = @At("HEAD"))
-    private void onSendMessage(String chatText, boolean addToHistory, CallbackInfo ci) {
+    private void mbx$sendMessage(String chatText, boolean addToHistory, CallbackInfo ci) {
         if (chatText.startsWith("/")) {
             MineboxAdditions.INSTANCE.state.setLastSentCommand(chatText);
         }

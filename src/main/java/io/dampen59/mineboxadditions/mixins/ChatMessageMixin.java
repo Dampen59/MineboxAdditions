@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChatMessageMixin {
 
     @Inject(method = "onGameMessage", at = @At("HEAD"))
-    private void onChatMessageReceived(GameMessageS2CPacket packet, CallbackInfo ci) throws JSONException {
+    private void mbx$onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) throws JSONException {
         Text messageText = packet.content();
         String rawMessage = messageText.getString();
 

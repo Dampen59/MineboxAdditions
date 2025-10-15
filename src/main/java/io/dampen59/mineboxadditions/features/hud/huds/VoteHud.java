@@ -1,5 +1,6 @@
 package io.dampen59.mineboxadditions.features.hud.huds;
 
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.elements.SpacerElement;
@@ -12,8 +13,8 @@ import net.minecraft.text.Text;
 public class VoteHud extends Hud {
     public VoteHud() {
         super(
-                () -> true,
-                s -> {},
+                () -> HudsConfig.vote,
+                s -> HudsConfig.vote = s,
                 () -> HudPositions.vote.x,
                 x -> HudPositions.vote.x = x,
                 () -> HudPositions.vote.y,
