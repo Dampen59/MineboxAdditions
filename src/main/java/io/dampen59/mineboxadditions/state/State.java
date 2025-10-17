@@ -36,6 +36,9 @@ public class State {
     public int getCurrentMoonPhase() { return currentMoonPhase; }
     public void setCurrentMoonPhase(int phase) { this.currentMoonPhase = phase; }
 
+    public List<MineboxItem> getMbxItems() { return mbxItems; }
+    public void setMbxItems(List<MineboxItem> items) { this.mbxItems = items; }
+
     public List<Harvestable> getMineboxHarvestables(String islandName) {
         return mbxHarvestables.get(islandName);
     }

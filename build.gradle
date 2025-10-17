@@ -8,10 +8,6 @@ group = project.maven_group
 
 repositories {
     maven {
-        name = "Minecraft Chromium Embedded Framework"
-        url = "https://maven.dampen59.io/"
-    }
-    maven {
         name = "Mod Menu"
         url = "https://maven.terraformersmc.com/releases/"
     }
@@ -42,10 +38,6 @@ dependencies {
     modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
     // Resourceful Config
     modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
-    // MCEF
-    def mcefLocal = "com.cinemamod:mcef-fabric:${project.mcef_version}"
-    modImplementation mcefLocal
-    include mcefLocal
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
     include "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"

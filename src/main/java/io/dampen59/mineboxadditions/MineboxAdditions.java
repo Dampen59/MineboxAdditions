@@ -9,8 +9,8 @@ import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.AutoIsland;
 import io.dampen59.mineboxadditions.features.ShinyTracker;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
+import io.dampen59.mineboxadditions.features.harvestable.HarvestableScreen;
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
-import io.dampen59.mineboxadditions.features.harvestable.HarvestableMapScreen;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
@@ -103,15 +103,15 @@ public class MineboxAdditions implements ClientModInitializer {
             client.setScreen(new HudEditorScreen());
         }
         if (openAtlas.wasPressed()) {
-            if (SocketManager.getItems().isEmpty()) {
+            if (MineboxAdditions.INSTANCE.state.getMbxItems().isEmpty()) {
                 Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
                 return;
             }
             client.setScreen(new MineboxAtlasScreen());
         }
         if (openHarvestables.wasPressed()) {
-            //client.setScreen(new HarvestableScreen());
-            client.setScreen(new HarvestableMapScreen());
+            client.setScreen(new HarvestableScreen());
+            //client.setScreen(new HarvestableMapScreen());
         }
         if (openModSettings.wasPressed()) {
             if (client.currentScreen == null) {
@@ -194,7 +194,6 @@ public class MineboxAdditions implements ClientModInitializer {
                     })
                 )
         );
-
 
     }
 

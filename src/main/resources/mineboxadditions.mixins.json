@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "BossBarMixin",
-    "BrowserTextureMixin",
     "ChatMessageMixin",
     "ChatScreenMixin",
     "HandledScreenMixin",

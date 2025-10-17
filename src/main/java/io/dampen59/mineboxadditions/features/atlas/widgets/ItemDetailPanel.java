@@ -395,7 +395,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         // Used in
         List<MineboxItem> usedIn = usedInCache.computeIfAbsent(item.getId(), key ->
-                SocketManager.getItems().stream()
+                MineboxAdditions.INSTANCE.state.getMbxItems().stream()
                         .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
                         .filter(other -> other.getRecipe().getIngredients().stream()
                                 .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))
@@ -654,7 +654,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         lastPreloadedItemId = item.getId();
 
         List<MineboxItem> usedIn = usedInCache.computeIfAbsent(item.getId(), key ->
-                SocketManager.getItems().stream()
+                MineboxAdditions.INSTANCE.state.getMbxItems().stream()
                         .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
                         .filter(other -> other.getRecipe().getIngredients().stream()
                                 .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))

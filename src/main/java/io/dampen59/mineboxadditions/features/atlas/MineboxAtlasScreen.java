@@ -38,7 +38,7 @@ public class MineboxAtlasScreen extends Screen {
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        int maxTextWidth = SocketManager.getItems().stream()
+        int maxTextWidth = MineboxAdditions.INSTANCE.state.getMbxItems().stream()
                 .map(item -> {
                     String line1 = Text.translatable("mbx.items." + item.getId() + ".name").getString();
                     String line2 = "Lvl " + item.getLevel() + " • " + item.getCategory();
@@ -56,7 +56,7 @@ public class MineboxAtlasScreen extends Screen {
         itemList = new ItemListWidget(client, left, top, panelWidth, height, 25);
         this.addDrawableChild(itemList);
 
-        this.allItems = new ArrayList<>(SocketManager.getItems());
+        this.allItems = new ArrayList<>(MineboxAdditions.INSTANCE.state.getMbxItems());
 
         updateFilteredItems(searchField.getText());
 

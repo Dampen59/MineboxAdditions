@@ -33,11 +33,6 @@ public class SocketManager {
     private static Socket socket;
     private static final int protocol = 10;
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static List<MineboxItem> items = new ArrayList<>();
-
-    public static List<MineboxItem> getItems() {
-        return items;
-    }
 
     @NotNull
     public static Socket getSocket() {
@@ -65,8 +60,8 @@ public class SocketManager {
         socket.on("S2CMineboxItemsStats", args -> {
             String jsonData = (String) args[0];
             try {
-                items = mapper.readValue(jsonData,
-                        mapper.getTypeFactory().constructCollectionType(List.class, MineboxItem.class));
+                List<MineboxItem> itemsList = mapper.readValue(jsonData, mapper.getTypeFactory().constructCollectionType(List.class, MineboxItem.class));
+                MineboxAdditions.INSTANCE.state.setMbxItems(itemsList);
             } catch (JsonProcessingException e) {
                 System.out.println("[SocketManager] Failed to load Minebox Items Stats JSON: " + e.getMessage());
             }
