@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.features.item;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.MinecraftClient;
@@ -30,8 +31,8 @@ public class ItemTooltip {
         boolean isKeyPressed = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), TOOLTIP_KEY);
         if (isKeyPressed) {
             String itemId = Utils.getMineboxItemId(item);
-            if (MineboxAdditions.INSTANCE.state.getMbxItems() == null) return;
-            MineboxItem mbxItem = Utils.findItemByName(MineboxAdditions.INSTANCE.state.getMbxItems(), itemId);
+            if (SocketManager.getItems().isEmpty()) return;
+            MineboxItem mbxItem = Utils.findItemByName(SocketManager.getItems(), itemId);
 
             for (int i = 0; i < lines.size(); i++) {
                 Text originalText = lines.get(i);

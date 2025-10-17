@@ -1,8 +1,8 @@
 package io.dampen59.mineboxadditions.features.hud.huds;
 
-import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
+import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.elements.SpacerElement;
 import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
@@ -10,7 +10,6 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextureElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import io.dampen59.mineboxadditions.state.State;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
@@ -47,21 +46,19 @@ public class MermaidHud extends Hud {
     }
 
     private void update(MinecraftClient client) {
-        State state = MineboxAdditions.INSTANCE.state;
-
         String mermaidText = "Unknown";
-        if (state.getMermaidItemOffer().itemTranslationKey != null && state.getMermaidItemOffer().quantity > 0)
-            mermaidText = getMermaidText(state);
+        if (ShopManager.getMermaid().itemTranslationKey != null && ShopManager.getMermaid().quantity > 0)
+            mermaidText = getMermaidText();
 
         getNamedElement("text", TextElement.class).setText(Text.of(mermaidText));
     }
 
-    private static @NotNull String getMermaidText(State state) {
+    private static @NotNull String getMermaidText() {
         String mermaidText;
-        if (state.getMermaidItemOffer().itemTranslationKeyArgs == null) {
-            mermaidText = String.format("%dx %s", state.getMermaidItemOffer().quantity, Text.translatable(state.getMermaidItemOffer().itemTranslationKey).getString());
+        if (ShopManager.getMermaid().itemTranslationKeyArgs == null) {
+            mermaidText = String.format("%dx %s", ShopManager.getMermaid().quantity, Text.translatable(ShopManager.getMermaid().itemTranslationKey).getString());
         } else {
-            mermaidText = String.format("%dx %s", state.getMermaidItemOffer().quantity, Text.translatable(state.getMermaidItemOffer().itemTranslationKey, Text.translatable(state.getMermaidItemOffer().itemTranslationKeyArgs).getString()).getString());
+            mermaidText = String.format("%dx %s", ShopManager.getMermaid().quantity, Text.translatable(ShopManager.getMermaid().itemTranslationKey, Text.translatable(ShopManager.getMermaid().itemTranslationKeyArgs).getString()).getString());
         }
         return mermaidText;
     }

@@ -11,7 +11,6 @@ import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 

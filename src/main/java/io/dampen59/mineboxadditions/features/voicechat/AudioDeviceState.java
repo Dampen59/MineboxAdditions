@@ -1,4 +1,4 @@
-package io.dampen59.mineboxadditions.state;
+package io.dampen59.mineboxadditions.features.voicechat;
 
 import javax.sound.sampled.Mixer;
 

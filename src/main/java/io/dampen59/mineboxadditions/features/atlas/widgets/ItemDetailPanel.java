@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.features.atlas.widgets;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -394,7 +395,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         // Used in
         List<MineboxItem> usedIn = usedInCache.computeIfAbsent(item.getId(), key ->
-                MineboxAdditions.INSTANCE.state.getMbxItems().stream()
+                SocketManager.getItems().stream()
                         .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
                         .filter(other -> other.getRecipe().getIngredients().stream()
                                 .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))
@@ -653,7 +654,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         lastPreloadedItemId = item.getId();
 
         List<MineboxItem> usedIn = usedInCache.computeIfAbsent(item.getId(), key ->
-                MineboxAdditions.INSTANCE.state.getMbxItems().stream()
+                SocketManager.getItems().stream()
                         .filter(other -> other.getRecipe() != null && other.getRecipe().getIngredients() != null)
                         .filter(other -> other.getRecipe().getIngredients().stream()
                                 .anyMatch(ing -> !ing.isVanilla() && item.getId().equals(ing.getId())))

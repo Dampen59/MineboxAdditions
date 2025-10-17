@@ -1,26 +1,24 @@
-package io.dampen59.mineboxadditions.state;
+package io.dampen59.mineboxadditions.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.maxhenkel.opus4j.OpusDecoder;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
 import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
-import io.dampen59.mineboxadditions.utils.AudioUtils;
-import io.dampen59.mineboxadditions.utils.ImageUtils;
-import io.dampen59.mineboxadditions.utils.Utils;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -32,20 +30,23 @@ import java.util.List;
 
 @Environment(EnvType.CLIENT)
 public class SocketManager {
-    private final State modState;
-    private final int protocolVersion = 10;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private static Socket socket;
+    private static final int protocol = 10;
+    private static final ObjectMapper mapper = new ObjectMapper();
+    private static List<MineboxItem> items = new ArrayList<>();
 
-    public SocketManager(State modState) {
-        this.modState = modState;
-        initializeSocket();
+    public static List<MineboxItem> getItems() {
+        return items;
     }
 
-    private void initializeSocket() {
-        URI uri = URI.create(Config.socketServerAddress);
-        IO.Options options = IO.Options.builder().build();
-        Socket socket = IO.socket(uri, options);
-        modState.setSocket(socket);
+    @NotNull
+    public static Socket getSocket() {
+        if (socket == null) init();
+        return socket;
+    }
+
+    public static void init() {
+        socket = IO.socket(URI.create(Config.socketServerAddress), IO.Options.builder().build());
 
         socket.on(Socket.EVENT_CONNECT, args -> {
             MinecraftClient client = MinecraftClient.getInstance();
@@ -53,64 +54,7 @@ public class SocketManager {
                 String playerName = client.player.getName().getString();
                 String playerUuid = client.player.getUuid().toString();
                 String playerLang = client.getLanguageManager().getLanguage();
-                socket.emit("C2SHelloConnectMessage", playerUuid, playerName, playerLang, protocolVersion);
-            }
-        });
-
-        socket.on("S2CShopOfferEvent", args -> {
-            String shopName = (String) args[0];
-            String itemName = (String) args[1];
-            switch (shopName) {
-                case "Mouse":
-                    if (modState.getOfferState().getMouseOffer() == null) {
-                        String title = Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.title")
-                                .getString();
-                        modState.getOfferState().setMouseOffer(title + ": " + Text.translatable(itemName).getString());
-                        Utils.showShopToastNotification("MOUSE", title,
-                                Text.translatable("mineboxadditions.strings.toasts.shop.mouse.iteminfo.content",
-                                        Text.translatable(itemName).getString()).getString());
-                        Utils.playSound(SoundEvents.BLOCK_BELL_USE);
-                    }
-                    break;
-                case "Bakery":
-                    if (modState.getOfferState().getBakeryOffer() == null) {
-                        String title = Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.title")
-                                .getString();
-                        modState.getOfferState().setBakeryOffer(title + ": " + Text.translatable(itemName).getString());
-                        Utils.showShopToastNotification("BAKERY", title,
-                                Text.translatable("mineboxadditions.strings.toasts.shop.bakery.iteminfo.content",
-                                        Text.translatable(itemName).getString()).getString());
-                        Utils.playSound(SoundEvents.BLOCK_BELL_USE);
-                    }
-                    break;
-                case "Buckstar":
-                    if (modState.getOfferState().getBuckstarOffer() == null) {
-                        String title = Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.title")
-                                .getString();
-                        modState.getOfferState()
-                                .setBuckstarOffer(title + ": " + Text.translatable(itemName).getString());
-                        Utils.showShopToastNotification("BUCKSTAR", title,
-                                Text.translatable("mineboxadditions.strings.toasts.shop.buckstar.iteminfo.content",
-                                        Text.translatable(itemName).getString()).getString());
-                        Utils.playSound(SoundEvents.BLOCK_BELL_USE);
-                    }
-                    break;
-                case "Cocktail":
-                    if (modState.getOfferState().getCocktailOffer() == null) {
-                        String title = Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.title")
-                                .getString();
-                        modState.getOfferState()
-                                .setCocktailOffer(title + ": " + Text.translatable(itemName).getString());
-                        Utils.showShopToastNotification("COCKTAIL", title,
-                                Text.translatable("mineboxadditions.strings.toasts.shop.cocktail.iteminfo.content",
-                                        Text.translatable(itemName).getString()).getString());
-                        Utils.playSound(SoundEvents.BLOCK_BELL_USE);
-                    }
-                    break;
-                default:
-                    System.out.println(
-                            "[SocketManager] Unknown shop event: " + shopName + " Data: " + Arrays.toString(args));
-                    break;
+                socket.emit("C2SHelloConnectMessage", playerUuid, playerName, playerLang, protocol);
             }
         });
 
@@ -121,49 +65,11 @@ public class SocketManager {
         socket.on("S2CMineboxItemsStats", args -> {
             String jsonData = (String) args[0];
             try {
-                List<MineboxItem> items = mapper.readValue(jsonData,
+                items = mapper.readValue(jsonData,
                         mapper.getTypeFactory().constructCollectionType(List.class, MineboxItem.class));
-                modState.setMbxItems(items);
             } catch (JsonProcessingException e) {
                 System.out.println("[SocketManager] Failed to load Minebox Items Stats JSON: " + e.getMessage());
             }
-        });
-
-        socket.on("S2CMineboxFishables", args -> {
-            String jsonData = (String) args[0];
-
-            try {
-                List<FishingShoal.Item> items = mapper.readValue(jsonData,
-                        mapper.getTypeFactory().constructCollectionType(List.class,
-                                FishingShoal.Item.class));
-
-                for (FishingShoal.Item item : items) {
-                    if (item.getTexture() == null) {
-                        MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
-                        continue;
-                    }
-
-                    String textureName = "textures/fish/" + item.getName() + ".png";
-                    Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
-                    if (resource != null)
-                        item.setResource(resource);
-                }
-
-                modState.setShoalItems(items);
-            } catch (JsonProcessingException e) {
-                MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
-                        e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
-            }
-        });
-
-        socket.on("S2CShinyEvent", args -> {
-            String playerName = (String) args[0];
-            String mobKey = (String) args[1];
-            String mobUuid = (String) args[2];
-
-            modState.getMbxShiniesUuids().put(mobUuid, true);
-            String mobName = Text.translatable(mobKey).getString();
-            Utils.shinyFoundAlert(playerName, mobName);
         });
 
         socket.on("S2CAudioData", args -> {
@@ -171,7 +77,7 @@ public class SocketManager {
             byte[] audioData = (byte[]) args[1];
             try {
 
-                OpusDecoder decoder = this.modState.getAudioManager().getDecoders().computeIfAbsent(playerName,
+                OpusDecoder decoder = MineboxAdditions.INSTANCE.state.getAudioManager().getDecoders().computeIfAbsent(playerName,
                         name -> {
                             try {
                                 return new OpusDecoder(48000, 1);
@@ -197,7 +103,7 @@ public class SocketManager {
             try {
                 List<Harvestable> items = mapper.readValue(jsonData,
                         mapper.getTypeFactory().constructCollectionType(List.class, Harvestable.class));
-                modState.addMineboxHarvestables(islandName, items);
+                MineboxAdditions.INSTANCE.state.addMineboxHarvestables(islandName, items);
             } catch (Exception e) {
                 System.out.println("[SocketManager] Failed to load Harvestables JSON: " + e.getMessage());
             }
@@ -214,7 +120,7 @@ public class SocketManager {
 
                 float volumeMultiplier = AudioUtils.computeVolumeMultiplier(sourcePlayer);
 
-                OpusDecoder decoder = this.modState.getAudioManager().getDecoders().computeIfAbsent(playerName,
+                OpusDecoder decoder = MineboxAdditions.INSTANCE.state.getAudioManager().getDecoders().computeIfAbsent(playerName,
                         name -> {
                             try {
                                 return new OpusDecoder(48000, 1);
@@ -240,7 +146,7 @@ public class SocketManager {
                     Text.translatable("mineboxadditions.strings.audiochannel.create.success", roomCode).getString());
 
             try {
-                AudioManager audioManager = this.modState.getAudioManager();
+                AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
 
                 Mixer speakerMixer = AudioUtils
                         .getMixerByName(Config.selectedSpeakerName);
@@ -258,7 +164,7 @@ public class SocketManager {
                 }
 
             } catch (LineUnavailableException e) {
-                this.modState.getSocket().emit("C2SLeaveAudioRoom");
+                SocketManager.getSocket().emit("C2SLeaveAudioRoom");
                 Utils.displayChatErrorMessage(
                         "You have left the voice channel because MineboxAdditions was not able to setup your Speakers and/or Microphone. Please check your game logs.");
                 MineboxAdditions.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
@@ -272,7 +178,7 @@ public class SocketManager {
                     Text.translatable("mineboxadditions.strings.audiochannel.join.success", roomCode).getString());
 
             try {
-                AudioManager audioManager = this.modState.getAudioManager();
+                AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
 
                 Mixer speakerMixer = AudioUtils
                         .getMixerByName(Config.selectedSpeakerName);
@@ -290,7 +196,7 @@ public class SocketManager {
                 }
 
             } catch (LineUnavailableException e) {
-                this.modState.getSocket().emit("C2SLeaveAudioRoom");
+                SocketManager.getSocket().emit("C2SLeaveAudioRoom");
                 Utils.displayChatErrorMessage(
                         "You have left the voice channel because MineboxAdditions was not able to setup your Speakers and/or Microphone. Please check your game logs.");
                 MineboxAdditions.LOGGER.error("[SocketManager] Failed to open Speaker or Microphone : {}",
@@ -306,7 +212,7 @@ public class SocketManager {
                 Utils.displayChatSuccessMessage(
                         Text.translatable("mineboxadditions.strings.audiochannel.proximity.enabled").getString());
 
-                AudioManager audioManager = this.modState.getAudioManager();
+                AudioManager audioManager = MineboxAdditions.INSTANCE.state.getAudioManager();
 
                 try {
                     if (audioManager.getSpeaker() == null || !audioManager.getSpeaker().isOpen()) {
@@ -334,7 +240,7 @@ public class SocketManager {
                 }
 
             } else {
-                this.modState.getAudioManager().closeMicrophoneAndSpeaker();
+                MineboxAdditions.INSTANCE.state.getAudioManager().closeMicrophoneAndSpeaker();
                 Utils.displayChatErrorMessage(
                         Text.translatable("mineboxadditions.strings.audiochannel.proximity.disabled").getString());
             }
@@ -377,7 +283,7 @@ public class SocketManager {
             String roomCode = (String) args[0];
             Utils.displayChatSuccessMessage(
                     Text.translatable("mineboxadditions.strings.audiochannel.leave.success", roomCode).getString());
-            this.modState.getAudioManager().closeMicrophoneAndSpeaker();
+            MineboxAdditions.INSTANCE.state.getAudioManager().closeMicrophoneAndSpeaker();
         });
 
         socket.on("S2CAudioClientDisconnected", args -> {
@@ -391,17 +297,17 @@ public class SocketManager {
             Integer timestamp = Integer.parseInt(args[1].toString());
 
             switch (weather) {
-                case "RAIN" -> this.modState.getWeatherState().addRainTimestamp(timestamp);
+                case "RAIN" -> MineboxAdditions.INSTANCE.state.getWeatherState().addRainTimestamp(timestamp);
                 case "STORM" -> {
-                    this.modState.getWeatherState().addRainTimestamp(timestamp); // Storms also equals rain :)
-                    this.modState.getWeatherState().addStormTimestamp(timestamp);
+                    MineboxAdditions.INSTANCE.state.getWeatherState().addRainTimestamp(timestamp); // Storms also equals rain :)
+                    MineboxAdditions.INSTANCE.state.getWeatherState().addStormTimestamp(timestamp);
                 }
                 default -> System.out.println("Received unknown weather data : " + weather);
             }
         });
 
         socket.on("S2ClearWeatherData", args -> {
-            this.modState.getWeatherState().clear();
+            MineboxAdditions.INSTANCE.state.getWeatherState().clear();
         });
 
         socket.on("S2CMotd", args -> {
@@ -413,7 +319,7 @@ public class SocketManager {
             int itemQuantity = (int) args[0];
             String itemTranslationKey = (String) args[1];
             String itemTranslationKeyArgs = (args[2] instanceof String) ? (String) args[2] : null;
-            this.modState.getMermaidItemOffer().set(itemQuantity, itemTranslationKey, itemTranslationKeyArgs);
+            ShopManager.getMermaid().set(itemQuantity, itemTranslationKey, itemTranslationKeyArgs);
         });
 
         socket.on("S2CMineboxApiUnauthorized", args -> {
@@ -431,7 +337,7 @@ public class SocketManager {
                     itemIds.add(id);
                 }
             }
-            this.modState.setMissingMuseumItemIds(itemIds);
+            MineboxAdditions.INSTANCE.state.setMissingMuseumItemIds(itemIds);
         });
 
     }

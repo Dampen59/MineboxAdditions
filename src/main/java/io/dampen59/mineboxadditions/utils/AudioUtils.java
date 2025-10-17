@@ -3,7 +3,7 @@ package io.dampen59.mineboxadditions.utils;
 import de.maxhenkel.opus4j.OpusDecoder;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.voicechat.AudioMixer;
-import io.dampen59.mineboxadditions.state.AudioDeviceState;
+import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;

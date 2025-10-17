@@ -13,18 +13,18 @@ public abstract class ItemStackMixin {
     }
 
     @ModifyReturnValue(method = "isItemBarVisible", at = @At("RETURN"))
-    private boolean mba$isItemBarVisible(boolean original) {
+    private boolean mbx$isItemBarVisible(boolean original) {
         return ItemDurability.hasDurability(self()) || original;
     }
 
     @ModifyReturnValue(method = "getItemBarStep", at = @At("RETURN"))
-    private int mba$getItemBarStep(int original) {
+    private int mbx$getItemBarStep(int original) {
         int step = ItemDurability.getDurabilityStep(self());
         return step >= 0 ? step : original;
     }
 
     @ModifyReturnValue(method = "getItemBarColor", at = @At("RETURN"))
-    private int mba$getItemBarColor(int original) {
+    private int mbx$getItemBarColor(int original) {
         int color = ItemDurability.getDurabilityColor(self());
         return color >= 0 ? color : original;
     }

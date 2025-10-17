@@ -5,7 +5,6 @@ import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.voicechat.widgets.MicGainSlider;
 import io.dampen59.mineboxadditions.features.voicechat.widgets.VolumeMultiplierSlider;
-import io.dampen59.mineboxadditions.state.AudioDeviceState;
 import io.dampen59.mineboxadditions.utils.AudioUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;

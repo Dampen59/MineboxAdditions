@@ -4,6 +4,7 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemDetailPanel;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
+import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
@@ -37,7 +38,7 @@ public class MineboxAtlasScreen extends Screen {
 
         TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
 
-        int maxTextWidth = MineboxAdditions.INSTANCE.state.getMbxItems().stream()
+        int maxTextWidth = SocketManager.getItems().stream()
                 .map(item -> {
                     String line1 = Text.translatable("mbx.items." + item.getId() + ".name").getString();
                     String line2 = "Lvl " + item.getLevel() + " • " + item.getCategory();
@@ -55,7 +56,7 @@ public class MineboxAtlasScreen extends Screen {
         itemList = new ItemListWidget(client, left, top, panelWidth, height, 25);
         this.addDrawableChild(itemList);
 
-        this.allItems = new ArrayList<>(MineboxAdditions.INSTANCE.state.getMbxItems());
+        this.allItems = new ArrayList<>(SocketManager.getItems());
 
         updateFilteredItems(searchField.getText());
 

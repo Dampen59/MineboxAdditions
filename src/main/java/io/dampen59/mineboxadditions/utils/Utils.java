@@ -1,10 +1,17 @@
 package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
-import io.dampen59.mineboxadditions.features.hud.MineboxToast;
+import io.dampen59.mineboxadditions.utils.models.Location;
+import io.dampen59.mineboxadditions.utils.models.Skill;
+import io.dampen59.mineboxadditions.utils.models.SkillData;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.toast.SystemToast;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -12,30 +19,98 @@ import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.decoration.DisplayEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
+import java.time.LocalTime;
 import java.util.*;
 
 public class Utils {
+    private static boolean isOnMinebox = false;
 
-    public static void showShopToastNotification(String prmShopName, String prmTitle, String prmDescription) {
+    private static LocalTime time = LocalTime.parse("00:00");
+    private static Location previousLocation = Location.UNKNOWN;
+    private static Location location = Location.UNKNOWN;
+    private static final Map<Skill, SkillData> skills = new EnumMap<>(Skill.class);
 
-        String texturePath = shopNameToTexture(prmShopName);
-        if (texturePath == null) return;
+    public static boolean isOnMinebox() {
+        return isOnMinebox;
+    }
 
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client == null) return;
+    public static boolean isInSpawn() {
+        return location == Location.SPAWN;
+    }
 
-        client.getToastManager().add(new MineboxToast(
-                client.textRenderer,
-                Identifier.of("mineboxadditions", texturePath),
-                Text.of(prmTitle),
-                Text.of(prmDescription)
-        ));
+    public static boolean isInHome() {
+        return location == Location.HOME;
+    }
+
+    public static boolean isInKokoko() {
+        return location == Location.KOKOKO;
+    }
+
+    public static boolean isInQuadraPlains() {
+        return location == Location.QUADRA_PLAINS;
+    }
+
+    public static boolean isInBambooPeak() {
+        return location == Location.BAMBOO_PEAK;
+    }
+
+    public static boolean isInFrostbiteFortress() {
+        return location == Location.FROSTBITE_FORTRESS;
+    }
+
+    public static boolean isInSandwhisperDunes() {
+        return location == Location.SANDWHISPER_DUNES;
+    }
+
+    public static Location getPreviousLocation() { return previousLocation; }
+
+    public static LocalTime getTime() {
+        return time;
+    }
+
+    public static Location getLocation() {
+        return location;
+    }
+
+    public static SkillData getSkill(Skill skill) {
+        return skills.computeIfAbsent(skill, SkillData::new);
+    }
+
+    public static void init() {
+        ClientPlayConnectionEvents.JOIN.register(Utils::onJoin);
+        ClientPlayConnectionEvents.DISCONNECT.register(Utils::onDisconnect);
+    }
+
+    private static void onJoin(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+        ServerInfo server = handler.getServerInfo();
+
+        if (server != null) {
+            String address = server.address.toLowerCase();
+            isOnMinebox = address.contains("minebox.co") || address.contains("minebox.fr");
+        } else isOnMinebox = false;
+    }
+
+    private static void onDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+        isOnMinebox = false;
+        previousLocation = Location.UNKNOWN;
+        location = Location.UNKNOWN;
+    }
+
+    public static void updateTime(String timeStr) {
+        time = LocalTime.parse(timeStr);
+    }
+
+    public static void updateLocation(@Nullable Text footer) {
+        if (!isOnMinebox) return;
+        if (footer == null || footer.getSiblings().isEmpty()) return;
+
+        String serverId = footer.getSiblings().getLast().getString().replaceAll("\\r?\\n", "");
+        previousLocation = location;
+        location = Location.from(serverId);
     }
 
     public static void showToastNotification(String prmTitle, String prmDescription) {
@@ -52,17 +127,19 @@ public class Utils {
         );
     }
 
-    public static void playSound(SoundEvent prmSound) {
+    public static Text getPlayerServerName(String playerName) {
         MinecraftClient client = MinecraftClient.getInstance();
 
-        if (client.player == null) return;
+        if (client != null && client.player != null) {
+            Collection<PlayerListEntry> entries = client.player.networkHandler.getPlayerList();
+            for (PlayerListEntry entry : entries) {
+                if (!entry.getProfile().getName().equals(playerName)) continue;
+                if (entry.getDisplayName() == null) break;
+                return entry.getDisplayName();
+            }
+        }
 
-        client.player.playSound(
-                prmSound,
-                1.0f,
-                1.0f
-        );
-
+        return Text.of(playerName);
     }
 
     public static boolean itemHaveStats(ItemStack itemStack) {
@@ -335,49 +412,6 @@ public class Utils {
             }
         }
         return null;
-    }
-
-    public static void shinyFoundAlert(String prmPlayerName, String prmMobName) {
-
-        MinecraftClient client = MinecraftClient.getInstance();
-
-        Text baseMessage = Text.literal("The player ")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-
-        Text playerText = Text.literal(prmPlayerName)
-                .setStyle(Style.EMPTY.withColor(Formatting.GOLD).withBold(true));
-
-        Text baseMessageNext = Text.literal(" found a shiny ")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-
-        Text mobText = Text.literal("[" + prmMobName + "]")
-                .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
-
-        Text endMessage = Text.literal(" ! Click on this message to send a teleport request.")
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false)
-                        .withClickEvent(new ClickEvent.RunCommand("/tpa " + prmPlayerName)));
-
-
-        Text message = baseMessage.copy().append(playerText).append(baseMessageNext).append(mobText).append(endMessage);
-
-        client.player.sendMessage(message, false);
-
-        playSound(SoundEvents.ENTITY_PLAYER_LEVELUP);
-    }
-
-    public static String shopNameToTexture(String prmShopName) {
-        String sanitizedName = prmShopName.toLowerCase().trim();
-        String returnVal = "textures/toasts/shops/";
-
-        switch (sanitizedName) {
-            case "bakery" -> returnVal += "bakery.png";
-            case "mouse" -> returnVal += "mouse.png";
-            case "cocktail" -> returnVal += "cocktail.png";
-            case "buckstar" -> returnVal += "buckstar.png";
-            default -> returnVal = null;
-        }
-
-        return returnVal;
     }
 
     public static void displayChatErrorMessage(String prmMessage) {

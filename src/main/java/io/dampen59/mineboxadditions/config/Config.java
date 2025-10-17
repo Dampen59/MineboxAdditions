@@ -51,4 +51,13 @@ public class Config {
         @ConfigEntry(id = "autoIsland", translation = "mineboxadditions.config.autoIsland")
         @Comment(value = "", translation = "mineboxadditions.config.autoIsland.desc")
         public static boolean autoIsland = false;
+
+        @ConfigEntry(id = "shinyNotify", translation = "mineboxadditions.config.shinyNotify")
+        @Comment(value = "", translation = "mineboxadditions.config.shinyNotify.desc")
+        public static ShinyNotify shinyNotify = ShinyNotify.MANUAL;
+        public enum ShinyNotify {
+                AUTO,
+                MANUAL,
+                OFF
+        }
 }

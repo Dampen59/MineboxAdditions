@@ -125,7 +125,7 @@ public class WorldRendererEvent {
     public static void render(WorldRenderContext context) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.world == null) return;
-        if (!MineboxAdditions.INSTANCE.state.isConnectedToMinebox()) return;
+        if (!Utils.isOnMinebox()) return;
 
         if (FishingDrops.enabled)
             FishingShoalDisplay.handle(context);
