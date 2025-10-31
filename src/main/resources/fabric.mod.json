@@ -26,7 +26,8 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "~${minecraft_version}",
-    "java": ">=21"
+    "java": ">=21",
+    "resourcefulconfig": ">=3.7.6"
   },
   "accessWidener": "mineboxadditions.accesswidener",
   "mixins": [

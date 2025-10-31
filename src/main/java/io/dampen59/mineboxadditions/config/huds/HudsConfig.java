@@ -1,9 +1,6 @@
 package io.dampen59.mineboxadditions.config.huds;
 
-import com.teamresourceful.resourcefulconfig.api.annotations.Category;
-import com.teamresourceful.resourcefulconfig.api.annotations.Comment;
-import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
-import com.teamresourceful.resourcefulconfig.api.annotations.ConfigInfo;
+import com.teamresourceful.resourcefulconfig.api.annotations.*;
 import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
 import io.dampen59.mineboxadditions.config.huds.objects.HaversackHud;
@@ -19,14 +16,17 @@ import io.dampen59.mineboxadditions.config.huds.objects.ShopHud;
         descriptionTranslation = "mineboxadditions.config.huds.desc"
 )
 public class HudsConfig {
+    @ConfigOption.Hidden
     @ConfigEntry(id = "island", translation = "mineboxadditions.config.huds.island")
     @Comment(value = "", translation = "mineboxadditions.config.huds.island.desc")
     public static boolean island = true;
 
+    @ConfigOption.Hidden
     @ConfigEntry(id = "time", translation = "mineboxadditions.config.huds.time")
     @Comment(value = "", translation = "mineboxadditions.config.huds.time.desc")
     public static boolean time = true;
 
+    @ConfigOption.Hidden
     @ConfigEntry(id = "vote", translation = "mineboxadditions.config.huds.vote")
     @Comment(value = "", translation = "mineboxadditions.config.huds.vote.desc")
     public static boolean vote = true;
