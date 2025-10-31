@@ -34,63 +34,65 @@ public class ItemTooltip {
             if (MineboxAdditions.INSTANCE.state.getMbxItems().isEmpty()) return;
             MineboxItem mbxItem = Utils.findItemByName(MineboxAdditions.INSTANCE.state.getMbxItems(), itemId);
 
-            for (int i = 0; i < lines.size(); i++) {
-                Text originalText = lines.get(i);
-                boolean modified = false;
-                List<Text> updatedSiblings = new ArrayList<>();
+            if (mbxItem != null && !mbxItem.getMbxStats().isEmpty()) {
+                for (int i = 0; i < lines.size(); i++) {
+                    Text originalText = lines.get(i);
+                    boolean modified = false;
+                    List<Text> updatedSiblings = new ArrayList<>();
 
-                for (Text sibling : originalText.getSiblings()) {
-                    List<Text> newNestedSiblings = new ArrayList<>();
+                    for (Text sibling : originalText.getSiblings()) {
+                        List<Text> newNestedSiblings = new ArrayList<>();
 
-                    for (Text nestedSibling : sibling.getSiblings()) {
-                        if (nestedSibling.getContent() instanceof TranslatableTextContent translatableContent) {
-                            String translationKey = translatableContent.getKey();
-                            if (translationKey.startsWith("mbx.stats.")) {
-                                String jsonKey = translationKey.replace(".", "_");
-                                MineboxStat stat = mbxItem.getStat(jsonKey).orElse(null);
-                                if (stat != null && stat.getMin() != null && stat.getMax() != null) {
-                                    int minRoll = stat.getMin();
-                                    int maxRoll = stat.getMax();
+                        for (Text nestedSibling : sibling.getSiblings()) {
+                            if (nestedSibling.getContent() instanceof TranslatableTextContent translatableContent) {
+                                String translationKey = translatableContent.getKey();
+                                if (translationKey.startsWith("mbx.stats.")) {
+                                    String jsonKey = translationKey.replace(".", "_");
+                                    MineboxStat stat = mbxItem.getStat(jsonKey).orElse(null);
+                                    if (stat != null && stat.getMin() != null && stat.getMax() != null) {
+                                        int minRoll = stat.getMin();
+                                        int maxRoll = stat.getMax();
 
-                                    Formatting color = (minRoll < 0 && maxRoll < 0)
-                                            ? Formatting.RED
-                                            : Formatting.DARK_GREEN;
+                                        Formatting color = (minRoll < 0 && maxRoll < 0)
+                                                ? Formatting.RED
+                                                : Formatting.DARK_GREEN;
 
-                                    String numericRange = (minRoll == maxRoll)
-                                            ? " [" + maxRoll + "]"
-                                            : " [" + minRoll + " to " + maxRoll + "]";
+                                        String numericRange = (minRoll == maxRoll)
+                                                ? " [" + maxRoll + "]"
+                                                : " [" + minRoll + " to " + maxRoll + "]";
 
-                                    newNestedSiblings.add(
-                                            Text.literal(numericRange)
-                                                    .setStyle(Style.EMPTY.withColor(color))
-                                    );
-                                    modified = true;
-                                    continue;
+                                        newNestedSiblings.add(
+                                                Text.literal(numericRange)
+                                                        .setStyle(Style.EMPTY.withColor(color))
+                                        );
+                                        modified = true;
+                                        continue;
+                                    }
                                 }
                             }
+                            newNestedSiblings.add(nestedSibling);
                         }
-                        newNestedSiblings.add(nestedSibling);
+
+                        MutableText updatedSibling;
+                        if (sibling.getContent() instanceof TranslatableTextContent translatableContent
+                                && translatableContent.getKey().startsWith("mbx.stats.")) {
+                            updatedSibling = Text.literal("");
+                        } else {
+                            updatedSibling = sibling.copy();
+                        }
+                        for (Text nested : newNestedSiblings) {
+                            updatedSibling = updatedSibling.append(nested);
+                        }
+                        updatedSiblings.add(updatedSibling);
                     }
 
-                    MutableText updatedSibling;
-                    if (sibling.getContent() instanceof TranslatableTextContent translatableContent
-                            && translatableContent.getKey().startsWith("mbx.stats.")) {
-                        updatedSibling = Text.literal("");
-                    } else {
-                        updatedSibling = sibling.copy();
+                    if (modified) {
+                        MutableText updatedText = Text.literal("");
+                        for (Text sib : updatedSiblings) {
+                            updatedText = updatedText.append(sib);
+                        }
+                        lines.set(i, updatedText);
                     }
-                    for (Text nested : newNestedSiblings) {
-                        updatedSibling = updatedSibling.append(nested);
-                    }
-                    updatedSiblings.add(updatedSibling);
-                }
-
-                if (modified) {
-                    MutableText updatedText = Text.literal("");
-                    for (Text sib : updatedSiblings) {
-                        updatedText = updatedText.append(sib);
-                    }
-                    lines.set(i, updatedText);
                 }
             }
 

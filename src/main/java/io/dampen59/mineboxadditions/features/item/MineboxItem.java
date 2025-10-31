@@ -7,7 +7,11 @@ import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
+import net.minecraft.text.TextColor;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 
@@ -266,13 +270,48 @@ public class MineboxItem {
             return styled(Text.translatable("mbx.items.soul.name", resolveEntity(mob)), item.rarity.toLowerCase());
         }
 
+        // Event items
+        if (id.startsWith("xmas_present_small_")) {
+            String colorKey = id.substring("xmas_present_small_".length());
+            return styled(Text.translatable("mbx.items.xmas_present_small.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+        }
+
+        if (id.startsWith("xmas_present_medium_")) {
+            String colorKey = id.substring("xmas_present_medium_".length());
+            return styled(Text.translatable("mbx.items.xmas_present_medium.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+        }
+
+        if (id.startsWith("xmas_present_big_")) {
+            String colorKey = id.substring("xmas_present_big_".length());
+            return styled(Text.translatable("mbx.items.xmas_present_big.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+        }
+
+        if (id.startsWith("lny_envelope_")) {
+            String colorKey = id.substring("lny_envelope_".length());
+            return styled(Text.translatable("mbx.items.lny_envelope.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+        }
+
+        // Ornaments
+        if (id.startsWith("nameplate_")) {
+            String nameplateKey = id.substring("nameplate_".length());
+            return styled(Text.translatable("mbx.attributes.nameplate." + nameplateKey + ".title"), item.rarity.toLowerCase());
+        }
+
+        if (id.startsWith("emote_")) {
+            String emoteKey = id.substring("emote_".length());
+            return styled(Text.translatable("mbx.attributes.emote." + emoteKey + ".title"), item.rarity.toLowerCase());
+        }
+
+
         // Default
         return Text.literal(id).copy().styled(style -> style.withColor(0xFFFFFFFF));
     }
 
-    private static Text statName(String formatKey, String id, Function<Text, Text> styleFunc) {
-        return statName(formatKey, id, styleFunc, "mbx.stats.");
+    public static Text getStatName(String statsKey) {
+        String cleanedKey = statsKey.replace("_", ".").toUpperCase();
+        return getColoredStatName(cleanedKey);
     }
+
 
     private static Text statName(String formatKey, String id, Function<Text, Text> styleFunc, String statPrefix) {
         String stat = id.substring(id.lastIndexOf('_') + 1);
@@ -311,6 +350,13 @@ public class MineboxItem {
         return Text.of(name);
     }
 
+    private static Text resolveColor(String key) {
+        Language lang = Language.getInstance();
+        if (lang.hasTranslation("color.minecraft." + key))
+            return Text.translatable("color.minecraft." + key);
+        return Text.of(key);
+    }
+
 
     public Optional<MineboxStat> getStat(String statName) {
         return mbxStats == null
@@ -324,5 +370,33 @@ public class MineboxItem {
                         .withBold(true)
         );
     }
+
+    public static Text getColoredStatName(String stat) {
+        String key = stat.toLowerCase();
+        MutableText text = switch (key) {
+            case "mbx.stats.health" -> Text.literal("❤ ").append(Text.translatable("mbx.stats.health"));
+            case "mbx.stats.strength" -> Text.literal("₪ ").append(Text.translatable("mbx.stats.strength"));
+            case "mbx.stats.agility" -> Text.literal("☄ ").append(Text.translatable("mbx.stats.agility"));
+            case "mbx.stats.intelligence" -> Text.literal("🔥 ").append(Text.translatable("mbx.stats.intelligence"));
+            case "mbx.stats.wisdom" -> Text.literal("☽ ").append(Text.translatable("mbx.stats.wisdom"));
+            case "mbx.stats.luck" -> Text.literal("🌊 ").append(Text.translatable("mbx.stats.luck"));
+            case "mbx.stats.fortune" -> Text.literal("🔱 ").append(Text.translatable("mbx.stats.fortune"));
+            case "mbx.stats.defense" -> Text.literal("🛡 ").append(Text.translatable("mbx.stats.defense"));
+            default -> Text.literal(stat);
+        };
+
+        return switch (key) {
+            case "mbx.stats.health" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xE24A63)));
+            case "mbx.stats.strength" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xA55F26)));
+            case "mbx.stats.agility" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x6BC047)));
+            case "mbx.stats.intelligence" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xE24A2E)));
+            case "mbx.stats.defense" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x1F8ECD)));
+            case "mbx.stats.wisdom" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x9457D3)));
+            case "mbx.stats.luck" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x3D84A8)));
+            case "mbx.stats.fortune" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xEC8C2E)));
+            default -> text.setStyle(Style.EMPTY.withColor(Formatting.WHITE));
+        };
+    }
+
 
 }

@@ -103,7 +103,7 @@ public class MineboxAdditions implements ClientModInitializer {
             client.setScreen(new HudEditorScreen());
         }
         if (openAtlas.wasPressed()) {
-            if (MineboxAdditions.INSTANCE.state.getMbxItems().isEmpty()) {
+            if (state.getMbxItems() == null || state.getMbxItems().isEmpty()) {
                 Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
                 return;
             }
@@ -194,7 +194,6 @@ public class MineboxAdditions implements ClientModInitializer {
                     })
                 )
         );
-
     }
 
     private void registerKeybinds() {

@@ -41,7 +41,7 @@ public class MineboxAtlasScreen extends Screen {
         int maxTextWidth = MineboxAdditions.INSTANCE.state.getMbxItems().stream()
                 .map(item -> {
                     String line1 = Text.translatable("mbx.items." + item.getId() + ".name").getString();
-                    String line2 = "Lvl " + item.getLevel() + " • " + item.getCategory();
+                    String line2 = Text.translatable("mineboxadditions.gui.atlas.level_short", item.getLevel()).getString() + " • " + item.getCategory();
                     return Math.max(textRenderer.getWidth(line1), textRenderer.getWidth(line2));
                 })
                 .max(Integer::compare)

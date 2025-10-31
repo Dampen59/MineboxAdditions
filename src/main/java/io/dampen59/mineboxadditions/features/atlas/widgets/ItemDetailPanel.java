@@ -146,7 +146,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             }
             lines.sort(String::compareToIgnoreCase);
             MinecraftClient.getInstance().keyboard.setClipboard(String.join("\n", lines));
-            Utils.showToastNotification("Copied to clipboard", "The recipe has been copied to your clipboard!");
+            Utils.showToastNotification(Text.translatable("mineboxadditions.gui.atlas.clipboard.title").getString(), Text.translatable("mineboxadditions.gui.atlas.clipboard.desc").getString());
         }).dimensions(x + UI_PADDING, rowY, 16, 16).build();
         parent.addDrawableChild(clipboardButton);
     }
@@ -362,25 +362,33 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         }
 
         // Info
-        context.drawText(textRenderer, Text.of("Level: " + item.getLevel()), leftMargin, drawY, 0xFFAAAAAA, false);
+        context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.level", item.getLevel()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
         drawY += lineHeight;
-        context.drawText(textRenderer, Text.of("Category: " + item.getCategory()), leftMargin, drawY, 0xFFAAAAAA, false);
+        context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.category", item.getCategory()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
         drawY += lineHeight;
-        context.drawText(textRenderer, Text.of("Rarity: " + item.getRarity()), leftMargin, drawY, 0xFFAAAAAA, false);
-        drawY += lineHeight;
+        context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.rarity", item.getRarity()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
+        drawY += lineHeight * 2;
 
         // Stats
-        if (item.getMbxStats() != null) {
+        if (item.getMbxStats() != null && !item.getMbxStats().isEmpty()) {
+            context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.stats").getString(), leftMargin, drawY, 0xFFFFD700, false);
+            drawY += lineHeight;
             for (var entry : item.getMbxStats().entrySet()) {
-                String stat = entry.getKey() + ": " + entry.getValue().getMin() + " - " + entry.getValue().getMax();
-                context.drawText(textRenderer, Text.of(stat), leftMargin, drawY, 0xFFCCCCCC, false);
+                String statKey = entry.getKey();
+                var statVal = entry.getValue();
+                Text statName = MineboxItem.getStatName(statKey);
+                Text statRange = Text.literal(": " + statVal.getMin() + " - " + statVal.getMax());
+                Text fullStatText = Text.literal("").append(statName).append(statRange);
+                context.drawText(textRenderer, fullStatText, leftMargin, drawY, 0xFFFFFFFF, false);
                 drawY += lineHeight;
             }
+            drawY += lineHeight;
         }
+
 
         // Recipe
         if (item.getRecipe() != null && item.getRecipe().getIngredients() != null) {
-            context.drawText(textRenderer, Text.of("Recipe:"), leftMargin, drawY, 0xFFFFD700, false);
+            context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.recipe").getString(), leftMargin, drawY, 0xFFFFD700, false);
             drawY += lineHeight;
             List<MineboxItem.Ingredient> ingredients = item.getRecipe().getIngredients();
             for (int i = 0; i < ingredients.size(); i++) {
@@ -403,7 +411,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         );
 
         if (!usedIn.isEmpty()) {
-            context.drawText(textRenderer, Text.of("Used in:"), leftMargin, drawY, 0xFFFFD700, false);
+            context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.used_in").getString(), leftMargin, drawY, 0xFFFFD700, false);
             drawY += lineHeight;
 
             int iconSizeUsedIn = 16;
