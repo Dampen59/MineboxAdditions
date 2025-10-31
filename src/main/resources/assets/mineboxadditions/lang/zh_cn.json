@@ -74,6 +74,8 @@
   "mineboxadditions.config.items.museumIndicator": "博物馆指示器",
   "mineboxadditions.config.items.museumIndicator.desc": "显示缺失博物馆物品的标识",
 
+  "mineboxadditions.config.items.rangeDisplay": "工具范围显示",
+  "mineboxadditions.config.items.rangeDisplay.desc": "突出显示您应使用工具的下一个区域（例如：种子篮）",
 
   "mineboxadditions.strings.full_moon": "满月",
 

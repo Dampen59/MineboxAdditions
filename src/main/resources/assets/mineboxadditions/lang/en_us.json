@@ -74,6 +74,9 @@
   "mineboxadditions.config.items.museumIndicator": "Museum Indicator",
   "mineboxadditions.config.items.museumIndicator.desc": "Displays indicator for missing museum items",
 
+  "mineboxadditions.config.items.rangeDisplay": "Tools range display",
+  "mineboxadditions.config.items.rangeDisplay.desc": "Highlight the next block on which you should use your tool (eg: Seed Basket)",
+
 
   "mineboxadditions.strings.full_moon": "Full moon",
 

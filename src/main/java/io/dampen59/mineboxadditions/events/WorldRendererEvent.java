@@ -2,6 +2,7 @@ package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
+import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableBeam;
 import io.dampen59.mineboxadditions.utils.Utils;
@@ -63,7 +64,7 @@ public class WorldRendererEvent {
         });
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
-//            if (!MineboxAdditionConfig.get().displaySettings.displayItemRange) return ActionResult.PASS;
+            if (!ItemsConfig.rangeDisplay) return ActionResult.PASS;
 
             if (!world.isClient) return ActionResult.PASS;
             if (!(player instanceof ClientPlayerEntity)) return ActionResult.PASS;

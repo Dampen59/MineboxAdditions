@@ -74,6 +74,8 @@
   "mineboxadditions.config.items.museumIndicator": "Индикатор музея",
   "mineboxadditions.config.items.museumIndicator.desc": "Показывает индикатор отсутствующих предметов в музее",
 
+  "mineboxadditions.config.items.rangeDisplay": "Отображение диапазона инструментов",
+  "mineboxadditions.config.items.rangeDisplay.desc": "Выделите следующий блок, на котором следует использовать инструмент (например: корзина для семян)",
 
   "mineboxadditions.strings.full_moon": "Полнолуние",
 

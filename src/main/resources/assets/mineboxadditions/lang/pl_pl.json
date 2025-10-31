@@ -74,6 +74,8 @@
   "mineboxadditions.config.items.museumIndicator": "Wskaźnik Muzeum",
   "mineboxadditions.config.items.museumIndicator.desc": "Wyświetla wskaźnik brakujących eksponatów w muzeum",
 
+  "mineboxadditions.config.items.rangeDisplay": "Wyświetlanie zakresu narzędzi",
+  "mineboxadditions.config.items.rangeDisplay.desc": "Podświetl następny blok, na którym należy użyć narzędzia (np. koszyk nasion)",
 
   "mineboxadditions.strings.full_moon": "Pełnia księżyca",
 

@@ -74,6 +74,8 @@
   "mineboxadditions.config.items.museumIndicator": "Indicateur du musée",
   "mineboxadditions.config.items.museumIndicator.desc": "Affiche un indicateur pour les objets manquants du musée",
 
+  "mineboxadditions.config.items.rangeDisplay": "Affichage de la portée des outils",
+  "mineboxadditions.config.items.rangeDisplay.desc": "Met en évidence le bloc suivant sur lequel vous devriez utiliser votre outil (ex.: Panier de Graines)",
 
   "mineboxadditions.strings.full_moon": "Pleine lune",
 

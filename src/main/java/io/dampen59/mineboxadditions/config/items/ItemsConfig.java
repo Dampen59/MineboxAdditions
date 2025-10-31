@@ -19,4 +19,8 @@ public class ItemsConfig {
     @ConfigEntry(id = "museumIndicator", translation = "mineboxadditions.config.items.museumIndicator")
     @Comment(value = "", translation = "mineboxadditions.config.items.museumIndicator.desc")
     public static boolean museumIndicator = true;
+
+    @ConfigEntry(id = "rangeDisplay", translation = "mineboxadditions.config.items.rangeDisplay")
+    @Comment(value = "", translation = "mineboxadditions.config.items.rangeDisplay.desc")
+    public static boolean rangeDisplay = false;
 }

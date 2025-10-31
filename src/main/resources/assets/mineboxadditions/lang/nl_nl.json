@@ -74,6 +74,8 @@
   "mineboxadditions.config.items.museumIndicator": "Museumindicator",
   "mineboxadditions.config.items.museumIndicator.desc": "Toont een indicator voor ontbrekende museumitems",
 
+  "mineboxadditions.config.items.rangeDisplay": "Weergave van gereedschapsassortiment",
+  "mineboxadditions.config.items.rangeDisplay.desc": "Markeer het volgende blok waarop u uw gereedschap moet gebruiken (bijv.: zaadmand)",
 
   "mineboxadditions.strings.full_moon": "Volle maan",
 
