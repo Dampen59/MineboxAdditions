@@ -3,8 +3,8 @@ package io.dampen59.mineboxadditions.utils.models;
 public class SkillData {
     private final Skill skill;
     private Integer level;
-    private Integer current;
-    private Integer max;
+    private Long current;
+    private Long max;
 
     public SkillData(Skill skill) {
         this.skill = skill;
@@ -18,19 +18,19 @@ public class SkillData {
         this.level = level;
     }
 
-    public Integer getCurrentXp() {
+    public Long getCurrentXp() {
         return current;
     }
 
-    public void setCurrentXp(int xp) {
+    public void setCurrentXp(long xp) {
         this.current = xp;
     }
 
-    public Integer getMaxXp() {
+    public Long getMaxXp() {
         return max;
     }
 
-    public void setMaxXP(int xp) {
+    public void setMaxXP(long xp) {
         this.max = xp;
     }
 

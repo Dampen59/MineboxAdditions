@@ -21,9 +21,11 @@ import java.util.stream.Stream;
 
 public class HaversackManager {
     private int lastAmountInside = -1;
-    private long lastCheckTime = System.currentTimeMillis();
+    private long lastMonoTimeNs = -1L;
     private double fillRatePerSecond = 0.0;
     private String timeUntilFull = "";
+    private static final long MIN_INTERVAL_NS = 300_000_000L;
+    private static final double EMA_ALPHA = 0.3;
 
     public HaversackManager() {
         ClientTickEvents.END_CLIENT_TICK.register(this::handle);
@@ -79,35 +81,57 @@ public class HaversackManager {
     }
 
     private void handleHaversackDurability(ItemStack stack, NbtCompound nbtData, TranslatableTextContent content) {
-        StringVisitable quantityArg = content.getArg(0);
-        String[] parts = quantityArg.getString().split("/");
+        String[] parts = content.getArg(0).getString().split("/");
         if (parts.length < 2) return;
-        int maxQuantity = Integer.parseInt(parts[1]);
+        int maxQuantity;
+        try {
+            maxQuantity = Integer.parseInt(parts[1].trim());
+        } catch (NumberFormatException e) { return; }
+
         NbtCompound persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
-        int amountInside = persistentData.getInt("mbitems:amount_inside").orElse(0);
+        if (persistentData == null) return;
+        int amountInside = persistentData.getInt("mbitems:amount_inside").orElse(-1);
+        if (amountInside < 0) return;
 
-        long currentTime = System.currentTimeMillis();
-        if (lastAmountInside >= 0) {
-            long deltaTime = currentTime - lastCheckTime;
-            if (deltaTime >= 1000) {
-                int deltaAmount = amountInside - lastAmountInside;
-                fillRatePerSecond = deltaAmount / (deltaTime / 1000.0);
-                lastCheckTime = currentTime;
-                lastAmountInside = amountInside;
-
-                // Estimate time to full
-                int remaining = maxQuantity - amountInside;
-                if (fillRatePerSecond > 0) {
-                    long secondsLeft = (long) (remaining / fillRatePerSecond);
-                    timeUntilFull = Utils.formatTime(secondsLeft);
-                } else {
-                    timeUntilFull = "∞";
-                }
-            }
-        } else {
+        long now = System.nanoTime();
+        if (lastMonoTimeNs < 0 || lastAmountInside < 0) {
+            lastMonoTimeNs = now;
             lastAmountInside = amountInside;
-            lastCheckTime = currentTime;
             timeUntilFull = "";
+            return;
+        }
+
+        long dtNs = now - lastMonoTimeNs;
+        if (dtNs < MIN_INTERVAL_NS) {
+            return;
+        }
+
+        int dAmount = amountInside - lastAmountInside;
+
+        if (dAmount <= 0 || dtNs <= 0) {
+            lastMonoTimeNs = now;
+            lastAmountInside = amountInside;
+            fillRatePerSecond = Math.max(0.0, fillRatePerSecond * 0.8);
+            timeUntilFull = fillRatePerSecond > 0
+                    ? Utils.formatTime((long)((maxQuantity - amountInside) / fillRatePerSecond))
+                    : "∞";
+            return;
+        }
+
+        double dtSec = dtNs / 1_000_000_000.0;
+        double instantRate = dAmount / dtSec;
+
+        fillRatePerSecond = EMA_ALPHA * instantRate + (1.0 - EMA_ALPHA) * fillRatePerSecond;
+
+        lastMonoTimeNs = now;
+        lastAmountInside = amountInside;
+
+        int remaining = Math.max(0, maxQuantity - amountInside);
+        if (fillRatePerSecond > 0.0001 && Double.isFinite(fillRatePerSecond)) {
+            long secondsLeft = (long) Math.ceil(remaining / fillRatePerSecond);
+            timeUntilFull = Utils.formatTime(secondsLeft);
+        } else {
+            timeUntilFull = "∞";
         }
     }
 }

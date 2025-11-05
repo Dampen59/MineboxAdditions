@@ -38,8 +38,8 @@ public abstract class BossBarMixin {
                 if (skill.getName().getString().equals(matcher.group(1))) {
                     SkillData data = Utils.getSkill(skill);
                     data.setLevel(Integer.parseInt(matcher.group(2)));
-                    data.setCurrentXp(Integer.parseInt(matcher.group(3)));
-                    data.setMaxXP(Integer.parseInt(matcher.group(4)));
+                    data.setCurrentXp(Long.parseLong(matcher.group(3)));
+                    data.setMaxXP(Long.parseLong(matcher.group(4)));
                     break;
                 }
             }
