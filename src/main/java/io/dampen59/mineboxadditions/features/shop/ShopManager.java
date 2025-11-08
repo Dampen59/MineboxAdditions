@@ -1,6 +1,8 @@
 package io.dampen59.mineboxadditions.features.shop;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.Config;
+import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.features.hud.huds.ShopHud;
@@ -65,6 +67,18 @@ public class ShopManager {
 
         if (shop != null && shop.getOffer() == null) {
             shop.setOffer(itemName);
+
+            boolean shopEnabled = switch (shop.name().toLowerCase()) {
+                case "mouse" -> HudsConfig.shop.mouse;
+                case "bakery" -> HudsConfig.shop.bakery;
+                case "buckstar" -> HudsConfig.shop.buckstar;
+                case "sharkoffe" -> HudsConfig.shop.sharkoffe;
+                default -> false;
+            };
+
+            if (!shopEnabled)
+                return;
+
             showToast(shop, shop.getOffer());
         }
     }
