@@ -4,7 +4,6 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemDetailPanel;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
-import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;

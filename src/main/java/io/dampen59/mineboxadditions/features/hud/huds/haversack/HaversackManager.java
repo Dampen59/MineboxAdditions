@@ -1,13 +1,11 @@
 package io.dampen59.mineboxadditions.features.hud.huds.haversack;
 
-import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.LoreComponent;
@@ -21,11 +19,9 @@ import java.util.stream.Stream;
 
 public class HaversackManager {
     private int lastAmountInside = -1;
-    private long lastMonoTimeNs = -1L;
     private double fillRatePerSecond = 0.0;
     private String timeUntilFull = "";
-    private static final long MIN_INTERVAL_NS = 300_000_000L;
-    private static final double EMA_ALPHA = 0.3;
+    private long lastCheckTime = System.currentTimeMillis();
 
     public HaversackManager() {
         ClientTickEvents.END_CLIENT_TICK.register(this::handle);
@@ -34,20 +30,12 @@ public class HaversackManager {
 
     private void handle(MinecraftClient client) {
         if (client.player == null || client.world == null || !Utils.isOnMinebox()) return;
-
-        Stream.of(client.player.getOffHandStack())
-                .filter(stack -> !stack.isEmpty())
-                .forEach(this::handleDurability);
-        client.player.getInventory().getMainStacks().stream().filter(stack -> !stack.isEmpty())
-                .forEach(this::handleDurability);
-
-        if (client.currentScreen instanceof GenericContainerScreen containerScreen) {
-            containerScreen.getScreenHandler().slots.forEach(slot -> {
-                ItemStack stack = slot.getStack();
-                if (!stack.isEmpty()) {
-                    handleDurability(stack);
-                }
-            });
+        ItemStack offHandStack = client.player.getOffHandStack();
+        String offHandStackId = Utils.getMineboxItemId(offHandStack);
+        if (offHandStackId != null && offHandStackId.startsWith("haversack_")) {
+            handleDurability(offHandStack);
+        } else {
+            reset();
         }
     }
 
@@ -81,57 +69,40 @@ public class HaversackManager {
     }
 
     private void handleHaversackDurability(ItemStack stack, NbtCompound nbtData, TranslatableTextContent content) {
-        String[] parts = content.getArg(0).getString().split("/");
+        StringVisitable quantityArg = content.getArg(0);
+        String[] parts = quantityArg.getString().split("/");
         if (parts.length < 2) return;
-        int maxQuantity;
-        try {
-            maxQuantity = Integer.parseInt(parts[1].trim());
-        } catch (NumberFormatException e) { return; }
-
+        int maxQuantity = Integer.parseInt(parts[1]);
         NbtCompound persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
-        if (persistentData == null) return;
-        int amountInside = persistentData.getInt("mbitems:amount_inside").orElse(-1);
-        if (amountInside < 0) return;
+        int amountInside = persistentData.getInt("mbitems:amount_inside").orElse(0);
+        long currentTime = System.currentTimeMillis();
+        if (lastAmountInside >= 0) {
+            long deltaTime = currentTime - lastCheckTime;
+            if (deltaTime >= 1000) {
+                int deltaAmount = amountInside - lastAmountInside;
+                fillRatePerSecond = deltaAmount / (deltaTime / 1000.0);
+                lastCheckTime = currentTime;
+                lastAmountInside = amountInside;
 
-        long now = System.nanoTime();
-        if (lastMonoTimeNs < 0 || lastAmountInside < 0) {
-            lastMonoTimeNs = now;
-            lastAmountInside = amountInside;
-            timeUntilFull = "";
-            return;
-        }
-
-        long dtNs = now - lastMonoTimeNs;
-        if (dtNs < MIN_INTERVAL_NS) {
-            return;
-        }
-
-        int dAmount = amountInside - lastAmountInside;
-
-        if (dAmount <= 0 || dtNs <= 0) {
-            lastMonoTimeNs = now;
-            lastAmountInside = amountInside;
-            fillRatePerSecond = Math.max(0.0, fillRatePerSecond * 0.8);
-            timeUntilFull = fillRatePerSecond > 0
-                    ? Utils.formatTime((long)((maxQuantity - amountInside) / fillRatePerSecond))
-                    : "∞";
-            return;
-        }
-
-        double dtSec = dtNs / 1_000_000_000.0;
-        double instantRate = dAmount / dtSec;
-
-        fillRatePerSecond = EMA_ALPHA * instantRate + (1.0 - EMA_ALPHA) * fillRatePerSecond;
-
-        lastMonoTimeNs = now;
-        lastAmountInside = amountInside;
-
-        int remaining = Math.max(0, maxQuantity - amountInside);
-        if (fillRatePerSecond > 0.0001 && Double.isFinite(fillRatePerSecond)) {
-            long secondsLeft = (long) Math.ceil(remaining / fillRatePerSecond);
-            timeUntilFull = Utils.formatTime(secondsLeft);
+                // Estimate time to full
+                int remaining = maxQuantity - amountInside;
+                if (fillRatePerSecond > 0) {
+                    long secondsLeft = (long) (remaining / fillRatePerSecond);
+                    timeUntilFull = Utils.formatTime(secondsLeft);
+                } else {
+                    timeUntilFull = "∞";
+                }
+            }
         } else {
-            timeUntilFull = "∞";
+            lastAmountInside = amountInside;
+            lastCheckTime = currentTime;
+            timeUntilFull = "";
         }
+    }
+
+    private void reset() {
+        lastAmountInside = -1;
+        fillRatePerSecond = 0.0;
+        timeUntilFull = "";
     }
 }
