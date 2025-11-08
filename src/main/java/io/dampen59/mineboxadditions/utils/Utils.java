@@ -185,144 +185,145 @@ public class Utils {
                 return "transformed_bamboo";
             case "bag_material-bamboo":
                 return "bag_bamboo";
-            case "crate_bamboo":
-                return "crate_material-bamboo";
-            case "barrel_bamboo":
-                return "barrel_material-bamboo";
-            case "enchanted_bamboo":
-                return "enchanted_material-bamboo";
+            case "crate_material-bamboo":
+                return "crate_bamboo";
+            case "barrel_material-bamboo":
+                return "barrel_bamboo";
+            case "enchanted_material-bamboo":
+                return "enchanted_bamboo";
 
             case "transformed_material-carrot":
                 return "transformed_carrot";
             case "bag_material-carrot":
                 return "bag_carrot";
-            case "crate_carrot":
-                return "crate_material-carrot";
-            case "barrel_carrot":
-                return "barrel_material-carrot";
-            case "enchanted_carrot":
-                return "enchanted_material-carrot";
+            case "crate_material-carrot":
+                return "crate_carrot";
+            case "barrel_material-carrot":
+                return "barrel_carrot";
+            case "enchanted_material-carrot":
+                return "enchanted_carrot";
 
             case "transformed_material-beetroot":
                 return "transformed_beetroot";
             case "bag_material-beetroot":
                 return "bag_beetroot";
-            case "crate_beetroot":
-                return "crate_material-beetroot";
-            case "barrel_beetroot":
-                return "barrel_material-beetroot";
-            case "enchanted_beetroot":
-                return "enchanted_material-beetroot";
+            case "crate_material-beetroot":
+                return "crate_beetroot";
+            case "barrel_material-beetroot":
+                return "barrel_beetroot";
+            case "enchanted_material-beetroot":
+                return "enchanted_beetroot";
 
             case "transformed_material-cactus":
                 return "transformed_cactus";
             case "bag_material-cactus":
                 return "bag_cactus";
-            case "crate_cactus":
-                return "crate_material-cactus";
-            case "barrel_cactus":
-                return "barrel_material-cactus";
-            case "enchanted_cactus":
-                return "enchanted_material-cactus";
+            case "crate_material-cactus":
+                return "crate_cactus";
+            case "barrel_material-cactus":
+                return "barrel_cactus";
+            case "enchanted_material-cactus":
+                return "enchanted_cactus";
 
             case "transformed_material-cocoa_beans":
                 return "transformed_cocoa_beans";
             case "bag_material-cocoa_beans":
                 return "bag_cocoa_beans";
-            case "crate_cocoa_beans":
-                return "crate_material-cocoa_beans";
-            case "barrel_cocoa_beans":
-                return "barrel_material-cocoa_beans";
-            case "enchanted_cocoa_beans":
-                return "enchanted_material-cocoa_beans";
+            case "crate_material-cocoa_beans":
+                return "crate_cocoa_beans";
+            case "barrel_material-cocoa_beans":
+                return "barrel_cocoa_beans";
+            case "enchanted_material-cocoa_beans":
+                return "enchanted_cocoa_beans";
 
             case "transformed_material-kelp":
                 return "transformed_kelp";
             case "bag_material-kelp":
                 return "bag_kelp";
-            case "crate_kelp":
-                return "crate_material-kelp";
-            case "barrel_kelp":
-                return "barrel_material-kelp";
-            case "enchanted_kelp":
-                return "enchanted_material-kelp";
+            case "crate_material-kelp":
+                return "crate_kelp";
+            case "barrel_material-kelp":
+                return "barrel_kelp";
+            case "enchanted_material-kelp":
+                return "enchanted_kelp";
 
             case "transformed_material-melon_slice":
                 return "transformed_melon_slice";
             case "bag_material-melon_slice":
                 return "bag_melon_slice";
-            case "crate_melon_slice":
-                return "crate_material-melon_slice";
-            case "barrel_melon_slice":
-                return "barrel_material-melon_slice";
-            case "enchanted_melon_slice":
-                return "enchanted_material-melon_slice";
+            case "crate_material-melon_slice":
+                return "crate_melon_slice";
+            case "barrel_material-melon_slice":
+                return "barrel_melon_slice";
+            case "enchanted_material-melon_slice":
+                return "enchanted_melon_slice";
 
             case "transformed_material-nether_wart":
                 return "transformed_nether_wart";
             case "bag_material-nether_wart":
                 return "bag_nether_wart";
-            case "crate_nether_wart":
-                return "crate_material-nether_wart";
-            case "barrel_nether_wart":
-                return "barrel_material-nether_wart";
-            case "enchanted_nether_wart":
-                return "enchanted_material-nether_wart";
+            case "crate_material-nether_wart":
+                return "crate_nether_wart";
+            case "barrel_material-nether_wart":
+                return "barrel_nether_wart";
+            case "enchanted_material-nether_wart":
+                return "enchanted_nether_wart";
 
             case "transformed_material-potato":
                 return "transformed_potato";
             case "bag_material-potato":
                 return "bag_potato";
-            case "crate_potato":
-                return "crate_material-potato";
-            case "barrel_potato":
-                return "barrel_material-potato";
-            case "enchanted_potato":
-                return "enchanted_material-potato";
+            case "crate_material-potato":
+                return "crate_potato";
+            case "barrel_material-potato":
+                return "barrel_potato";
+            case "enchanted_material-potato":
+                return "enchanted_potato";
 
             case "transformed_material-pumpkin":
                 return "transformed_pumpkin";
             case "bag_material-pumpkin":
                 return "bag_pumpkin";
-            case "crate_pumpkin":
-                return "crate_material-pumpkin";
-            case "barrel_pumpkin":
-                return "barrel_material-pumpkin";
-            case "enchanted_pumpkin":
-                return "enchanted_material-pumpkin";
+            case "crate_material-pumpkin":
+                return "crate_pumpkin";
+            case "barrel_material-pumpkin":
+                return "barrel_pumpkin";
+            case "enchanted_material-pumpkin":
+                return "enchanted_pumpkin";
 
             case "transformed_material-sugar_cane":
                 return "transformed_sugar_cane";
             case "bag_material-sugar_cane":
                 return "bag_sugar_cane";
-            case "crate_sugar_cane":
-                return "crate_material-sugar_cane";
-            case "barrel_sugar_cane":
-                return "barrel_material-sugar_cane";
-            case "enchanted_sugar_cane":
-                return "enchanted_material-sugar_cane";
+            case "crate_material-sugar_cane":
+                return "crate_sugar_cane";
+            case "barrel_material-sugar_cane":
+                return "barrel_sugar_cane";
+            case "enchanted_material-sugar_cane":
+                return "enchanted_sugar_cane";
 
             case "transformed_material-sweet_berries":
                 return "transformed_sweet_berries";
             case "bag_material-sweet_berries":
                 return "bag_sweet_berries";
-            case "crate_sweet_berries":
-                return "crate_material-sweet_berries";
-            case "barrel_sweet_berries":
-                return "barrel_material-sweet_berries";
-            case "enchanted_sweet_berries":
-                return "enchanted_material-sweet_berries";
+            case "crate_material-sweet_berries":
+                return "crate_sweet_berries";
+            case "barrel_material-sweet_berries":
+                return "barrel_sweet_berries";
+            case "enchanted_material-sweet_berries":
+                return "enchanted_sweet_berries";
 
             case "transformed_material-wheat":
                 return "transformed_wheat";
             case "bag_material-wheat":
                 return "bag_wheat";
-            case "crate_wheat":
-                return "crate_material-wheat";
-            case "barrel_wheat":
-                return "barrel_material-wheat";
-            case "enchanted_wheat":
-                return "enchanted_material-wheat";
+            case "crate_material-wheat":
+                return "crate_wheat";
+            case "barrel_material-wheat":
+                return "barrel_wheat";
+            case "enchanted_material-wheat":
+                return "enchanted_wheat";
+
             default:
                 return prmId;
         }
