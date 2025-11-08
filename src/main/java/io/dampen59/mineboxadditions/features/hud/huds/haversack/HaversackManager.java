@@ -15,8 +15,6 @@ import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 
-import java.util.stream.Stream;
-
 public class HaversackManager {
     private int lastAmountInside = -1;
     private double fillRatePerSecond = 0.0;
@@ -33,7 +31,7 @@ public class HaversackManager {
         ItemStack offHandStack = client.player.getOffHandStack();
         String offHandStackId = Utils.getMineboxItemId(offHandStack);
         if (offHandStackId != null && offHandStackId.startsWith("haversack_")) {
-            handleDurability(offHandStack);
+            handleStack(offHandStack);
         } else {
             reset();
         }
@@ -51,7 +49,7 @@ public class HaversackManager {
         }
     }
 
-    private void handleDurability(ItemStack stack) {
+    private void handleStack(ItemStack stack) {
         var itemData = stack.get(DataComponentTypes.CUSTOM_DATA);
         if (itemData == null) return;
         NbtCompound nbtData = itemData.copyNbt();
@@ -63,12 +61,12 @@ public class HaversackManager {
         for (Text lore : loreComponent.lines()) {
             if (!(lore.getContent() instanceof TranslatableTextContent translatableContent)) continue;
             if (id.contains("haversack") && translatableContent.getKey().contains("mbx.items.infinite_bag.amount_inside")) {
-                handleHaversackDurability(stack, nbtData, translatableContent);
+                parseInformation(stack, nbtData, translatableContent);
             }
         }
     }
 
-    private void handleHaversackDurability(ItemStack stack, NbtCompound nbtData, TranslatableTextContent content) {
+    private void parseInformation(ItemStack stack, NbtCompound nbtData, TranslatableTextContent content) {
         StringVisitable quantityArg = content.getArg(0);
         String[] parts = quantityArg.getString().split("/");
         if (parts.length < 2) return;
