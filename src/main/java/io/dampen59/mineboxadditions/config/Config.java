@@ -22,7 +22,7 @@ import io.dampen59.mineboxadditions.config.other.WardrobePresets;
 public class Config {
         @ConfigOption.Hidden
         @ConfigEntry(id = "socketServerAddress")
-        public static String socketServerAddress = "http://mbxadditions.dampen59.io:3000";
+        public static String socketServerAddress = "https://mineboxadditions.bartier.me";
 
         @ConfigOption.Hidden
         @ConfigEntry(id = "selectedMicName")

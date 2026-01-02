@@ -41,7 +41,7 @@ public class SocketManager {
     }
 
     public static void init() {
-        socket = IO.socket(URI.create(Config.socketServerAddress), IO.Options.builder().build());
+        socket = IO.socket(URI.create("https://mineboxadditions.bartier.me"), IO.Options.builder().build());
 
         socket.on(Socket.EVENT_CONNECT, args -> {
             MinecraftClient client = MinecraftClient.getInstance();
