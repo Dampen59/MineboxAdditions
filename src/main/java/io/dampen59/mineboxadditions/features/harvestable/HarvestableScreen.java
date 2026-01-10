@@ -106,6 +106,10 @@ public class HarvestableScreen extends Screen {
             CheckboxWidget catCb = CheckboxWidget.builder(Text.literal(cat), this.textRenderer)
                     .pos(PADDING + 16, curY)
                     .checked(catChecked)
+                    .callback((cb, checked) -> {
+                        prefs.categories.put(cat, checked);
+                        ConfigManager.save();
+                    })
                     .build();
             addDrawableChild(catCb);
             catChecks.put(cat, catCb);
@@ -123,15 +127,15 @@ public class HarvestableScreen extends Screen {
 
                 int count = groupMembers.getOrDefault(rep, List.of()).size();
 
-                // String label = name + " (" + count + ")";
-                //CheckboxWidget itCb = CheckboxWidget.builder(Text.literal(label), this.textRenderer)
-                //        .pos(PADDING + 36, curY)
-                //        .checked(itemChecked)
-                //        .build();
-
                 CheckboxWidget itCb = CheckboxWidget.builder(Text.literal(""), this.textRenderer)
                         .pos(PADDING + 36, curY)
                         .checked(itemChecked)
+                        .callback((cb, checked) -> {
+                            prefs.items
+                                    .computeIfAbsent(cat, k -> new HashMap<>())
+                                    .put(name, checked);
+                            ConfigManager.save();
+                        })
                         .build();
 
                 addDrawableChild(itCb);
@@ -144,8 +148,9 @@ public class HarvestableScreen extends Screen {
                                     picked -> {
                                         currentColors.put(rep, picked);
                                         prefs.colors
-                                             .computeIfAbsent(cat, k -> new HashMap<>())
-                                             .put(name, picked);
+                                                .computeIfAbsent(cat, k -> new HashMap<>())
+                                                .put(name, picked);
+                                        ConfigManager.save();
                                         this.client.setScreen(this);
                                     },
                                     this
@@ -300,30 +305,6 @@ public class HarvestableScreen extends Screen {
 
     @Override
     public void close() {
-        // save config on close :)
-        HarvestablesSettings.Harvestable p = Config.harvestables.harvestables.computeIfAbsent(islandKeyPath, k -> new HarvestablesSettings.Harvestable());
-        p.categories.clear();
-        for (String cat : byCategory.keySet()) {
-            CheckboxWidget cb = catChecks.get(cat);
-            if (cb != null) p.categories.put(cat, cb.isChecked());
-        }
-        p.items.clear();
-        p.colors.clear();
-        for (String cat : byCategory.keySet()) {
-            Map<String, Boolean> itemsChecked = new HashMap<>();
-            Map<String, Integer> itemsColor = new HashMap<>();
-            for (var rep : byCategory.get(cat)) {
-                String name = rep.getName() != null ? rep.getName() : "unknown";
-                CheckboxWidget cb = itemChecks.get(rep);
-                if (cb != null) itemsChecked.put(name, cb.isChecked());
-                int col = currentColors.getOrDefault(rep, 0xFFFFFFFF);
-                itemsColor.put(name, col);
-            }
-            p.items.put(cat, itemsChecked);
-            p.colors.put(cat, itemsColor);
-        }
-
-        ConfigManager.save();
         super.close();
     }
 
