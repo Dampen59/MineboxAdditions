@@ -1,9 +1,10 @@
 # MineboxAddition
-MineboxAddition is a Minecraft Fabric Mod for version 1.21.3 and 1.21.4 that introduces exciting features for your Minebox gameplay !
+MineboxAddition is a Minecraft Fabric Mod for version 1.21.7 and 1.21.8 that introduces exciting features for your Minebox gameplay !
 
 ## Features
 
 - Durability indicators for Haversacks and Harvesters
+- Enhanced item tooltips (press LEFT_ALT while hovering an item to show its base stats, ID...)
 - Shiny mobs alerter, send and receive alerts from other MineboxAdditions users
 - Shop opening alerts and their actual selling item (Mouse, Bakery, Buckstar, Cocktail)
 - Full moon HUD
@@ -14,9 +15,10 @@ MineboxAddition is a Minecraft Fabric Mod for version 1.21.3 and 1.21.4 that int
 - Item rarity display (modes: fill or circle, adjustable opacity)
 - Fishing HUD (configurable display radius)
 - In-game HUD editor
-- In-game atlas (show recipes, adjustable quantity, lock recipes)
-- Performance mode (reduced rendering of certain entities)
+- In-game Atlas (show recipes, linked recipes, adjustable quantity, lock recipes)
+- In-Game configurable harvestable waypoints (as beacon beams)
 - Full-featured voice chat (Private and Proximity) with audio device selection screen (microphone/speakers) + microphone gain adjustment
+- Auto set your job data in clipboard on /jobs and it's aliases
 
 Each feature can be enabled/disabled. Some are disabled by default, so remember to open the mod settings before playing!
 
@@ -24,7 +26,7 @@ Each feature can be enabled/disabled. Some are disabled by default, so remember 
 - O: open mod settings
 - L: open audio device screen
 - I: open HUD editor
-- P: enable/disable performance mode
+- P: open Harvestables screen
 - Right Shift: open Atlas
 
 ### In-game commands
@@ -34,15 +36,15 @@ Each feature can be enabled/disabled. Some are disabled by default, so remember 
 - /mba vc leave - leave the audio room
 - /mba debug - display diagnostic information about the mod
 
-### Network features informations
-When using the mod network features, some informations are sent to the server to keep track of your session and to send you latest features data (eg: Atlas items, Shops Alerts, Shinies...)
+### Network features information
+When using the mod network features, some information are sent to the server to keep track of your session and to send you latest features data (eg: Atlas items, Shops Alerts, Shinies...)
 
-The informations used are :
+The information used are :
 - Your Minecraft username
 - Your Minecraft UUID [What's that ?!](https://minecraft.fandom.com/wiki/Universally_unique_identifier)
 - Your Minecraft client lang
 
-These informations are NOT stored anywhere, and gets automatically erased from RAM when your session ends (when you disconnect from Minebox)
+This information are NOT stored anywhere, and gets automatically erased from RAM when your session ends (when you disconnect from Minebox)
 
 ## Available locales
 - FR
@@ -52,8 +54,8 @@ These informations are NOT stored anywhere, and gets automatically erased from R
 - CN
 
 ## Requirements
-- Minecraft 1.21.3 or 1.21.4
-- Fabric Loader 0.16.10 or above
+- Minecraft 1.21.7 or 1.21.8
+- Fabric Loader 0.17.0 or above
 - Fabric API
 - Cloth Config API
 
@@ -61,11 +63,7 @@ These informations are NOT stored anywhere, and gets automatically erased from R
 - ModMenu
 
 ## Download and Installation
-- Download the latest release from [here](https://github.com/Dampen59/MineboxAdditions/releases/latest)
-- Drop the downloaded jarfile to your ``\mods`` folder and you're all set !
-
-Be sure you have downloaded the correct version of Fabric Loader and the required dependencies otherwise you may have an error upon starting the game.
-
+- Find the latest release on [Modrinth](https://modrinth.com/mod/mineboxadditions) or on [Curseforge](https://legacy.curseforge.com/minecraft/mc-mods/mineboxadditions)
 
 ## Building from sources
 
@@ -74,6 +72,9 @@ Be sure you have downloaded the correct version of Fabric Loader and the require
 
 ### Build
 ``./gradlew build``
+
+### Run in dev-env
+``./gradlew runClientLogin``
 
 ## Contributing
 Contributions are welcome! Please follow these steps:
@@ -85,4 +86,4 @@ Contributions are welcome! Please follow these steps:
 
 ## Support
 
-For questions or support, please open an issue on Github or contact me on Discord (dampen59)
+For questions or support, please open an issue on GitHub or contact me on Discord (dampen59)
