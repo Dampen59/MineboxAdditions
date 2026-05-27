@@ -35,7 +35,6 @@ public class ServerEvents {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             if (SocketManager.getSocket().connected()) {
                 SocketManager.getSocket().disconnect();
-                this.modState.getAudioManager().closeMicrophoneAndSpeaker();
             }
             modState.reset();
         });

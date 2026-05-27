@@ -1,7 +1,6 @@
 package io.dampen59.mineboxadditions.state;
 
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
-import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
 import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
@@ -17,8 +16,6 @@ public class State {
     private Map<String, List<Harvestable>> mbxHarvestables = new HashMap<>();
     private List<FishingShoal.Item> shoalItems = new ArrayList<>();
     private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
-
-    private AudioManager audioManager = null;
 
     private String lastSentCommand = null;
     private String lockedItemId = null;
@@ -51,9 +48,6 @@ public class State {
     public Map<String, Boolean> getMbxShiniesUuids() { return mbxShiniesUuids; }
     public void resetShinyList() { mbxShiniesUuids.clear(); }
     public void addShinyUuid(String uuid) { mbxShiniesUuids.put(uuid, false); }
-
-    public AudioManager getAudioManager() { return audioManager; }
-    public void setAudioManager(AudioManager audioManager) { this.audioManager = audioManager; }
 
     public WeatherState getWeatherState() { return weatherState; }
 

@@ -16,10 +16,6 @@ repositories {
         url = "https://maven.covers1624.net/"
     }
     maven {
-        name = "henkelmax.public"
-        url = "https://maven.maxhenkel.de/repository/public"
-    }
-    maven {
         name = "Resourceful Config"
         url = "https://maven.teamresourceful.com/repository/maven-public/"
     }
@@ -48,9 +44,6 @@ dependencies {
     include "com.squareup.okhttp3:okhttp:3.12.12"
     include "org.json:json:20231013"
     include "com.squareup.okio:okio:3.4.0"
-
-    implementation "de.maxhenkel.opus4j:opus4j:2.0.2"
-    include "de.maxhenkel.opus4j:opus4j:2.0.2"
 
     // Dev Login
     localRuntime "net.covers1624:DevLogin:0.1.0.5"

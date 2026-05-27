@@ -25,22 +25,6 @@ public class Config {
         public static String socketServerAddress = "https://mineboxadditions.bartier.me";
 
         @ConfigOption.Hidden
-        @ConfigEntry(id = "selectedMicName")
-        public static String selectedMicName = "";
-
-        @ConfigOption.Hidden
-        @ConfigEntry(id = "selectedSpeakerName")
-        public static String selectedSpeakerName = "";
-
-        @ConfigOption.Hidden
-        @ConfigEntry(id = "micGainDb")
-        public static float micGainDb = 0.0f;
-
-        @ConfigOption.Hidden
-        @ConfigEntry(id = "speakerVolumeMultiplier")
-        public static float speakerVolumeMultiplier = 1.0f;
-
-        @ConfigOption.Hidden
         @ConfigEntry(id = "wardrobe")
         public static final WardrobePresets wardrobe = new WardrobePresets();
 

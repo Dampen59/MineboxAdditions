@@ -1,8 +1,6 @@
 package io.dampen59.mineboxadditions;
 
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
@@ -12,16 +10,12 @@ import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableScreen;
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
-import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
-import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceScreen;
 import io.dampen59.mineboxadditions.features.hud.HudEditorScreen;
 import io.dampen59.mineboxadditions.features.atlas.MineboxAtlasScreen;
 import io.dampen59.mineboxadditions.utils.SocketManager;
-import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
-import io.dampen59.mineboxadditions.utils.AudioUtils;
 import io.dampen59.mineboxadditions.utils.Scheduler;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.api.ClientModInitializer;
@@ -49,7 +43,6 @@ public class MineboxAdditions implements ClientModInitializer {
 
     public State state = null;
     private static KeyBinding openModSettings;
-    private static KeyBinding openAudioSettings;
     public static KeyBinding openEditMode;
     public static KeyBinding openHarvestables;
     public static KeyBinding openAtlas;
@@ -81,14 +74,9 @@ public class MineboxAdditions implements ClientModInitializer {
         new ServerEvents(state);
         new ContainerOpenEvent(state);
         new WorldRendererEvent();
-        new AudioManager(state);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
         this.registerKeybinds();
-
-        AudioDeviceState.micGainDb = Config.micGainDb;
-        AudioDeviceState.selectedInput = AudioUtils.getMixerByName(Config.selectedMicName, true);
-        AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(Config.selectedSpeakerName, false);
 
         INSTANCE = this;
     }
@@ -96,9 +84,6 @@ public class MineboxAdditions implements ClientModInitializer {
     public void tick(MinecraftClient client) {
         Scheduler.INSTANCE.tick();
 
-        while (openAudioSettings.wasPressed()) {
-            MinecraftClient.getInstance().setScreen(new AudioDeviceScreen());
-        }
         if (openEditMode.wasPressed()) {
             client.setScreen(new HudEditorScreen());
         }
@@ -121,53 +106,6 @@ public class MineboxAdditions implements ClientModInitializer {
     }
 
     private void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("create")
-                                .executes(context -> {
-                                    SocketManager.getSocket().emit("C2SCreateAudioRoom");
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("join")
-                                .then(ClientCommandManager.argument("code", StringArgumentType.string())
-                                        .executes(context -> {
-                                            String code = StringArgumentType.getString(context, "code");
-                                            SocketManager.getSocket().emit("C2SJoinAudioRoom", code);
-                                            return Command.SINGLE_SUCCESS;
-                                        })
-                                )
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("proximity")
-                                .executes(context -> {
-                                    SocketManager.getSocket().emit("C2SToggleProximityAudio");
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("leave")
-                                .executes(context -> {
-                                    SocketManager.getSocket().emit("C2SLeaveAudioRoom");
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        )
-                )
-        );
-
         dispatcher.register(ClientCommandManager.literal("mba")
                 .then(ClientCommandManager.literal("debug")
                     .executes(context -> {
@@ -201,13 +139,6 @@ public class MineboxAdditions implements ClientModInitializer {
                 "mineboxadditions.strings.keybinds.modSettings.open",
                 InputUtil.Type.KEYSYM,
                 GLFW.GLFW_KEY_O,
-                "MineboxAdditions"
-        ));
-
-        openAudioSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.audioSettings.open",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_L,
                 "MineboxAdditions"
         ));
 
