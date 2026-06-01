@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import io.dampen59.mineboxadditions.features.item.ItemDurability;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -12,19 +12,19 @@ public abstract class ItemStackMixin {
         return (ItemStack) (Object) this;
     }
 
-    @ModifyReturnValue(method = "isItemBarVisible", at = @At("RETURN"))
-    private boolean mbx$isItemBarVisible(boolean original) {
+    @ModifyReturnValue(method = "isBarVisible", at = @At("RETURN"))
+    private boolean mbx$isBarVisible(boolean original) {
         return ItemDurability.hasDurability(self()) || original;
     }
 
-    @ModifyReturnValue(method = "getItemBarStep", at = @At("RETURN"))
-    private int mbx$getItemBarStep(int original) {
+    @ModifyReturnValue(method = "getBarWidth", at = @At("RETURN"))
+    private int mbx$getBarWidth(int original) {
         int step = ItemDurability.getDurabilityStep(self());
         return step >= 0 ? step : original;
     }
 
-    @ModifyReturnValue(method = "getItemBarColor", at = @At("RETURN"))
-    private int mbx$getItemBarColor(int original) {
+    @ModifyReturnValue(method = "getBarColor", at = @At("RETURN"))
+    private int mbx$getBarColor(int original) {
         int color = ItemDurability.getDurabilityColor(self());
         return color >= 0 ? color : original;
     }

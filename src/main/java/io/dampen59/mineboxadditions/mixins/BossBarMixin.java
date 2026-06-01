@@ -3,8 +3,8 @@ package io.dampen59.mineboxadditions.mixins;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.dampen59.mineboxadditions.utils.models.Skill;
 import io.dampen59.mineboxadditions.utils.models.SkillData;
-import net.minecraft.entity.boss.BossBar;
-import net.minecraft.text.Text;
+import net.minecraft.world.BossEvent;
+import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Debug(export = true)
-@Mixin(BossBar.class)
+@Mixin(BossEvent.class)
 public abstract class BossBarMixin {
     @Unique
     private static final Pattern ZONE_PATTERN = Pattern.compile("끫\\s*([^]+?)");
@@ -26,7 +26,7 @@ public abstract class BossBarMixin {
     private static final Pattern SKILL_PATTERN = Pattern.compile("^(.+?)\\s*\\|\\s*.*?(\\d+)\\s*\\((\\d+)\\s*/\\s*(\\d+)\\)$");
 
     @Inject(method = "setName", at = @At("HEAD"))
-    private void mbx$setName(Text name, CallbackInfo ci) {
+    private void mbx$setName(Component name, CallbackInfo ci) {
         Matcher timeMatch = TIME_PATTERN.matcher(name.getString());
         if (timeMatch.find()) {
             Utils.updateTime(timeMatch.group(1));

@@ -10,9 +10,9 @@ import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.dampen59.mineboxadditions.utils.models.Location;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.Component;
 
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -29,8 +29,8 @@ public class ShopManager {
         SocketManager.getSocket().on("S2CShopOfferEvent", ShopManager::update);
     }
 
-    private static void tick(MinecraftClient client) {
-        if (!Utils.isOnMinebox() || client.world == null) return;
+    private static void tick(Minecraft client) {
+        if (!Utils.isOnMinebox() || client.level == null) return;
         if (Utils.getTime() == LocalTime.MIDNIGHT) return;
 
         TextElement text = HudManager.INSTANCE.get(ShopHud.class)
@@ -45,14 +45,14 @@ public class ShopManager {
                     showToast(shop);
                     shop.setAlerted(true);
                 }
-                text.setText(Text.of(shop.getName().getString() + (shop.getOffer() != null ? ": " + shop.getOffer().getString() : "")));
+                text.setValue(Component.literal(shop.getName().getString() + (shop.getOffer() != null ? ": " + shop.getOffer().getString() : "")));
             } else {
                 shop.reset();
             }
         }
 
         if (allClosed) {
-            text.setText(Text.translatable("mineboxadditions.shop.all_closed"));
+            text.setValue(Component.translatable("mineboxadditions.shop.all_closed"));
         }
     }
 
@@ -92,21 +92,21 @@ public class ShopManager {
     public static void showToast(Shop shop) {
         showToast(shop, null);
     }
-    public static void showToast(Shop shop, Text offer) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public static void showToast(Shop shop, Component offer) {
+        Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) return;
 
-        Text text = offer != null
-                ? Text.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast.offer", offer)
-                : Text.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast");
+        Component text = offer != null
+                ? Component.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast.offer", offer)
+                : Component.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast");
 
-        client.getToastManager().add(new MineboxToast(
-                client.textRenderer,
+        client.getToastManager().addToast(new MineboxToast(
+                client.font,
                 MineboxAdditions.id("textures/gui/toasts/" + shop.name().toLowerCase() + ".png"),
                 shop.getName(),
                 text
         ));
-        client.player.playSound(SoundEvents.BLOCK_BELL_USE, 1.0f, 1.0f);
+        client.player.playSound(SoundEvents.BELL_BLOCK, 1.0f, 1.0f);
     }
 
     public static class MermaidItemOffer {

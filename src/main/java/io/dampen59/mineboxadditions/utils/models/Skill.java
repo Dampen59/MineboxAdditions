@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.utils.models;
 
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public enum Skill {
     ALCHEMIST,
@@ -17,7 +17,7 @@ public enum Skill {
     TAILOR,
     TINKERER;
 
-    public Text getName() {
-        return Text.translatable("mbx.skills." + this.name().toLowerCase() + ".name");
+    public Component getName() {
+        return Component.translatable("mbx.skills." + this.name().toLowerCase() + ".name");
     }
 }

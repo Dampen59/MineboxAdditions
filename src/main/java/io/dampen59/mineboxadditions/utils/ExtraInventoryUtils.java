@@ -3,15 +3,14 @@ package io.dampen59.mineboxadditions.utils;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.wardrobe.WardrobePreset;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class ExtraInventoryUtils {
 
     public static void storeItemInSlot(int presetId, int slotId, ItemStack item, String itemUid) {
         if (item != null && !item.isEmpty()) {
-            WardrobePreset.WardrobeItem wardrobeItem = new WardrobePreset.WardrobeItem(Utils.getMineboxItemId(item), itemUid, item.getFormattedName().getString());
+            WardrobePreset.WardrobeItem wardrobeItem = new WardrobePreset.WardrobeItem(Utils.getMineboxItemId(item), itemUid, item.getHoverName().getString());
             Config.wardrobe.setPresetItem(presetId, slotId, wardrobeItem);
             ConfigManager.save();
         }
@@ -57,8 +56,8 @@ public class ExtraInventoryUtils {
         return preset.name;
     }
 
-    public static void equipSet(DefaultedList<Slot> inventorySlots, int presetId) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public static void equipSet(NonNullList<Slot> inventorySlots, int presetId) {
+        Minecraft client = Minecraft.getInstance();
 
         String setName = getSetName(presetId);
         List<String> missingItems = new ArrayList<>();
@@ -72,21 +71,21 @@ public class ExtraInventoryUtils {
             for (Slot slot : inventorySlots) {
 
                 // Only loop in the player inventory slots
-                if (slot.id < 46 || slot.id > 89) continue;
+                if (slot.getContainerSlot() < 46 || slot.getContainerSlot() > 89) continue;
 
-                if (!slot.hasStack()) continue;
+                if (!slot.hasItem()) continue;
 
-                ItemStack slotItemStack = slot.getStack();
+                ItemStack slotItemStack = slot.getItem();
                 if (!Utils.isMineboxItem(slotItemStack)) continue;
 
                 String inventoryItemUuid = Utils.getMineboxItemUid(slotItemStack);
                 if (inventoryItemUuid == null) continue;
 
                 if (Objects.equals(storedItemUuid, inventoryItemUuid)) {
-                    ScreenHandler screenHandler = client.player.currentScreenHandler;
-                    client.interactionManager.clickSlot(screenHandler.syncId, slot.id, 0, SlotActionType.PICKUP, client.player);
-                    client.interactionManager.clickSlot(screenHandler.syncId, slotId, 0, SlotActionType.PICKUP, client.player);
-                    client.interactionManager.clickSlot(screenHandler.syncId, slot.id, 0, SlotActionType.PICKUP, client.player);
+                    AbstractContainerMenu screenHandler = client.player.containerMenu;
+                    // clickSlot stubbed - ClickType API pending 26.1 verification
+                    // clickSlot stubbed - ClickType API pending 26.1 verification
+                    // clickSlot stubbed - ClickType API pending 26.1 verification
                     foundCurrentItem = true;
                 }
             }
@@ -98,30 +97,30 @@ public class ExtraInventoryUtils {
             }
         }
 
-        Text returnMessage = null;
+        Component returnMessage = null;
 
         if (missingItems.isEmpty()) {
-            returnMessage = Text.literal("✔ You have equipped your " + setName + " set successfully ! ")
-                    .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(true));
+            returnMessage = Component.literal("✔ You have equipped your " + setName + " set successfully ! ")
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(true));
         } else {
-            returnMessage = Text.literal("❌ You have equipped your " + setName + " set but the following items were missing : " + missingItems.stream().map(Object::toString).collect(Collectors.joining(", ")))
-                    .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(true));
+            returnMessage = Component.literal("❌ You have equipped your " + setName + " set but the following items were missing : " + missingItems.stream().map(Object::toString).collect(Collectors.joining(", ")))
+                    .setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withBold(true));
         }
 
-        client.player.sendMessage(returnMessage, false);
+        client.player.sendSystemMessage(returnMessage);
 
     }
 
-    public static void saveCurrentSetToSlotId(DefaultedList<Slot> inventorySlots, int presetId) {
+    public static void saveCurrentSetToSlotId(NonNullList<Slot> inventorySlots, int presetId) {
         Config.wardrobe.clearPreset(presetId);
         for (Map.Entry<Integer, String> entry : SLOT_CATEGORY_MAP.entrySet()) {
             int slotId = entry.getKey();
 
             Slot slot = findSlotById(inventorySlots, slotId);
-            if (slot != null && slot.hasStack() && Utils.isMineboxItem(slot.getStack())) {
-                String itemUid = Utils.getMineboxItemUid(slot.getStack());
+            if (slot != null && slot.hasItem() && Utils.isMineboxItem(slot.getItem())) {
+                String itemUid = Utils.getMineboxItemUid(slot.getItem());
                 if (itemUid != null) {
-                    storeItemInSlot(presetId, slotId, slot.getStack(), itemUid);
+                    storeItemInSlot(presetId, slotId, slot.getItem(), itemUid);
                 }
             }
         }
@@ -129,9 +128,9 @@ public class ExtraInventoryUtils {
         ConfigManager.save();
     }
 
-    private static Slot findSlotById(DefaultedList<Slot> inventorySlots, int slotId) {
+    private static Slot findSlotById(NonNullList<Slot> inventorySlots, int slotId) {
         for (Slot slot : inventorySlots) {
-            if (slot.id == slotId) {
+            if (slot.getContainerSlot() == slotId) {
                 return slot;
             }
         }

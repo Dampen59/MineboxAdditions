@@ -9,8 +9,8 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextureElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class IslandHud extends Hud {
     public IslandHud() {
@@ -25,8 +25,8 @@ public class IslandHud extends Hud {
 
     @Override
     public StackElement init() {
-        Identifier texture = Identifier.of("mineboxadditions", "textures/icons/island.png");
-        TextElement text = new TextElement(Text.of("Island"));
+        Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/island.png");
+        TextElement text = new TextElement(Component.literal("Island"));
 
         HStackElement hstack = new HStackElement()
                 .add(new SpacerElement(4))

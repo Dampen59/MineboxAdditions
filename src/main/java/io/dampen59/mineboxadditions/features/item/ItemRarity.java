@@ -3,21 +3,21 @@ package io.dampen59.mineboxadditions.features.item;
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.Slot;
 
 import java.awt.*;
 
 public class ItemRarity {
-    public static void render(DrawContext context, HandledScreen<?> screen) {
+    public static void render(GuiGraphicsExtractor context, AbstractContainerScreen<?> screen) {
         if (!ItemsConfig.rarity.enabled) return;
 
-        for (Slot slot : screen.getScreenHandler().slots) {
-            if (!slot.isEnabled() || !slot.hasStack()) continue;
+        for (Slot slot : screen.getMenu().slots) {
+            if (!slot.isActive() || !slot.hasItem()) continue;
 
-            ItemStack stack = slot.getStack();
+            ItemStack stack = slot.getItem();
             if (!Utils.isMineboxItem(stack)) continue;
 
             Color rarity = RaritiesUtils.getItemRarityColorFromLore(stack);
@@ -33,7 +33,7 @@ public class ItemRarity {
         }
     }
 
-    private static void drawCircle(DrawContext ctx, int x, int y, int argb) {
+    private static void drawCircle(GuiGraphicsExtractor ctx, int x, int y, int argb) {
         int cx = x + 8, cy = y + 8, r = 8;
         for (int dy = -r; dy <= r; dy++) {
             int dx = (int) Math.sqrt(r * r - dy * dy);

@@ -3,7 +3,7 @@ package io.dampen59.mineboxadditions.features.fishingshoal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +51,7 @@ public class FishingShoal {
         }
 
         public Identifier getResource() {
-            return Identifier.of(MineboxAdditions.NAMESPACE, "textures/fish/" + name + ".png");
+            return Identifier.fromNamespaceAndPath(MineboxAdditions.NAMESPACE, "textures/fish/" + name + ".png");
         }
 
         public void setResource(Identifier resource) {

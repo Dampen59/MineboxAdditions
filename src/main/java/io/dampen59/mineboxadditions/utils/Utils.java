@@ -1,4 +1,5 @@
 package io.dampen59.mineboxadditions.utils;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.utils.models.Location;
@@ -8,19 +9,19 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.toast.SystemToast;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.component.type.NbtComponent;
-import net.minecraft.entity.decoration.DisplayEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.client.multiplayer.PlayerInfo;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.gui.components.toasts.SystemToast;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.entity.Display;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.*;
+import net.minecraft.ChatFormatting;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalTime;
@@ -85,16 +86,16 @@ public class Utils {
         ClientPlayConnectionEvents.DISCONNECT.register(Utils::onDisconnect);
     }
 
-    private static void onJoin(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
-        ServerInfo server = handler.getServerInfo();
+    private static void onJoin(ClientPacketListener handler, PacketSender sender, Minecraft client) {
+        ServerData server = handler.getServerData();
 
         if (server != null) {
-            String address = server.address.toLowerCase();
+            String address = server.ip.toLowerCase();
             isOnMinebox = address.contains("minebox.co") || address.contains("minebox.fr");
         } else isOnMinebox = false;
     }
 
-    private static void onDisconnect(ClientPlayNetworkHandler handler, MinecraftClient client) {
+    private static void onDisconnect(ClientPacketListener handler, Minecraft client) {
         isOnMinebox = false;
         previousLocation = Location.UNKNOWN;
         location = Location.UNKNOWN;
@@ -104,7 +105,7 @@ public class Utils {
         time = LocalTime.parse(timeStr);
     }
 
-    public static void updateLocation(@Nullable Text footer) {
+    public static void updateLocation(@Nullable Component footer) {
         if (!isOnMinebox) return;
         if (footer == null || footer.getSiblings().isEmpty()) return;
 
@@ -115,42 +116,41 @@ public class Utils {
 
     public static void showToastNotification(String prmTitle, String prmDescription) {
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client == null) return;
 
-        client.getToastManager().add(
-                new SystemToast(
-                        SystemToast.Type.PERIODIC_NOTIFICATION,
-                        Text.literal(prmTitle),
-                        Text.literal(prmDescription)
+        client.getToastManager().addToast(
+                new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+                        Component.literal(prmTitle),
+                        Component.literal(prmDescription)
                 )
         );
     }
 
-    public static Text getPlayerServerName(String playerName) {
-        MinecraftClient client = MinecraftClient.getInstance();
+    public static Component getPlayerServerName(String playerName) {
+        Minecraft client = Minecraft.getInstance();
 
         if (client != null && client.player != null) {
-            Collection<PlayerListEntry> entries = client.player.networkHandler.getPlayerList();
-            for (PlayerListEntry entry : entries) {
-                if (!entry.getProfile().getName().equals(playerName)) continue;
-                if (entry.getDisplayName() == null) break;
-                return entry.getDisplayName();
+            Collection<PlayerInfo> entries = client.player.connection.getOnlinePlayers();
+            for (PlayerInfo entry : entries) {
+                if (!entry.getProfile().name().equals(playerName)) continue;
+                if (entry.getProfile().name() == null) break;
+                return Component.literal(entry.getProfile().name());
             }
         }
 
-        return Text.of(playerName);
+        return Component.literal(playerName);
     }
 
     public static boolean itemHaveStats(ItemStack itemStack) {
-        LoreComponent loresList = itemStack.get(DataComponentTypes.LORE);
+        ItemLore loresList = itemStack.get(DataComponents.LORE);
         if (loresList == null) return false;
 
-        for (Text lore : loresList.lines()) {
-            for (Text sibling : lore.getSiblings()) {
-                List<Text> nestedSiblings = sibling.getSiblings();
-                for (Text nestedSibling : nestedSiblings) {
-                    if (!(nestedSibling.getContent() instanceof TranslatableTextContent translatableContent)) continue;
+        for (Component lore : loresList.lines()) {
+            for (Component sibling : lore.getSiblings()) {
+                List<Component> nestedSiblings = sibling.getSiblings();
+                for (Component nestedSibling : nestedSiblings) {
+                    if (!(nestedSibling.getContents() instanceof TranslatableContents translatableContent)) continue;
                     String translationKey = translatableContent.getKey();
                     if (translationKey.contains("mbx.stats.")) return true;
                 }
@@ -160,20 +160,20 @@ public class Utils {
     }
 
     public static boolean isMineboxItem(ItemStack itemStack) {
-        NbtComponent itemData = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+        CustomData itemData = itemStack.get(DataComponents.CUSTOM_DATA);
         if (itemData == null) return false;
 
-        NbtCompound nbtData = itemData.copyNbt();
+        CompoundTag nbtData = itemData.copyTag();
         return nbtData != null && nbtData.contains("mbitems:id");
     }
 
     public static String getMineboxItemId(ItemStack itemStack) {
         if (!isMineboxItem(itemStack)) return null;
 
-        NbtComponent itemData = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+        CustomData itemData = itemStack.get(DataComponents.CUSTOM_DATA);
         if (itemData == null) return null;
 
-        NbtCompound nbtData = itemData.copyNbt();
+        CompoundTag nbtData = itemData.copyTag();
         if (nbtData == null || !nbtData.contains("mbitems:id")) return null;
 
         return nbtData.getString("mbitems:id").orElse(null);
@@ -333,10 +333,10 @@ public class Utils {
     public static boolean isItemLooted(ItemStack itemStack) {
         if (!isMineboxItem(itemStack)) return false;
 
-        NbtComponent itemData = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+        CustomData itemData = itemStack.get(DataComponents.CUSTOM_DATA);
         if (itemData == null) return false;
 
-        NbtCompound nbtData = itemData.copyNbt();
+        CompoundTag nbtData = itemData.copyTag();
         if (nbtData == null || !nbtData.contains("mbitems:looted")) return false;
 
         return nbtData.getInt("mbitems:looted")
@@ -349,9 +349,9 @@ public class Utils {
             return false;
         }
 
-        Text customName = itemStack.getCustomName();
+        Component customName = itemStack.getCustomName();
 
-        if (customName.getContent() instanceof TranslatableTextContent translatable) {
+        if (customName.getContents() instanceof TranslatableContents translatable) {
             String key = translatable.getKey();
             return "mbx.your_stats.title".equals(key) || "mbx.main_menu.title".equals(key);
         }
@@ -364,12 +364,12 @@ public class Utils {
         if (itemStack == null) return 0;
         if (!isMineboxItem(itemStack)) return 0;
 
-        LoreComponent loresList = itemStack.get(DataComponentTypes.LORE);
+        ItemLore loresList = itemStack.get(DataComponents.LORE);
         if (loresList == null) return 0;
 
-        for (Text lore : loresList.lines()) {
-            TextContent content = lore.getContent();
-            if (content instanceof TranslatableTextContent tl &&
+        for (Component lore : loresList.lines()) {
+            ComponentContents content = lore.getContents();
+            if (content instanceof TranslatableContents tl &&
                     "mbx.size".equals(tl.getKey())) {
                 Object[] args = tl.getArgs();
                 if (args.length > 0) {
@@ -377,9 +377,9 @@ public class Utils {
                 }
             }
 
-            for (Text sibling : lore.getSiblings()) {
-                TextContent sibContent = sibling.getContent();
-                if (sibContent instanceof TranslatableTextContent tl2 &&
+            for (Component sibling : lore.getSiblings()) {
+                ComponentContents sibContent = sibling.getContents();
+                if (sibContent instanceof TranslatableContents tl2 &&
                         "mbx.size".equals(tl2.getKey())) {
                     Object[] args = tl2.getArgs();
                     if (args.length > 0) {
@@ -394,13 +394,13 @@ public class Utils {
     public static String getMineboxItemUid(ItemStack itemStack) {
         if (!isMineboxItem(itemStack)) return null;
 
-        NbtComponent itemData = itemStack.get(DataComponentTypes.CUSTOM_DATA);
+        CustomData itemData = itemStack.get(DataComponents.CUSTOM_DATA);
         if (itemData == null) return null;
 
-        NbtCompound nbtData = itemData.copyNbt();
+        CompoundTag nbtData = itemData.copyTag();
         if (nbtData == null) return null;
 
-        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
+        CompoundTag persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
         if (persistentData == null || !persistentData.contains("mbitems:uid")) return null;
 
         return persistentData.getString("mbitems:uid").orElse(null);
@@ -416,26 +416,26 @@ public class Utils {
     }
 
     public static void displayChatErrorMessage(String prmMessage) {
-        Text message = Text.literal("❌ " + prmMessage)
-                .setStyle(Style.EMPTY.withColor(Formatting.RED).withBold(false));
-        MinecraftClient.getInstance().player.sendMessage(message, false);
+        Component message = Component.literal("❌ " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.RED).withBold(false));
+        Minecraft.getInstance().player.sendSystemMessage(message);
     }
 
     public static void displayChatSuccessMessage(String prmMessage) {
-        Text message = Text.literal("✔ " + prmMessage)
-                .setStyle(Style.EMPTY.withColor(Formatting.GREEN).withBold(false));
-        MinecraftClient.getInstance().player.sendMessage(message, false);
+        Component message = Component.literal("✔ " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.GREEN).withBold(false));
+        Minecraft.getInstance().player.sendSystemMessage(message);
     }
 
     public static void displayChatInfoMessage(String prmMessage) {
-        Text message = Text.literal("\uD83D\uDEC8 " + prmMessage)
-                .setStyle(Style.EMPTY.withColor(Formatting.BLUE).withBold(false));
-        MinecraftClient.getInstance().player.sendMessage(message, false);
+        Component message = Component.literal("\uD83D\uDEC8 " + prmMessage)
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.BLUE).withBold(false));
+        Minecraft.getInstance().player.sendSystemMessage(message);
     }
 
-    public boolean isHarvestableTextDisplay(DisplayEntity.TextDisplayEntity entity) {
-        Text text = entity.getText();
-        if (text.getContent() instanceof TranslatableTextContent translatable) {
+    public boolean isHarvestableTextDisplay(Display.TextDisplay entity) {
+        Component text = entity.getText();
+        if (text.getContents() instanceof TranslatableContents translatable) {
             String key = translatable.getKey();
             return key.contains("mbx.harvestable");
         }
@@ -467,7 +467,7 @@ public class Utils {
     private static int parseIntArg(Object arg) {
         if (arg == null) return 0;
 
-        if (arg instanceof Text t) {
+        if (arg instanceof Component t) {
             String s = t.getString().trim();
             return tryParseInt(s);
         }

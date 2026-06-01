@@ -7,7 +7,6 @@
     "ChatMessageMixin",
     "ChatScreenMixin",
     "HandledScreenMixin",
-    "InGameHudMixin",
     "ItemStackMixin",
     "PlayerListHudMixin"
   ],

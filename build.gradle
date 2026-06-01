@@ -1,5 +1,5 @@
 plugins {
-    id "fabric-loom" version "${loom_version}"
+    id "net.fabricmc.fabric-loom" version "${loom_version}"
     id "maven-publish"
 }
 
@@ -23,20 +23,23 @@ repositories {
 
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.layered {
-        mappings("net.fabricmc:yarn:${project.yarn_mappings}:v2")
-    }
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     // Fabric API
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
     // Mod Menu
-    modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+    implementation("com.terraformersmc:modmenu:${project.modmenu_version}")
     // Resourceful Config
-    modImplementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
+    implementation "com.teamresourceful.resourcefulconfig:resourcefulconfig-fabric-${project.rconfig_version}"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
     include "org.jetbrains.kotlin:kotlin-stdlib:1.8.0"
+
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.17.0"
+    include "com.fasterxml.jackson.core:jackson-databind:2.17.0"
+    include "com.fasterxml.jackson.core:jackson-core:2.17.0"
+    include "com.fasterxml.jackson.core:jackson-annotations:2.17.0"
 
     implementation "io.socket:socket.io-client:2.1.1"
     include "io.socket:socket.io-client:2.1.1"
@@ -77,14 +80,11 @@ processResources {
     }
 }
 
-tasks.withType(JavaCompile).configureEach {
-    it.options.release = 21
-}
-
 java {
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 jar {

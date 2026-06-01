@@ -1,39 +1,43 @@
 package io.dampen59.mineboxadditions.features.hud.elements;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
 public class TextElement extends Element {
-    private Text text;
-    private List<OrderedText> lines;
+    private Component text;
+    private List<FormattedCharSequence> lines;
     private int maxWidth = -1;
 
-    public TextElement(Text text) {
+    public TextElement(Component text) {
         setText(text);
     }
 
-    public TextElement(Text text, int maxWidth) {
+    public TextElement(Component text, int maxWidth) {
         this.maxWidth = maxWidth;
         setText(text);
     }
 
     private void updateText() {
-        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+        Font renderer = Minecraft.getInstance().font;
         if (maxWidth > 0) {
-            lines = renderer.wrapLines(text, maxWidth);
+            lines = renderer.split(text, maxWidth);
         } else {
-            lines = List.of(text.asOrderedText());
+            lines = List.of(net.minecraft.locale.Language.getInstance().getVisualOrder(text));
         }
     }
 
-    public void setText(Text text) {
+    public void setText(Component text) {
         this.text = text;
         updateText();
+    }
+
+    public void setValue(Component text) {
+        setText(text);
     }
 
     public void setMaxWidth(int maxWidth) {
@@ -43,27 +47,27 @@ public class TextElement extends Element {
 
     @Override
     public int getWidth() {
-        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+        Font renderer = Minecraft.getInstance().font;
         int max = 0;
-        for (OrderedText line : lines) {
-            max = Math.max(max, renderer.getWidth(line));
+        for (FormattedCharSequence line : lines) {
+            max = Math.max(max, renderer.width(line));
         }
         return max;
     }
 
     @Override
     public int getHeight() {
-        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
-        return renderer.fontHeight * lines.size();
+        Font renderer = Minecraft.getInstance().font;
+        return renderer.lineHeight * lines.size();
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {
-        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+    public void draw(GuiGraphicsExtractor context, int x, int y) {
+        Font renderer = Minecraft.getInstance().font;
         int lineY = y;
-        for (OrderedText line : lines) {
-            context.drawText(renderer, line, x, lineY, 0xFFFFFFFF, true);
-            lineY += renderer.fontHeight;
+        for (FormattedCharSequence line : lines) {
+            context.text(renderer, line, x, lineY, 0xFFFFFFFF, true);
+            lineY += renderer.lineHeight;
         }
     }
 }

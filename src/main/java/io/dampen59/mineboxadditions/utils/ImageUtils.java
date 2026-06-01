@@ -1,10 +1,10 @@
 package io.dampen59.mineboxadditions.utils;
 
-import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.platform.NativeImage;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.texture.*;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.*;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -25,26 +25,26 @@ public class ImageUtils {
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
                     int argb = image.getRGB(x, y);
-                    nativeImage.setColorArgb(x, y, argb);
+                    nativeImage.setPixelABGR(x, y, argb);
                 }
             }
 
-            Identifier id = Identifier.of("mineboxadditions", identifierName);
+            Identifier id = Identifier.fromNamespaceAndPath("mineboxadditions", identifierName);
 
             Runnable register = () -> {
                 try {
-                    NativeImageBackedTexture tex = new NativeImageBackedTexture(id::toString, nativeImage);
-                    MinecraftClient.getInstance().getTextureManager().registerTexture(id, tex);
+                    DynamicTexture tex = new DynamicTexture(id::toString, nativeImage);
+                    Minecraft.getInstance().getTextureManager().register(id, tex);
                     MineboxAdditions.LOGGER.info("Texture registered: {}", id);
                 } catch (Exception e) {
                     MineboxAdditions.LOGGER.error("Error registering texture {}: ", id, e);
                 }
             };
 
-            if (MinecraftClient.getInstance().isOnThread()) {
+            if (Minecraft.getInstance().isSameThread()) {
                 register.run();
             } else {
-                MinecraftClient.getInstance().execute(register);
+                Minecraft.getInstance().execute(register);
             }
 
             return id;
@@ -114,16 +114,8 @@ public class ImageUtils {
     public static boolean textureExists(TextureManager textureManager, Identifier id) {
         try {
             AbstractTexture tex = textureManager.getTexture(id);
-            if (tex == null) return false;
-            GpuTexture gpu = tex.getGlTexture();
-            if (gpu == null || gpu.isClosed()) return false;
-            if (gpu instanceof GlTexture gl) {
-                int glId = gl.getGlId();
-                return glId != 0;
-            }
-            return true;
+            return tex != null;
         } catch (Exception e) {
-            MineboxAdditions.LOGGER.warn("Error checking if texture exists: {}", id, e);
             return false;
         }
     }

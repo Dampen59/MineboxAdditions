@@ -1,31 +1,32 @@
 package io.dampen59.mineboxadditions.features.atlas.widgets;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.Drawable;
-import net.minecraft.client.gui.Selectable;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.*;
 import java.util.function.Supplier;
 
-public class ItemDetailPanel implements Drawable, Element, Selectable {
+public class ItemDetailPanel implements Renderable, GuiEventListener, NarratableEntry {
 
     private final Supplier<MineboxItem> itemSupplier;
     private final int x, y, width, height;
@@ -36,9 +37,9 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     private boolean isLocked = false;
     private MineboxItem lockedItem = null;
     private Integer pendingScrollOffset = null;
-    private ButtonWidget lockButton;
-    private TextFieldWidget quantityField;
-    private ButtonWidget clipboardButton;
+    private Button lockButton;
+    private EditBox quantityField;
+    private Button clipboardButton;
     private int quantity = 1;
     private final Set<String> collapsed = new HashSet<>();
     private final Map<String, ClickRegion> toggleRegions = new HashMap<>();
@@ -82,16 +83,16 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         int btnH = 16;
         int rowY = y + UI_PADDING + (HEADER_H - CTRL_H) / 2;
 
-        TextRenderer tr = MinecraftClient.getInstance().textRenderer;
-        int fieldW = Math.max(36, tr.getWidth("0000") + 10);
+        Font tr = Minecraft.getInstance().font;
+        int fieldW = Math.max(36, tr.width("0000") + 10);
 
-        quantityField = new TextFieldWidget(
+        quantityField = new EditBox(
                 tr,
                 x + UI_PADDING, rowY, fieldW, CTRL_H,
-                Text.of("Qty"));
+                Component.literal("Qty"));
         quantityField.setMaxLength(4);
-        quantityField.setText(String.valueOf(quantity));
-        quantityField.setChangedListener(text -> {
+        quantityField.setValue(String.valueOf(quantity));
+        quantityField.setResponder(text -> {
             try {
                 int newQty = Integer.parseInt(text.trim());
                 if (newQty > 0) {
@@ -102,13 +103,13 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 }
             } catch (NumberFormatException ignored) {}
         });
-        parent.addDrawableChild(quantityField);
+        parent.addRenderableWidget(quantityField);
 
         int buttonX = x + width - btnW - UI_PADDING;
         int buttonY = rowY;
-        lockButton = ButtonWidget.builder(Text.of(isLocked ? "🔒" : "🔓"), btn -> {
+        lockButton = Button.builder(Component.literal(isLocked ? "🔒" : "🔓"), btn -> {
             isLocked = !isLocked;
-            lockButton.setMessage(Text.of(isLocked ? "🔒" : "🔓"));
+            lockButton.setMessage(Component.literal(isLocked ? "🔒" : "🔓"));
             if (isLocked) {
                 lockedItem = itemSupplier.get();
                 if (lockedItem != null) {
@@ -119,10 +120,10 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             } else {
                 unlock();
             }
-        }).dimensions(buttonX, buttonY, btnW, btnH).build();
-        parent.addDrawableChild(lockButton);
+        }).bounds(buttonX, buttonY, btnW, btnH).build();
+        parent.addRenderableWidget(lockButton);
 
-        clipboardButton = ButtonWidget.builder(Text.of("📋"), btn -> {
+        clipboardButton = Button.builder(Component.literal("📋"), btn -> {
             MineboxItem item = isLocked ? lockedItem : itemSupplier.get();
             if (item == null || item.getRecipe() == null || item.getRecipe().getIngredients() == null) return;
             Map<String, Integer> flat = new HashMap<>();
@@ -136,19 +137,19 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 String id = parts[1];
                 String name;
                 if (isVanilla) {
-                    Identifier rid = Identifier.of("minecraft", id);
-                    Item mcItem = Registries.ITEM.get(rid);
-                    name = Text.translatable(mcItem.getTranslationKey()).getString();
+                    Identifier rid = Identifier.fromNamespaceAndPath("minecraft", id);
+                    Item mcItem = BuiltInRegistries.ITEM.getOptional(rid).orElse(null);
+                    name = Component.translatable(mcItem.getDescriptionId()).getString();
                 } else {
                     name = MineboxItem.getDisplayName(MineboxAdditions.INSTANCE.state.getItemById(id)).getString();
                 }
                 lines.add("- " + entry.getValue() + "x " + name);
             }
             lines.sort(String::compareToIgnoreCase);
-            MinecraftClient.getInstance().keyboard.setClipboard(String.join("\n", lines));
-            Utils.showToastNotification(Text.translatable("mineboxadditions.gui.atlas.clipboard.title").getString(), Text.translatable("mineboxadditions.gui.atlas.clipboard.desc").getString());
-        }).dimensions(x + UI_PADDING, rowY, 16, 16).build();
-        parent.addDrawableChild(clipboardButton);
+            Minecraft.getInstance().keyboardHandler.setClipboard(String.join("\n", lines));
+            Utils.showToastNotification(Component.translatable("mineboxadditions.gui.atlas.clipboard.title").getString(), Component.translatable("mineboxadditions.gui.atlas.clipboard.desc").getString());
+        }).bounds(x + UI_PADDING, rowY, 16, 16).build();
+        parent.addRenderableWidget(clipboardButton);
     }
 
     private void collectBaseIngredients(MineboxItem.Ingredient ing, int multiplier, Map<String, Integer> out) {
@@ -174,8 +175,8 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         isLocked = false;
         lockedItem = null;
         quantity = 1;
-        if (quantityField != null) quantityField.setText("1");
-        if (lockButton != null) lockButton.setMessage(Text.of("🔓"));
+        if (quantityField != null) quantityField.setValue("1");
+        if (lockButton != null) lockButton.setMessage(Component.literal("🔓"));
 
         MineboxAdditions.INSTANCE.state.setLockedItemId(null);
         MineboxAdditions.INSTANCE.state.setLockedItemScrollOffset(null);
@@ -187,11 +188,11 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         this.isLocked = true;
         this.lockedItem = item;
 
-        if (lockButton != null) lockButton.setMessage(Text.of("🔒"));
+        if (lockButton != null) lockButton.setMessage(Component.literal("🔒"));
 
         int savedQty = MineboxAdditions.INSTANCE.state.getLockedItemQuantity();
         quantity = savedQty > 0 ? savedQty : 1;
-        if (quantityField != null) quantityField.setText(String.valueOf(quantity));
+        if (quantityField != null) quantityField.setValue(String.valueOf(quantity));
         MineboxAdditions.INSTANCE.state.setLockedItemQuantity(quantity);
 
         Integer savedScroll = MineboxAdditions.INSTANCE.state.getLockedItemScrollOffset();
@@ -202,15 +203,15 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     }
 
     private boolean playerHasIngredient(MineboxItem.Ingredient ingredient, int multiplier) {
-        if (MinecraftClient.getInstance().player == null)
+        if (Minecraft.getInstance().player == null)
             return false;
 
-        var inventory = MinecraftClient.getInstance().player.getInventory();
+        var inventory = Minecraft.getInstance().player.getInventory();
         int requiredAmount = ingredient.getAmount() * multiplier;
         int totalCount = 0;
 
-        for (int i = 0; i < inventory.size(); i++) {
-            var stack = inventory.getStack(i);
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            var stack = inventory.getItem(i);
             if (stack.isEmpty())
                 continue;
 
@@ -223,7 +224,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                         return true;
                 }
             } else if (ingredient.isVanilla()) {
-                Item ingredientItem = Registries.ITEM.get(Identifier.of("minecraft", ingredient.getId()));
+                Item ingredientItem = BuiltInRegistries.ITEM.getOptional(Identifier.fromNamespaceAndPath("minecraft", ingredient.getId())).orElse(null);
                 if (stack.getItem() == ingredientItem) {
                     totalCount += stack.getCount();
                     if (totalCount >= requiredAmount)
@@ -237,14 +238,14 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     }
 
     private int playerIngredientCount(MineboxItem.Ingredient ingredient) {
-        if (MinecraftClient.getInstance().player == null)
+        if (Minecraft.getInstance().player == null)
             return -1;
 
-        var inventory = MinecraftClient.getInstance().player.getInventory();
+        var inventory = Minecraft.getInstance().player.getInventory();
         int totalCount = 0;
 
-        for (int i = 0; i < inventory.size(); i++) {
-            var stack = inventory.getStack(i);
+        for (int i = 0; i < inventory.getContainerSize(); i++) {
+            var stack = inventory.getItem(i);
             if (stack.isEmpty())
                 continue;
 
@@ -255,7 +256,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                     totalCount += stack.getCount();
                 }
             } else if (ingredient.isVanilla()) {
-                Item ingredientItem = Registries.ITEM.get(Identifier.of("minecraft", ingredient.getId()));
+                Item ingredientItem = BuiltInRegistries.ITEM.getOptional(Identifier.fromNamespaceAndPath("minecraft", ingredient.getId())).orElse(null);
                 if (stack.getItem() == ingredientItem) {
                     totalCount += stack.getCount();
                 }
@@ -266,7 +267,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         toggleRegions.clear();
         usedInRegions.clear();
         MineboxItem item = isLocked ? lockedItem : itemSupplier.get();
@@ -279,19 +280,19 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             scrollOffset = Math.max(0, pendingScrollOffset);
         }
 
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        Font textRenderer = Minecraft.getInstance().font;
         final int lineHeight = 12;
         final int leftMargin = x + UI_PADDING;
 
-        context.getMatrices().pushMatrix();
+        context.pose().pushMatrix();
         context.fill(x - 6, y - 6, x + width + 6, y + height, 0xAA000000);
 
         int headerBottom = y + HEADER_H;
         context.fill(x, y, x + width, headerBottom, 0x66000000);
 
         String label = "Qty:";
-        int labelW = textRenderer.getWidth(label);
-        int fieldW = Math.max(36, textRenderer.getWidth("0000") + 10);
+        int labelW = textRenderer.width(label);
+        int fieldW = Math.max(36, textRenderer.width("0000") + 10);
         if (quantityField != null) quantityField.setWidth(fieldW);
         int lockW = (lockButton != null) ? lockButton.getWidth() : 16;
         int clipW = (clipboardButton != null) ? clipboardButton.getWidth() : 16;
@@ -304,8 +305,8 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         // Quantity label
         int labelX = startX;
-        int labelY = y + (HEADER_H - textRenderer.fontHeight) / 2;
-        context.drawText(textRenderer, Text.of(label), labelX, labelY, 0xFFFFFFFF, false);
+        int labelY = y + (HEADER_H - textRenderer.lineHeight) / 2;
+        context.text(textRenderer, Component.literal(label), labelX, labelY, 0xFFFFFFFF, false);
 
         // Quantity text field
         if (quantityField != null) {
@@ -327,7 +328,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
 
         context.enableScissor(x, y + HEADER_H, x + width, y + height);
-        context.getMatrices().translate(0f, (float) -scrollOffset);
+        context.pose().translate(0f, (float) -scrollOffset);
 
         int drawY = y + HEADER_H + 5;
 
@@ -336,7 +337,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         int iconSize = 32;
         if (icon != null) {
             int iconX = x + (width - iconSize) / 2;
-            context.drawTexture(RenderPipelines.GUI_TEXTURED, icon,
+            context.blit(RenderPipelines.GUI_TEXTURED, icon,
                     iconX, drawY,
                     0, 0,
                     iconSize, iconSize,
@@ -345,41 +346,41 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         drawY += iconSize + 4;
 
         // Name
-        Text nameText = MineboxItem.getDisplayName(item);
-        int nameWidth = textRenderer.getWidth(nameText);
+        Component nameText = MineboxItem.getDisplayName(item);
+        int nameWidth = textRenderer.width(nameText);
         int nameX = x + (width - nameWidth) / 2;
-        context.drawText(textRenderer, nameText, nameX, drawY, 0xFFFFFFFF, false);
+        context.text(textRenderer, nameText, nameX, drawY, 0xFFFFFFFF, false);
         drawY += lineHeight + 2;
 
         // Lore
         String loreText = MineboxItem.getLoreText(item.getId());
         if (!loreText.isEmpty()) {
             String fullLore = "« " + loreText + " »";
-            int loreWidth = textRenderer.getWidth(fullLore);
+            int loreWidth = textRenderer.width(fullLore);
             int loreX = x + (width - loreWidth) / 2;
-            context.drawText(textRenderer, Text.of(fullLore), loreX, drawY, 0xFF6D6D6D, false);
+            context.text(textRenderer, Component.literal(fullLore), loreX, drawY, 0xFF6D6D6D, false);
             drawY += lineHeight + 2;
         }
 
         // Info
-        context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.level", item.getLevel()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
+        context.text(textRenderer, Component.translatable("mineboxadditions.gui.atlas.level", item.getLevel()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
         drawY += lineHeight;
-        context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.category", item.getCategory()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
+        context.text(textRenderer, Component.translatable("mineboxadditions.gui.atlas.category", item.getCategory()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
         drawY += lineHeight;
-        context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.rarity", item.getRarity()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
+        context.text(textRenderer, Component.translatable("mineboxadditions.gui.atlas.rarity", item.getRarity()).getString(), leftMargin, drawY, 0xFFAAAAAA, false);
         drawY += lineHeight * 2;
 
         // Stats
         if (item.getMbxStats() != null && !item.getMbxStats().isEmpty()) {
-            context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.stats").getString(), leftMargin, drawY, 0xFFFFD700, false);
+            context.text(textRenderer, Component.translatable("mineboxadditions.gui.atlas.stats").getString(), leftMargin, drawY, 0xFFFFD700, false);
             drawY += lineHeight;
             for (var entry : item.getMbxStats().entrySet()) {
                 String statKey = entry.getKey();
                 var statVal = entry.getValue();
-                Text statName = MineboxItem.getStatName(statKey);
-                Text statRange = Text.literal(": " + statVal.getMin() + " - " + statVal.getMax());
-                Text fullStatText = Text.literal("").append(statName).append(statRange);
-                context.drawText(textRenderer, fullStatText, leftMargin, drawY, 0xFFFFFFFF, false);
+                Component statName = MineboxItem.getStatName(statKey);
+                Component statRange = Component.literal(": " + statVal.getMin() + " - " + statVal.getMax());
+                Component fullStatText = Component.literal("").append(statName).append(statRange);
+                context.text(textRenderer, fullStatText, leftMargin, drawY, 0xFFFFFFFF, false);
                 drawY += lineHeight;
             }
             drawY += lineHeight;
@@ -388,7 +389,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
         // Recipe
         if (item.getRecipe() != null && item.getRecipe().getIngredients() != null) {
-            context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.recipe").getString(), leftMargin, drawY, 0xFFFFD700, false);
+            context.text(textRenderer, Component.translatable("mineboxadditions.gui.atlas.recipe").getString(), leftMargin, drawY, 0xFFFFD700, false);
             drawY += lineHeight;
             List<MineboxItem.Ingredient> ingredients = item.getRecipe().getIngredients();
             for (int i = 0; i < ingredients.size(); i++) {
@@ -411,7 +412,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         );
 
         if (!usedIn.isEmpty()) {
-            context.drawText(textRenderer, Text.translatable("mineboxadditions.gui.atlas.used_in").getString(), leftMargin, drawY, 0xFFFFD700, false);
+            context.text(textRenderer, Component.translatable("mineboxadditions.gui.atlas.used_in").getString(), leftMargin, drawY, 0xFFFFD700, false);
             drawY += lineHeight;
 
             int iconSizeUsedIn = 16;
@@ -422,7 +423,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 Identifier parentIcon = ItemListWidget.ItemEntry.getTexture(parent.getId());
 
                 if (parentIcon != null) {
-                    context.drawTexture(
+                    context.blit(
                             RenderPipelines.GUI_TEXTURED,
                             parentIcon,
                             leftMargin, drawY,
@@ -432,10 +433,10 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                     );
                 }
 
-                Text name = MineboxItem.getDisplayName(parent);
-                context.drawText(textRenderer, name, leftMargin + textOffset, drawY + (iconSizeUsedIn - textRenderer.fontHeight) / 2, 0xFFFFFFFF, false);
+                Component name = MineboxItem.getDisplayName(parent);
+                context.text(textRenderer, name, leftMargin + textOffset, drawY + (iconSizeUsedIn - textRenderer.lineHeight) / 2, 0xFFFFFFFF, false);
 
-                int clickableWidth = textOffset + textRenderer.getWidth(name);
+                int clickableWidth = textOffset + textRenderer.width(name);
                 usedInRegions.add(new ClickRegionUsedIn(
                         new ClickRegion(leftMargin, drawY, clickableWidth, iconSizeUsedIn),
                         parent
@@ -457,10 +458,10 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         }
 
         context.disableScissor();
-        context.getMatrices().popMatrix();
+        context.pose().popMatrix();
     }
 
-    private int renderRecipeIngredient(DrawContext context, TextRenderer textRenderer,
+    private int renderRecipeIngredient(GuiGraphicsExtractor context, Font textRenderer,
                                        MineboxItem.Ingredient ingredient, int x, int y, int depth,
                                        int amountMultiplier, boolean isLast, String path) {
         final int iconSize = 16;
@@ -486,8 +487,8 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
             boolean isCollapsed = !collapsed.contains(key);
             String twisty = isCollapsed ? "▶" : "▼";
             int twistyX = iconX - 10;
-            int twistyY = y + (iconSize - textRenderer.fontHeight) / 2;
-            context.drawText(textRenderer, Text.of(twisty), twistyX, twistyY, 0xFFCCCCCC, false);
+            int twistyY = y + (iconSize - textRenderer.lineHeight) / 2;
+            context.text(textRenderer, Component.literal(twisty), twistyX, twistyY, 0xFFCCCCCC, false);
             toggleRegions.put(key, new ClickRegion(twistyX - 2, y, 12, iconSize));
         }
 
@@ -495,33 +496,33 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
         if (ingredient.isVanilla()) {
             ItemStack stack = ingredient.getVanillaStack();
             if (!stack.isEmpty()) {
-                context.drawItem(stack, iconX, y);
+                context.item(stack, iconX, y);
             }
         } else {
             Identifier icon = ingredient.getTexture();
             if (icon != null) {
-                context.drawTexture(RenderPipelines.GUI_TEXTURED, icon, iconX, y,
+                context.blit(RenderPipelines.GUI_TEXTURED, icon, iconX, y,
                         0, 0, iconSize, iconSize, iconSize, iconSize);
             }
         }
 
         int textX = iconX + iconSize + 4;
-        int textY = y + (iconSize - textRenderer.fontHeight) / 2;
+        int textY = y + (iconSize - textRenderer.lineHeight) / 2;
 
-        MutableText amountText = Text.literal(String.valueOf(amount));
+        MutableComponent amountText = Component.literal(String.valueOf(amount));
         if (stacks > 0) {
             String stackInfo = (remainder > 0)
                     ? String.format(" (%ds + %d)", stacks, remainder)
                     : String.format(" (%ds)", stacks);
-            amountText.append(Text.literal(stackInfo).styled(style -> style.withColor(0xFFaf8e26)));
+            amountText.append(Component.literal(stackInfo).withStyle(style -> style.withColor(0xFFaf8e26)));
         }
 
-        amountText.append(Text.literal(" × "))
-                .append(ingredient.getDisplayName())
-                .append(Text.literal(hasItem ? " ✅" : " ❌ ("+ ingredientCount + "/" + amount + ")")
-                        .styled(style -> style.withColor(hasItem ? 0xFF55FF55 : 0xFFFF5555)));
+        amountText.append(Component.literal(" × "))
+                .append(ingredient.getId())
+                .append(Component.literal(hasItem ? " ✅" : " ❌ ("+ ingredientCount + "/" + amount + ")")
+                        .withStyle(style -> style.withColor(hasItem ? 0xFF55FF55 : 0xFFFF5555)));
 
-        context.drawText(textRenderer, amountText, textX, textY, 0xFFFFFFFF, false);
+        context.text(textRenderer, amountText, textX, textY, 0xFFFFFFFF, false);
 
         y += iconSize + spacing;
 
@@ -556,7 +557,8 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x(); double mouseY = event.y();
         if (mouseX < x || mouseX > x + width || mouseY < y || mouseY > y + height) return false;
 
         double adjY = mouseY + scrollOffset;
@@ -566,7 +568,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
                 String key = e.getKey();
                 boolean expand = collapsed.contains(key);
 
-                if (Screen.hasShiftDown()) {
+                if (InputConstants.isKeyDown(net.minecraft.client.Minecraft.getInstance().getWindow(), org.lwjgl.glfw.GLFW.GLFW_KEY_LEFT_SHIFT)) {
                     toggleSubtree(key, expand);
                 } else {
                     if (expand) collapsed.remove(key);
@@ -610,10 +612,10 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
     public boolean isFocused() { return false; }
 
     @Override
-    public void appendNarrations(NarrationMessageBuilder builder) { }
+    public void updateNarration(NarrationElementOutput builder) { }
 
     @Override
-    public SelectionType getType() { return SelectionType.HOVERED; }
+    public NarratableEntry.NarrationPriority narrationPriority() { return NarratableEntry.NarrationPriority.HOVERED; }
 
     public void setControlsVisible(boolean visible) {
         if (quantityField != null) quantityField.setVisible(visible);
@@ -637,7 +639,7 @@ public class ItemDetailPanel implements Drawable, Element, Selectable {
 
     private void preloadIngredientTextures(MineboxItem.Ingredient ing) {
         if (ing.isVanilla()) {
-            Identifier vanillaId = Identifier.of("minecraft", "textures/item/" + ing.getId() + ".png");
+            Identifier vanillaId = Identifier.fromNamespaceAndPath("minecraft", "textures/item/" + ing.getId() + ".png");
             ItemListWidget.ItemEntry.getTextureCache().putIfAbsent(ing.getId(), vanillaId);
             return;
         }

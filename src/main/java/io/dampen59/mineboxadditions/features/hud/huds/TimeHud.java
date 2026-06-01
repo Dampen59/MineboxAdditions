@@ -9,8 +9,8 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextureElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class TimeHud extends Hud {
     public TimeHud() {
@@ -25,8 +25,8 @@ public class TimeHud extends Hud {
 
     @Override
     public StackElement init() {
-        Identifier texture = Identifier.of("mineboxadditions", "textures/icons/time.png");
-        TextElement text = new TextElement(Text.of("00:00"));
+        Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/time.png");
+        TextElement text = new TextElement(Component.literal("00:00"));
 
         HStackElement hstack = new HStackElement()
                 .add(new SpacerElement(4))

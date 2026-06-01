@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.features.hud.elements.stack;
 
 import io.dampen59.mineboxadditions.features.hud.elements.Element;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +36,7 @@ public abstract class StackElement<T extends StackElement<T>> extends Element {
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {
+    public void draw(GuiGraphicsExtractor context, int x, int y) {
         if (getColor() != null) {
             int color = getColor();
             int w = getWidth();

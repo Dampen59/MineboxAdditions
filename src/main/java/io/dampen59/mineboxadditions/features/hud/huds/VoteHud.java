@@ -8,7 +8,7 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class VoteHud extends Hud {
     public VoteHud() {
@@ -23,7 +23,7 @@ public class VoteHud extends Hud {
 
     @Override
     public StackElement init() {
-        TextElement text = new TextElement(Text.of("5 votes"));
+        TextElement text = new TextElement(Component.literal("5 votes"));
 
         HStackElement hstack = new HStackElement()
                 .add(new SpacerElement(4))

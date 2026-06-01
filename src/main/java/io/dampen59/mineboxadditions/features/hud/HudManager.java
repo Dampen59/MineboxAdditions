@@ -1,10 +1,15 @@
 package io.dampen59.mineboxadditions.features.hud;
 
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.hud.huds.*;
 import io.dampen59.mineboxadditions.features.hud.huds.haversack.HaversackHud;
 import io.dampen59.mineboxadditions.features.hud.huds.haversack.HaversackManager;
 import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupHud;
 import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupManager;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,6 +36,23 @@ public enum HudManager {
         this.initHuds();
         new HaversackManager();
         new ItemPickupManager();
+
+        HudElementRegistry.attachElementBefore(
+            VanillaHudElements.CHAT,
+            Identifier.fromNamespaceAndPath("mineboxadditions", "main_huds"),
+            (context, delta) -> {
+                Minecraft client = Minecraft.getInstance();
+                if (client == null || client.player == null || client.options.hideGui) return;
+                for (Hud hud : INSTANCE.getAll()) {
+                    if (hud instanceof ItemPickupHud) continue;
+                    if (hud instanceof HaversackHud.RateHud) continue;
+                    if (hud instanceof HaversackHud.FullHud) continue;
+                    if (hud instanceof WeatherHud.FullMoonHud &&
+                        MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() != 0) continue;
+                    if (hud.getState()) hud.draw(context);
+                }
+            }
+        );
     }
 
     private void initHuds() {

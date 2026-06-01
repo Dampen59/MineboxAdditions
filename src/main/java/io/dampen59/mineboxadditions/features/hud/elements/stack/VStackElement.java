@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.features.hud.elements.stack;
 
 import io.dampen59.mineboxadditions.features.hud.elements.Element;
 import io.dampen59.mineboxadditions.features.hud.elements.SpacerElement;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class VStackElement extends StackElement<VStackElement> {
     @Override
@@ -25,7 +25,7 @@ public class VStackElement extends StackElement<VStackElement> {
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {
+    public void draw(GuiGraphicsExtractor context, int x, int y) {
         super.draw(context, x, y);
 
         int offsetY = y;

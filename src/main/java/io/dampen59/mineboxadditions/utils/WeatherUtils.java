@@ -1,8 +1,8 @@
 package io.dampen59.mineboxadditions.utils;
 
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import org.json.JSONException;
 import org.json.JSONObject;
 

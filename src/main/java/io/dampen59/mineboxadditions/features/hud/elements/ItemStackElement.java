@@ -1,9 +1,9 @@
 package io.dampen59.mineboxadditions.features.hud.elements;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemStackElement extends Element {
     private ItemStack item;
@@ -27,11 +27,11 @@ public class ItemStackElement extends Element {
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {
-        context.drawItem(item, x, y);
+    public void draw(GuiGraphicsExtractor context, int x, int y) {
+        context.item(item, x, y);
 
-        TextRenderer renderer = MinecraftClient.getInstance().textRenderer;
+        Font renderer = Minecraft.getInstance().font;
         String count = String.valueOf(item.getCount());
-        context.drawText(renderer, count, x + 1 + (this.getHeight() - renderer.getWidth(count)), y + 2 + (this.getHeight() - renderer.fontHeight), 0xFFFFFFFF, true);
+        context.text(renderer, count, x + 1 + (this.getHeight() - renderer.width(count)), y + 2 + (this.getHeight() - renderer.lineHeight), 0xFFFFFFFF, true);
     }
 }

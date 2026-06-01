@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.features.shop;
 
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.utils.Utils;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.time.LocalTime;
 import java.util.function.Supplier;
@@ -17,7 +17,7 @@ public enum Shop {
     private final LocalTime start;
     private final LocalTime end;
     private boolean alerted = false;
-    private Text offer;
+    private Component offer;
 
     Shop(LocalTime start, LocalTime end, Supplier<Boolean> state) {
         this.start = start;
@@ -25,8 +25,8 @@ public enum Shop {
         this.state = state;
     }
 
-    public Text getName() {
-        return Text.translatable("mineboxadditions." + this.name().toLowerCase());
+    public Component getName() {
+        return Component.translatable("mineboxadditions." + this.name().toLowerCase());
     }
 
     public boolean isEnabled() {
@@ -47,12 +47,12 @@ public enum Shop {
         this.alerted = alerted;
     }
 
-    public Text getOffer() {
+    public Component getOffer() {
         return offer;
     }
 
     public void setOffer(String offer) {
-        this.offer = Text.translatable(offer);
+        this.offer = Component.translatable(offer);
     }
 
     public void reset() {

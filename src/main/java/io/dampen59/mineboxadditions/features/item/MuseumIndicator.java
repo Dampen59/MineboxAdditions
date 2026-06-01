@@ -3,15 +3,15 @@ package io.dampen59.mineboxadditions.features.item;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.utils.Utils;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.Slot;
 
 import java.util.List;
 
 public class MuseumIndicator {
-    public static void render(DrawContext context, HandledScreen<?> screen) {
+    public static void render(GuiGraphicsExtractor context, AbstractContainerScreen<?> screen) {
         if (!ItemsConfig.museumIndicator) return;
         if (MineboxAdditions.INSTANCE.state == null) return;
         List<String> missing = MineboxAdditions.INSTANCE.state.getMissingMuseumItemIds();
@@ -19,9 +19,9 @@ public class MuseumIndicator {
 
         final float hueOffset = ((System.currentTimeMillis() % 6000L) / 6000f);
 
-        for (Slot slot : screen.getScreenHandler().slots) {
-            if (!slot.isEnabled() || !slot.hasStack()) continue;
-            ItemStack stack = slot.getStack();
+        for (Slot slot : screen.getMenu().slots) {
+            if (!slot.isActive() || !slot.hasItem()) continue;
+            ItemStack stack = slot.getItem();
             if (!Utils.isMineboxItem(stack)) continue;
             String id = Utils.getMineboxItemId(stack);
             if (id == null || id.isEmpty()) continue;
@@ -30,7 +30,7 @@ public class MuseumIndicator {
         }
     }
 
-    private static void drawMuseumBorder(DrawContext ctx, int x, int y, float hueOffset) {
+    private static void drawMuseumBorder(GuiGraphicsExtractor ctx, int x, int y, float hueOffset) {
         int top    = hsvToArgb((hueOffset + 0.00f) % 1f);
         int right  = hsvToArgb((hueOffset + 0.25f) % 1f);
         int bottom = hsvToArgb((hueOffset + 0.50f) % 1f);

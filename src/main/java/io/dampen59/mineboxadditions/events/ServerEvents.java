@@ -4,7 +4,7 @@ import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,9 +21,9 @@ public class ServerEvents {
 
     private void registerServerJoinEvent() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
-            var serverEntry = client.getCurrentServerEntry();
+            var serverEntry = client.getCurrentServer();
             if (serverEntry != null) {
-                String serverAddress = serverEntry.address;
+                String serverAddress = serverEntry.ip;
                 if (isMineboxServer(serverAddress)) {
                     SocketManager.getSocket().connect();
                 }

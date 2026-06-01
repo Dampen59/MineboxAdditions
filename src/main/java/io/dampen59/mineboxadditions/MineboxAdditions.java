@@ -1,5 +1,6 @@
 package io.dampen59.mineboxadditions;
 
+import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
 import io.dampen59.mineboxadditions.config.Config;
@@ -19,17 +20,17 @@ import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.Scheduler;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +43,13 @@ public class MineboxAdditions implements ClientModInitializer {
     public static MineboxAdditions INSTANCE;
 
     public State state = null;
-    private static KeyBinding openModSettings;
-    public static KeyBinding openEditMode;
-    public static KeyBinding openHarvestables;
-    public static KeyBinding openAtlas;
+    private static KeyMapping openModSettings;
+    public static KeyMapping openEditMode;
+    public static KeyMapping openHarvestables;
+    public static KeyMapping openAtlas;
 
     public static Identifier id(String path) {
-        return Identifier.of(NAMESPACE, path);
+        return Identifier.fromNamespaceAndPath(NAMESPACE, path);
     }
 
     @Override
@@ -81,33 +82,33 @@ public class MineboxAdditions implements ClientModInitializer {
         INSTANCE = this;
     }
 
-    public void tick(MinecraftClient client) {
+    public void tick(Minecraft client) {
         Scheduler.INSTANCE.tick();
 
-        if (openEditMode.wasPressed()) {
+        if (openEditMode.consumeClick()) {
             client.setScreen(new HudEditorScreen());
         }
-        if (openAtlas.wasPressed()) {
+        if (openAtlas.consumeClick()) {
             if (state.getMbxItems() == null || state.getMbxItems().isEmpty()) {
-                Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
+                Utils.displayChatErrorMessage(Component.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
                 return;
             }
             client.setScreen(new MineboxAtlasScreen());
         }
-        if (openHarvestables.wasPressed()) {
+        if (openHarvestables.consumeClick()) {
             client.setScreen(new HarvestableScreen());
             //client.setScreen(new HarvestableMapScreen());
         }
-        if (openModSettings.wasPressed()) {
-            if (client.currentScreen == null) {
+        if (openModSettings.consumeClick()) {
+            if (client.screen == null) {
                 client.setScreen(ResourcefulConfigScreen.make(ConfigManager.configurator, Config.class).build());
             }
         }
     }
 
     private void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("debug")
+        dispatcher.register(ClientCommands.literal("mba")
+                .then(ClientCommands.literal("debug")
                     .executes(context -> {
                         Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
                         Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
@@ -134,33 +135,35 @@ public class MineboxAdditions implements ClientModInitializer {
         );
     }
 
+    private static final KeyMapping.Category MBX_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("mineboxadditions", "mineboxadditions"));
+
     private void registerKeybinds() {
-        openModSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openModSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "mineboxadditions.strings.keybinds.modSettings.open",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_O,
-                "MineboxAdditions"
+                MBX_CATEGORY
         ));
 
-        openEditMode = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openEditMode = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "mineboxadditions.strings.keybinds.hudEditor.open",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_I,
-                "MineboxAdditions"
+                MBX_CATEGORY
         ));
 
-        openHarvestables = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openHarvestables = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "mineboxadditions.strings.keybinds.harvestables.open",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_P,
-                "MineboxAdditions"
+                MBX_CATEGORY
         ));
 
-        openAtlas = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        openAtlas = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "mineboxadditions.strings.keybinds.atlas.open",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_RIGHT_SHIFT,
-                "MineboxAdditions"
+                MBX_CATEGORY
         ));
 
     }

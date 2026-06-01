@@ -2,14 +2,14 @@ package io.dampen59.mineboxadditions.features.hud.elements.stack;
 
 import io.dampen59.mineboxadditions.features.hud.elements.Element;
 import io.dampen59.mineboxadditions.features.hud.elements.SpacerElement;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class HStackElement extends StackElement<HStackElement> {
     @Override
     public int getWidth() {
         int width = 0;
         for (Element element : elements) {
-            width += element.getWidth();
+            width += element.width();
         }
         return width;
     }
@@ -25,13 +25,13 @@ public class HStackElement extends StackElement<HStackElement> {
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {
+    public void draw(GuiGraphicsExtractor context, int x, int y) {
         super.draw(context, x, y);
 
         int offsetX = x;
         for (Element element : elements) {
             element.draw(context, offsetX, y);
-            offsetX += element.getWidth();
+            offsetX += element.width();
         }
     }
 }

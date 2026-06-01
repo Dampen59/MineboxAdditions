@@ -4,31 +4,31 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.tooltip.TooltipType;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.util.Formatting;
+import net.minecraft.client.Minecraft;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ItemTooltip {
-    private static final int TOOLTIP_KEY = InputUtil.GLFW_KEY_LEFT_ALT;
+    private static final int TOOLTIP_KEY = InputConstants.KEY_LALT;
 
     public static void init() {
         ItemTooltipCallback.EVENT.register(ItemTooltip::handle);
     }
 
-    private static void handle(ItemStack item, Item.TooltipContext context, TooltipType type, List<Text> lines) {
+    private static void handle(ItemStack item, Item.TooltipContext context, TooltipFlag type, List<Component> lines) {
         if (!Utils.isMineboxItem(item)) return;
 
-        boolean isKeyPressed = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), TOOLTIP_KEY);
+        boolean isKeyPressed = InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), TOOLTIP_KEY);
         if (isKeyPressed) {
             String itemId = Utils.getMineboxItemId(item);
             if (MineboxAdditions.INSTANCE.state.getMbxItems().isEmpty()) return;
@@ -36,15 +36,15 @@ public class ItemTooltip {
 
             if (mbxItem != null && !mbxItem.getMbxStats().isEmpty()) {
                 for (int i = 0; i < lines.size(); i++) {
-                    Text originalText = lines.get(i);
+                    Component originalText = lines.get(i);
                     boolean modified = false;
-                    List<Text> updatedSiblings = new ArrayList<>();
+                    List<Component> updatedSiblings = new ArrayList<>();
 
-                    for (Text sibling : originalText.getSiblings()) {
-                        List<Text> newNestedSiblings = new ArrayList<>();
+                    for (Component sibling : originalText.getSiblings()) {
+                        List<Component> newNestedSiblings = new ArrayList<>();
 
-                        for (Text nestedSibling : sibling.getSiblings()) {
-                            if (nestedSibling.getContent() instanceof TranslatableTextContent translatableContent) {
+                        for (Component nestedSibling : sibling.getSiblings()) {
+                            if (nestedSibling.getContents() instanceof TranslatableContents translatableContent) {
                                 String translationKey = translatableContent.getKey();
                                 if (translationKey.startsWith("mbx.stats.")) {
                                     String jsonKey = translationKey.replace(".", "_");
@@ -53,16 +53,16 @@ public class ItemTooltip {
                                         int minRoll = stat.getMin();
                                         int maxRoll = stat.getMax();
 
-                                        Formatting color = (minRoll < 0 && maxRoll < 0)
-                                                ? Formatting.RED
-                                                : Formatting.DARK_GREEN;
+                                        ChatFormatting color = (minRoll < 0 && maxRoll < 0)
+                                                ? ChatFormatting.RED
+                                                : ChatFormatting.DARK_GREEN;
 
                                         String numericRange = (minRoll == maxRoll)
                                                 ? " [" + maxRoll + "]"
                                                 : " [" + minRoll + " to " + maxRoll + "]";
 
                                         newNestedSiblings.add(
-                                                Text.literal(numericRange)
+                                                Component.literal(numericRange)
                                                         .setStyle(Style.EMPTY.withColor(color))
                                         );
                                         modified = true;
@@ -73,22 +73,22 @@ public class ItemTooltip {
                             newNestedSiblings.add(nestedSibling);
                         }
 
-                        MutableText updatedSibling;
-                        if (sibling.getContent() instanceof TranslatableTextContent translatableContent
+                        MutableComponent updatedSibling;
+                        if (sibling.getContents() instanceof TranslatableContents translatableContent
                                 && translatableContent.getKey().startsWith("mbx.stats.")) {
-                            updatedSibling = Text.literal("");
+                            updatedSibling = Component.literal("");
                         } else {
                             updatedSibling = sibling.copy();
                         }
-                        for (Text nested : newNestedSiblings) {
+                        for (Component nested : newNestedSiblings) {
                             updatedSibling = updatedSibling.append(nested);
                         }
                         updatedSiblings.add(updatedSibling);
                     }
 
                     if (modified) {
-                        MutableText updatedText = Text.literal("");
-                        for (Text sib : updatedSiblings) {
+                        MutableComponent updatedText = Component.literal("");
+                        for (Component sib : updatedSiblings) {
                             updatedText = updatedText.append(sib);
                         }
                         lines.set(i, updatedText);
@@ -96,20 +96,20 @@ public class ItemTooltip {
                 }
             }
 
-            lines.add(Text.literal(""));
+            lines.add(Component.literal(""));
 
-            Text firstPart = Text.literal("Minebox ID: ").withColor(0x4497CE);
-            Text endPart = Text.literal(itemId).withColor(0x1D4159);
-            Text mineboxItemId = firstPart.copy().append(endPart);
+            Component firstPart = Component.literal("Minebox ID: ").withColor(0x4497CE);
+            Component endPart = Component.literal(itemId).withColor(0x1D4159);
+            Component mineboxItemId = firstPart.copy().append(endPart);
             lines.add(mineboxItemId);
         } else {
-            lines.add(Text.literal(""));
+            lines.add(Component.literal(""));
 
-            Text firstPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.press").withColor(0x4497CE);
-            Text midPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.key").withColor(0x1D4159);
-            Text endPart = Text.translatable("mineboxadditions.strings.tooltip.more_info.desc").withColor(0x4497CE);
+            Component firstPart = Component.translatable("mineboxadditions.strings.tooltip.more_info.press").withColor(0x4497CE);
+            Component midPart = Component.translatable("mineboxadditions.strings.tooltip.more_info.key").withColor(0x1D4159);
+            Component endPart = Component.translatable("mineboxadditions.strings.tooltip.more_info.desc").withColor(0x4497CE);
 
-            Text moreInfos = firstPart.copy().append(midPart).append(endPart);
+            Component moreInfos = firstPart.copy().append(midPart).append(endPart);
             lines.add(moreInfos);
         }
     }

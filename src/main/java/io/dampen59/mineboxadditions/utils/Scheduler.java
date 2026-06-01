@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.utils;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,8 +45,8 @@ public class Scheduler {
     }
 
     private void addTask(Task task, int delay) {
-        if (!RenderSystem.isOnRenderThread() && MinecraftClient.getInstance() != null) {
-            MinecraftClient.getInstance().send(() -> addTask(task, delay));
+        if (!RenderSystem.isOnRenderThread() && Minecraft.getInstance() != null) {
+            Minecraft.getInstance().execute(() -> addTask(task, delay));
             return;
         }
         tasks.computeIfAbsent(tick + delay, k -> new CopyOnWriteArrayList<>()).add(task);

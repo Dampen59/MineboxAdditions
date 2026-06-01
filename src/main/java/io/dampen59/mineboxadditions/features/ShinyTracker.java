@@ -1,23 +1,24 @@
 package io.dampen59.mineboxadditions.features;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.utils.SocketManager;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.command.CommandRegistryAccess;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.decoration.DisplayEntity;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.*;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.commands.CommandBuildContext;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Display;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.network.chat.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
@@ -45,100 +46,100 @@ public class ShinyTracker {
 
         shinyUuids.put(shinyUuid, true);
 
-        Text player = Text.literal(playerName)
-                .setStyle(Style.EMPTY.withColor(Formatting.GRAY).withBold(true));
-        Text shiny = Text.translatable("mineboxadditions.shiny", Text.translatable(shinyKey))
+        Component player = Component.literal(playerName)
+                .setStyle(Style.EMPTY.withColor(ChatFormatting.GRAY).withBold(true));
+        Component shiny = Component.translatable("mineboxadditions.shiny", Component.translatable(shinyKey))
                 .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
-        Text message = Text.translatable("mineboxadditions.shiny.notify.message", player, shiny)
+        Component message = Component.translatable("mineboxadditions.shiny.notify.message", player, shiny)
                 .setStyle(Style.EMPTY
                         .withColor(0x578EC7)
                         .withClickEvent(new ClickEvent.RunCommand("/tpa " + playerName)));
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         if (client.player != null) {
-            client.player.sendMessage(message, false);
-            client.player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, 1.0f, 1.0f);
+            client.player.sendSystemMessage(message);
+            client.player.playSound(SoundEvents.PLAYER_LEVELUP, 1.0f, 1.0f);
         }
     }
 
-    private static void tick(MinecraftClient client) {
+    private static void tick(Minecraft client) {
         if (Config.shinyNotify == Config.ShinyNotify.OFF) return;
-        if (client.player == null || client.world == null) return;
+        if (client.player == null || client.level == null) return;
 
-        Vec3d position = client.player.getPos();
-        Box searchBox = Box.from(position).expand(5, 5, 5);
+        Vec3 position = client.player.position();
+        AABB searchBox = new AABB(position.x-5, position.y-5, position.z-5, position.x+5, position.y+5, position.z+5);
 
-        for (Entity entity : client.world.getEntities()) {
-            if (!(entity instanceof DisplayEntity.TextDisplayEntity display)) continue;
+        for (Entity entity : client.level.entitiesForRendering()) {
+            if (!(entity instanceof Display.TextDisplay display)) continue;
             if (!entity.getBoundingBox().intersects(searchBox)) continue;
 
-            for (Text sibling : display.getText().getSiblings()) {
-                if (!(sibling.getContent() instanceof TranslatableTextContent content)) continue;
+            for (Component sibling : display.getText().getSiblings()) {
+                if (!(sibling.getContents() instanceof TranslatableContents content)) continue;
                 if (!content.getKey().startsWith("mbx.bestiary")) continue;
 
                 TextColor color = sibling.getStyle().getColor();
-                if (color == null || !color.getHexCode().equals("#FEFE00")) continue;
+                if (color == null || color.getValue() != 0xFEFE00) continue;
 
-                if (shinyUuids.containsKey(display.getUuidAsString())) continue;
-                lastShinyUuid = display.getUuidAsString();
+                if (shinyUuids.containsKey(display.getStringUUID())) continue;
+                lastShinyUuid = display.getStringUUID();
                 lastShinyKey = content.getKey();
                 shinyUuids.put(lastShinyUuid, false);
 
                 if (Config.shinyNotify == Config.ShinyNotify.MANUAL) {
-                    Text shiny = Text.translatable("mineboxadditions.shiny", Text.translatable(lastShinyKey))
+                    Component shiny = Component.translatable("mineboxadditions.shiny", Component.translatable(lastShinyKey))
                             .setStyle(Style.EMPTY.withColor(0xFEFE00).withBold(true));
-                    Text message = Text.translatable("mineboxadditions.shiny.found", shiny)
+                    Component message = Component.translatable("mineboxadditions.shiny.found", shiny)
                             .setStyle(Style.EMPTY
                                     .withColor(0x578EC7)
                                     .withClickEvent(new ClickEvent.RunCommand("/mbaSendShinyAlert")));
-                    client.player.sendMessage(message, false);
+                    client.player.sendSystemMessage(message);
                 } else if (Config.shinyNotify == Config.ShinyNotify.AUTO) {
-                    client.player.networkHandler.sendPacket(new CommandExecutionC2SPacket("mbaSendShinyAlert"));
+                    client.player.connection.send(new ServerboundChatCommandPacket("mbaSendShinyAlert"));
                 }
             }
         }
     }
 
-    private static void command(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandRegistryAccess registry) {
-        var command = ClientCommandManager.literal("mbaSendShinyAlert");
+    private static void command(CommandDispatcher<FabricClientCommandSource> dispatcher, CommandBuildContext registry) {
+        var command = ClientCommands.literal("mbaSendShinyAlert");
         dispatcher.register(command.executes(context -> {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client == null || client.player == null || !shinyUuids.containsKey(lastShinyUuid))
                 return Command.SINGLE_SUCCESS;
 
-            Text message;
+            Component message;
             if (!shinyExists()) {
-                message = Text.translatable("mineboxadditions.shiny.notify.not_exists")
+                message = Component.translatable("mineboxadditions.shiny.notify.not_exists")
                         .setStyle(Style.EMPTY.withColor(0xFF2034));
             } else if (shinyUuids.get(lastShinyUuid) == false) {
                 shinyUuids.replace(lastShinyUuid, true);
 
-                Text text = Text.translatable("mineboxadditions.shiny.found.message",
-                        Text.translatable("mineboxadditions.shiny", Text.translatable(lastShinyKey)));
-                client.player.networkHandler.sendChatMessage(text.getString());
+                Component text = Component.translatable("mineboxadditions.shiny.found.message",
+                        Component.translatable("mineboxadditions.shiny", Component.translatable(lastShinyKey)));
+                client.player.connection.sendChat(text.getString());
                 SocketManager.getSocket().emit("C2SShinyEvent", lastShinyUuid, lastShinyKey);
 
-                message = Text.translatable("mineboxadditions.shiny.notify")
+                message = Component.translatable("mineboxadditions.shiny.notify")
                         .setStyle(Style.EMPTY.withColor(0x00FD72));
             } else {
-                message = Text.translatable("mineboxadditions.shiny.notify.error")
+                message = Component.translatable("mineboxadditions.shiny.notify.error")
                         .setStyle(Style.EMPTY.withColor(0xFF2034));
             }
 
             if (Config.shinyNotify == Config.ShinyNotify.MANUAL)
-                client.player.sendMessage(message, false);
+                client.player.sendSystemMessage(message);
 
             return Command.SINGLE_SUCCESS;
         }));
     }
 
     public static boolean shinyExists() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        if (client.world == null) return false;
+        Minecraft client = Minecraft.getInstance();
+        if (client.level == null) return false;
 
-        for (Entity entity : client.world.getEntities()) {
-            if (!(entity instanceof DisplayEntity.TextDisplayEntity display)) continue;
-            if (lastShinyUuid.equals(display.getUuidAsString())) return true;
+        for (Entity entity : client.level.entitiesForRendering()) {
+            if (!(entity instanceof Display.TextDisplay display)) continue;
+            if (lastShinyUuid.equals(display.getStringUUID())) return true;
         }
         return false;
     }

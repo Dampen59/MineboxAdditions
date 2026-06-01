@@ -1,11 +1,11 @@
 package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.awt.*;
 import java.util.Map;
@@ -49,14 +49,14 @@ public class RaritiesUtils {
 
 
     public static Color getItemRarityColorFromLore(ItemStack itemStack) {
-        LoreComponent loreComponent = itemStack.get(DataComponentTypes.LORE);
+        ItemLore loreComponent = itemStack.get(DataComponents.LORE);
         if (loreComponent == null) return null;
 
         final String PREFIX = "mbx.rarities.";
         final String SUFFIX = ".icon";
 
-        for (Text loreLine : loreComponent.lines()) {
-            String key = loreLine.getContent() instanceof TranslatableTextContent translatable
+        for (Component loreLine : loreComponent.lines()) {
+            String key = loreLine.getContents() instanceof TranslatableContents translatable
                     ? translatable.getKey()
                     : loreLine.getString();
             if (key.startsWith(PREFIX) && key.endsWith(SUFFIX)) {

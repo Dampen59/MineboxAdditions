@@ -4,7 +4,7 @@ import com.teamresourceful.resourcefulconfig.api.annotations.Comment;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigObject;
 import com.teamresourceful.resourcefulconfig.api.types.info.Translatable;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 @ConfigObject
 public class HaversackHud implements Translatable {
@@ -18,6 +18,6 @@ public class HaversackHud implements Translatable {
 
     @Override
     public String getTranslationKey() {
-        return Text.translatable("mineboxadditions.config.huds.haversack").getString();
+        return Component.translatable("mineboxadditions.config.huds.haversack").getString();
     }
 }

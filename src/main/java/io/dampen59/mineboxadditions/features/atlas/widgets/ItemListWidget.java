@@ -3,47 +3,45 @@ package io.dampen59.mineboxadditions.features.atlas.widgets;
 import io.dampen59.mineboxadditions.features.atlas.MineboxAtlasScreen;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.widget.EntryListWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.components.AbstractSelectionList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ItemListWidget extends EntryListWidget<ItemListWidget.ItemEntry> {
+public class ItemListWidget extends AbstractSelectionList<ItemListWidget.ItemEntry> {
     private final int left;
 
-    public ItemListWidget(MinecraftClient client, int left, int top, int width, int forcedHeight, int itemHeight) {
+    public ItemListWidget(Minecraft client, int left, int top, int width, int forcedHeight, int itemHeight) {
         super(client, width, top + forcedHeight, top, itemHeight);
         this.left = left;
         this.setX(left);
     }
 
-    @Override
     public int getRowLeft() {
         return left;
     }
 
-    @Override
     protected int getScrollbarX() {
         return this.getX() + this.width - 6;
     }
 
-    @Override
     public int getRowWidth() {
         return this.width - 6;
     }
 
-    @Override
-    protected void drawSelectionHighlight(DrawContext context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) { }
+    protected void drawSelectionHighlight(GuiGraphicsExtractor context, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) { }
+
+    protected void appendClickableNarrations(NarrationElementOutput builder) { }
 
     @Override
-    protected void appendClickableNarrations(NarrationMessageBuilder builder) { }
+    public void updateWidgetNarration(NarrationElementOutput builder) { }
 
     public static class ItemEntry extends Entry<ItemEntry> {
         private final MineboxItem item;
@@ -56,44 +54,27 @@ public class ItemListWidget extends EntryListWidget<ItemListWidget.ItemEntry> {
         }
 
         @Override
-        public void render(DrawContext context, int index, int y, int x, int entryWidth, int entryHeight,
-                           int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            MinecraftClient client = MinecraftClient.getInstance();
-
-            context.getMatrices().pushMatrix();
+        public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+            Minecraft client = Minecraft.getInstance();
+            int rowWidth = 200;
+            int rowHeight = 25;
 
             boolean isSelected = parent.getSelectedItem() == item;
-
-            int backgroundColor = 0x00000000;
-            if (isSelected) {
-                backgroundColor = 0x5544AAFF;
-            } else if (hovered) {
-                backgroundColor = 0x33FFFFFF;
-            }
-
-            context.fill(x, y, x + entryWidth, y + entryHeight + 4, backgroundColor);
+            int backgroundColor = isSelected ? 0x5544AAFF : hovered ? 0x33FFFFFF : 0x00000000;
+            context.fill(0, 0, rowWidth, rowHeight, backgroundColor);
 
             Identifier icon = textureCache.computeIfAbsent(item.getId(), id -> loadTexture(item.getId(), item.getTexture()));
             if (icon != null) {
-                context.drawTexture(
-                        RenderPipelines.GUI_TEXTURED,
-                        icon,
-                        x + 4, y + 4,
-                        0, 0,
-                        16, 16,
-                        16, 16
-                );
+                context.blit(RenderPipelines.GUI_TEXTURED, icon, 4, 4, 0, 0, 16, 16, 16, 16);
             }
 
-            context.drawText(client.textRenderer, MineboxItem.getDisplayName(item), x + 24, y + 4, 0xFFFFFFFF, false);
-            context.drawText(client.textRenderer, Text.of("Lvl " + item.getLevel() + " • " + item.getCategory()),
-                    x + 24, y + 14, 0xFFAAAAAA, false);
-
-            context.getMatrices().popMatrix();
+            context.text(client.font, MineboxItem.getDisplayName(item), 24, 4, 0xFFFFFFFF, false);
+            context.text(client.font, Component.literal("Lvl " + item.getLevel() + " • " + item.getCategory()),
+                    24, 14, 0xFFAAAAAA, false);
         }
 
         @Override
-        public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        public boolean mouseClicked(net.minecraft.client.input.MouseButtonEvent event, boolean doubleClick) {
             parent.setSelectedItem(item);
             preloadIngredientTextures(item);
             return true;
@@ -123,7 +104,7 @@ public class ItemListWidget extends EntryListWidget<ItemListWidget.ItemEntry> {
                         preloadIngredientTextures(subItem);
                     }
                 } else {
-                    Identifier vanillaId = Identifier.of("minecraft", "textures/item/" + ingredient.getId() + ".png");
+                    Identifier vanillaId = Identifier.fromNamespaceAndPath("minecraft", "textures/item/" + ingredient.getId() + ".png");
                     textureCache.putIfAbsent(ingredient.getId(), vanillaId);
                 }
             }

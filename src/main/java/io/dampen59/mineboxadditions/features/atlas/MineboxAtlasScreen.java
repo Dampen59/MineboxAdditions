@@ -4,20 +4,22 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemDetailPanel;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
+import net.minecraft.client.input.MouseButtonEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class MineboxAtlasScreen extends Screen {
     private ItemListWidget itemList;
 
-    private TextFieldWidget searchField;
+    private EditBox searchField;
     private List<MineboxItem> allItems;
 
     private MineboxItem selectedItem = null;
@@ -26,7 +28,7 @@ public class MineboxAtlasScreen extends Screen {
 
 
     public MineboxAtlasScreen() {
-        super(Text.of("Minebox Atlas"));
+        super(Component.literal("Minebox Atlas"));
     }
 
     @Override
@@ -35,35 +37,35 @@ public class MineboxAtlasScreen extends Screen {
         int top = 45;
         int height = this.height - 100;
 
-        TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+        Font textRenderer = Minecraft.getInstance().font;
 
         int maxTextWidth = MineboxAdditions.INSTANCE.state.getMbxItems().stream()
                 .map(item -> {
-                    String line1 = Text.translatable("mbx.items." + item.getId() + ".name").getString();
-                    String line2 = Text.translatable("mineboxadditions.gui.atlas.level_short", item.getLevel()).getString() + " • " + item.getCategory();
-                    return Math.max(textRenderer.getWidth(line1), textRenderer.getWidth(line2));
+                    String line1 = Component.translatable("mbx.items." + item.getId() + ".name").getString();
+                    String line2 = Component.translatable("mineboxadditions.gui.atlas.level_short", item.getLevel()).getString() + " • " + item.getCategory();
+                    return Math.max(textRenderer.width(line1), textRenderer.width(line2));
                 })
-                .max(Integer::compare)
+                .max(Comparator.naturalOrder())
                 .orElse(0);
 
         int panelWidth = 24 + maxTextWidth + 10;
 
-        searchField = new TextFieldWidget(textRenderer, left, 15, panelWidth, 20, Text.of("Search..."));
-        searchField.setChangedListener(this::updateFilteredItems);
-        this.addDrawableChild(searchField);
+        searchField = new EditBox(textRenderer, left, 15, panelWidth, 20, Component.literal("Search..."));
+        searchField.setResponder(this::updateFilteredItems);
+        this.addRenderableWidget(searchField);
 
-        itemList = new ItemListWidget(client, left, top, panelWidth, height, 25);
-        this.addDrawableChild(itemList);
+        itemList = new ItemListWidget(minecraft, left, top, panelWidth, height, 25);
+        this.addRenderableWidget(itemList);
 
         this.allItems = new ArrayList<>(MineboxAdditions.INSTANCE.state.getMbxItems());
 
-        updateFilteredItems(searchField.getText());
+        updateFilteredItems(searchField.getValue());
 
         int detailX = itemList.getX() + itemList.getWidth() + 20;
 
         itemDetailPanel = new ItemDetailPanel(this::getSelectedItem, detailX, 20, this.width - panelWidth - 50, height + 70);
-        this.addDrawableChild(itemDetailPanel);
-        this.addSelectableChild(itemDetailPanel);
+        this.addRenderableWidget(itemDetailPanel);
+        this.addWidget(itemDetailPanel);
         itemDetailPanel.setOnNavigate(this::setSelectedItem);
         itemDetailPanel.initLockButton(this);
         itemDetailPanel.setControlsVisible(false);
@@ -83,17 +85,17 @@ public class MineboxAtlasScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
         //this.renderBackground(context, mouseX, mouseY, delta);
         //searchField.render(context, mouseX, mouseY, delta);
         //itemList.render(context, mouseX, mouseY, delta);
-        super.render(context, mouseX, mouseY, delta);
+        super.extractRenderState(context, mouseX, mouseY, delta);
     }
 
 
     private void updateFilteredItems(String query) {
         itemList.clearEntries();
-        itemList.setScrollY(0);
+        itemList.setScrollAmount(0);
 
         for (MineboxItem item : allItems) {
             if (matchesQuery(item, query)) {
@@ -132,11 +134,11 @@ public class MineboxAtlasScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (itemDetailPanel != null && itemDetailPanel.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (itemDetailPanel != null && itemDetailPanel.mouseClicked(event, doubleClick)) {
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
 

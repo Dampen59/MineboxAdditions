@@ -11,9 +11,8 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 
@@ -37,18 +36,18 @@ public class SocketManager {
         socket = IO.socket(URI.create("https://mineboxadditions.bartier.me"), IO.Options.builder().build());
 
         socket.on(Socket.EVENT_CONNECT, args -> {
-            MinecraftClient client = MinecraftClient.getInstance();
+            Minecraft client = Minecraft.getInstance();
             if (client != null && client.player != null) {
                 String playerName = client.player.getName().getString();
-                String playerUuid = client.player.getUuid().toString();
-                String playerLang = client.getLanguageManager().getLanguage();
+                String playerUuid = client.player.getUUID().toString();
+                String playerLang = client.getLanguageManager().getSelected();
                 socket.emit("C2SHelloConnectMessage", playerUuid, playerName, playerLang, protocol);
             }
         });
 
         socket.on("S2CProtocolMismatch", args -> Utils.showToastNotification(
-                Text.translatable("mineboxadditions.strings.update.title").getString(),
-                Text.translatable("mineboxadditions.strings.update.content").getString()));
+                Component.translatable("mineboxadditions.strings.update.title").getString(),
+                Component.translatable("mineboxadditions.strings.update.content").getString()));
 
         socket.on("S2CMineboxItemsStats", args -> {
             String jsonData = (String) args[0];
@@ -103,7 +102,7 @@ public class SocketManager {
         });
 
         socket.on("S2CMineboxApiUnauthorized", args -> {
-            Utils.displayChatErrorMessage(Text
+            Utils.displayChatErrorMessage(Component
                     .translatable("mineboxadditions.strings.errors.unauthorized-api").getString());
         });
 

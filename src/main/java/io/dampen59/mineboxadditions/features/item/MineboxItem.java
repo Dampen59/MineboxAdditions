@@ -4,16 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Language;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextColor;
+import net.minecraft.ChatFormatting;
+import net.minecraft.resources.Identifier;
+import net.minecraft.locale.Language;
 
 import java.util.List;
 import java.util.Map;
@@ -112,18 +112,18 @@ public class MineboxItem {
             return "vanilla".equalsIgnoreCase(type);
         }
 
-        public Text getDisplayName() {
+        public Component getDisplayName() {
             if (isVanilla()) {
-                Identifier vanillaId = Identifier.of("minecraft", id);
-                if (net.minecraft.registry.Registries.ITEM.containsId(vanillaId)) {
-                    Item vanillaItem = net.minecraft.registry.Registries.ITEM.get(vanillaId);
-                    return vanillaItem.getName();
+                Identifier vanillaId = Identifier.fromNamespaceAndPath("minecraft", id);
+                if (net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(vanillaId)) {
+                    Item vanillaItem = net.minecraft.core.registries.BuiltInRegistries.ITEM.getOptional(vanillaId).orElse(null);
+                    return Component.translatable(vanillaItem.getDescriptionId());
                 } else {
-                    return Text.translatable("item.minecraft." + id);
+                    return Component.translatable("item.minecraft." + id);
                 }
             } else {
                 MineboxItem item = MineboxAdditions.INSTANCE.state.getItemById(id);
-                return item != null ? MineboxItem.getDisplayName(item) : Text.literal(id);
+                return item != null ? MineboxItem.getDisplayName(item) : Component.literal(id);
             }
         }
 
@@ -134,11 +134,11 @@ public class MineboxItem {
 
         public Identifier getTexture() {
             if (isVanilla()) {
-                Identifier vanillaId = Identifier.of("minecraft", id);
-                if (net.minecraft.registry.Registries.ITEM.containsId(vanillaId)) {
-                    return Identifier.of("minecraft", "textures/item/" + id + ".png");
+                Identifier vanillaId = Identifier.fromNamespaceAndPath("minecraft", id);
+                if (net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(vanillaId)) {
+                    return Identifier.fromNamespaceAndPath("minecraft", "textures/item/" + id + ".png");
                 }
-                return Identifier.of("minecraft", "textures/item/" + id + ".png");
+                return Identifier.fromNamespaceAndPath("minecraft", "textures/item/" + id + ".png");
             } else {
                 MineboxItem item = MineboxAdditions.INSTANCE.state.getItemById(id);
                 return item != null
@@ -156,7 +156,7 @@ public class MineboxItem {
         public ItemStack getVanillaStack() {
             if (!isVanilla()) return ItemStack.EMPTY;
             try {
-                Item item = Registries.ITEM.get(Identifier.of("minecraft", id));
+                Item item = BuiltInRegistries.ITEM.getOptional(Identifier.fromNamespaceAndPath("minecraft", id)).orElse(null);
                 return new ItemStack(item);
             } catch (Exception e) {
                 return ItemStack.EMPTY;
@@ -172,9 +172,9 @@ public class MineboxItem {
         int index = 0;
         while (true) {
             String key = "mbx.items." + itemId + ".lore." + index;
-            if (!language.hasTranslation(key)) break;
+            if (!language.has(key)) break;
 
-            String raw = Text.translatable(key).getString();
+            String raw = Component.translatable(key).getString();
             String cleaned = raw.replaceAll("[\\p{Cntrl}&&[^\r\n\t]]", "").replaceAll("[\\r\\n\\t]", " ");
             if (index > 0) loreBuilder.append(" ");
             loreBuilder.append(cleaned.trim());
@@ -184,21 +184,21 @@ public class MineboxItem {
         return loreBuilder.toString();
     }
 
-    public static Text getDisplayName(MineboxItem item) {
+    public static Component getDisplayName(MineboxItem item) {
         String id = item.getId();
         String rarity = item.getRarity().toLowerCase();
         Language lang = Language.getInstance();
 
         // Style (mbx rarity)
-        Function<Text, Text> styled = base ->
-                base.copy().styled(style ->
+        Function<Component, Component> styled = base ->
+                base.copy().withStyle(style ->
                         style.withColor(RaritiesUtils.getRarityColor(rarity).getRGB())
                                 .withBold(true));
 
         // Fallback
         String nameKey = "mbx.items." + id + ".name";
-        if (lang.hasTranslation(nameKey)) {
-            return styled(Text.translatable(nameKey), item.rarity.toLowerCase());
+        if (lang.has(nameKey)) {
+            return styled(Component.translatable(nameKey), item.rarity.toLowerCase());
         }
 
         // Stats
@@ -223,7 +223,7 @@ public class MineboxItem {
         for (var entry : containers.entrySet()) {
             if (id.startsWith(entry.getKey())) {
                 String resource = id.substring(entry.getKey().length());
-                return styled(Text.translatable(entry.getValue(), resolveResource(resource)), item.rarity.toLowerCase());
+                return styled(Component.translatable(entry.getValue(), resolveResource(resource)), item.rarity.toLowerCase());
             }
         }
 
@@ -231,130 +231,130 @@ public class MineboxItem {
         if (id.startsWith("harvester_")) {
             if (id.endsWith("_reaper")) {
                 String resource = id.substring("harvester_".length(), id.length() - "_reaper".length());
-                return styled(Text.translatable("mbx.items.reaper.name", resolveResource(resource)), item.rarity.toLowerCase());
+                return styled(Component.translatable("mbx.items.reaper.name", resolveResource(resource)), item.rarity.toLowerCase());
             } else if (id.endsWith("_chopper")) {
                 String resource = id.substring("harvester_".length(), id.length() - "_chopper".length());
-                return styled(Text.translatable("mbx.items.chopper.name", resolveResource(resource)), item.rarity.toLowerCase());
+                return styled(Component.translatable("mbx.items.chopper.name", resolveResource(resource)), item.rarity.toLowerCase());
             } else {
                 String resource = id.substring("harvester_".length());
-                return styled(Text.translatable("mbx.items.harvester.name", resolveResource(resource)), item.rarity.toLowerCase());
+                return styled(Component.translatable("mbx.items.harvester.name", resolveResource(resource)), item.rarity.toLowerCase());
             }
         }
 
         // Owner Removers
         if (id.startsWith("owner_remover_")) {
             String rarityKey = id.substring("owner_remover_".length());
-            Text rarityText = Text.translatable("mbx.rarities." + rarityKey + ".title");
-            return styled(Text.translatable("mbx.items.owner_remover.name", rarityText.getString()), item.rarity.toLowerCase());
+            Component rarityText = Component.translatable("mbx.rarities." + rarityKey + ".title");
+            return styled(Component.translatable("mbx.items.owner_remover.name", rarityText.getString()), item.rarity.toLowerCase());
         }
 
         // Haversacks
         if (id.startsWith("haversack_small_")) {
             String resource = id.substring("haversack_small_".length());
-            return styled(Text.translatable("mbx.items.haversack_small.name", resolveResource(resource)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.haversack_small.name", resolveResource(resource)), item.rarity.toLowerCase());
         }
 
         if (id.startsWith("haversack_")) {
             String resource = id.substring("haversack_".length());
-            return styled(Text.translatable("mbx.items.haversack.name", resolveResource(resource)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.haversack.name", resolveResource(resource)), item.rarity.toLowerCase());
         }
 
         // Spawners and souls
         if (id.startsWith("spawner_")) {
             String mob = id.substring("spawner_".length());
-            return styled(Text.translatable("mbx.items.spawner.name", resolveEntity(mob)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.spawner.name", resolveEntity(mob)), item.rarity.toLowerCase());
         }
 
         if (id.startsWith("soul_")) {
             String mob = id.substring("soul_".length());
-            return styled(Text.translatable("mbx.items.soul.name", resolveEntity(mob)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.soul.name", resolveEntity(mob)), item.rarity.toLowerCase());
         }
 
         // Event items
         if (id.startsWith("xmas_present_small_")) {
             String colorKey = id.substring("xmas_present_small_".length());
-            return styled(Text.translatable("mbx.items.xmas_present_small.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.xmas_present_small.name", resolveColor(colorKey)), item.rarity.toLowerCase());
         }
 
         if (id.startsWith("xmas_present_medium_")) {
             String colorKey = id.substring("xmas_present_medium_".length());
-            return styled(Text.translatable("mbx.items.xmas_present_medium.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.xmas_present_medium.name", resolveColor(colorKey)), item.rarity.toLowerCase());
         }
 
         if (id.startsWith("xmas_present_big_")) {
             String colorKey = id.substring("xmas_present_big_".length());
-            return styled(Text.translatable("mbx.items.xmas_present_big.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.xmas_present_big.name", resolveColor(colorKey)), item.rarity.toLowerCase());
         }
 
         if (id.startsWith("lny_envelope_")) {
             String colorKey = id.substring("lny_envelope_".length());
-            return styled(Text.translatable("mbx.items.lny_envelope.name", resolveColor(colorKey)), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.items.lny_envelope.name", resolveColor(colorKey)), item.rarity.toLowerCase());
         }
 
         // Ornaments
         if (id.startsWith("nameplate_")) {
             String nameplateKey = id.substring("nameplate_".length());
-            return styled(Text.translatable("mbx.attributes.nameplate." + nameplateKey + ".title"), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.attributes.nameplate." + nameplateKey + ".title"), item.rarity.toLowerCase());
         }
 
         if (id.startsWith("emote_")) {
             String emoteKey = id.substring("emote_".length());
-            return styled(Text.translatable("mbx.attributes.emote." + emoteKey + ".title"), item.rarity.toLowerCase());
+            return styled(Component.translatable("mbx.attributes.emote." + emoteKey + ".title"), item.rarity.toLowerCase());
         }
 
 
         // Default
-        return Text.literal(id).copy().styled(style -> style.withColor(0xFFFFFFFF));
+        return Component.literal(id).copy().withStyle(style -> style.withColor(0xFFFFFFFF));
     }
 
-    public static Text getStatName(String statsKey) {
+    public static Component getStatName(String statsKey) {
         String cleanedKey = statsKey.replace("_", ".").toUpperCase();
         return getColoredStatName(cleanedKey);
     }
 
 
-    private static Text statName(String formatKey, String id, Function<Text, Text> styleFunc, String statPrefix) {
+    private static Component statName(String formatKey, String id, Function<Component, Component> styleFunc, String statPrefix) {
         String stat = id.substring(id.lastIndexOf('_') + 1);
-        Text translatedStat = Text.translatable(statPrefix + stat);
-        return styleFunc.apply(Text.translatable(formatKey, translatedStat.getString()));
+        Component translatedStat = Component.translatable(statPrefix + stat);
+        return styleFunc.apply(Component.translatable(formatKey, translatedStat.getString()));
     }
 
     private static String capitalize(String input) {
         return input.substring(0, 1).toUpperCase() + input.substring(1);
     }
 
-    private static Text formatStatName(String key, String id, Function<Text, Text> styledFunc) {
+    private static Component formatStatName(String key, String id, Function<Component, Component> styledFunc) {
         return formatStatName(key, id, styledFunc, "mbx.stats.");
     }
 
-    private static Text formatStatName(String key, String id, Function<Text, Text> styledFunc, String statPrefix) {
+    private static Component formatStatName(String key, String id, Function<Component, Component> styledFunc, String statPrefix) {
         String stat = id.substring(id.lastIndexOf('_') + 1);
-        Text translatedStat = Text.translatable(statPrefix + stat);
-        return styledFunc.apply(Text.translatable(key, translatedStat.getString()));
+        Component translatedStat = Component.translatable(statPrefix + stat);
+        return styledFunc.apply(Component.translatable(key, translatedStat.getString()));
     }
 
 
-    private static Text resolveResource(String target) {
+    private static Component resolveResource(String target) {
         Language lang = Language.getInstance();
-        if (lang.hasTranslation("block.minecraft." + target))
-            return Text.translatable("block.minecraft." + target);
-        if (lang.hasTranslation("item.minecraft." + target))
-            return Text.translatable("item.minecraft." + target);
-        return Text.of(target);
+        if (lang.has("block.minecraft." + target))
+            return Component.translatable("block.minecraft." + target);
+        if (lang.has("item.minecraft." + target))
+            return Component.translatable("item.minecraft." + target);
+        return Component.literal(target);
     }
 
-    private static Text resolveEntity(String name) {
+    private static Component resolveEntity(String name) {
         Language lang = Language.getInstance();
-        if (lang.hasTranslation("entity.minecraft." + name))
-            return Text.translatable("entity.minecraft." + name);
-        return Text.of(name);
+        if (lang.has("entity.minecraft." + name))
+            return Component.translatable("entity.minecraft." + name);
+        return Component.literal(name);
     }
 
-    private static Text resolveColor(String key) {
+    private static Component resolveColor(String key) {
         Language lang = Language.getInstance();
-        if (lang.hasTranslation("color.minecraft." + key))
-            return Text.translatable("color.minecraft." + key);
-        return Text.of(key);
+        if (lang.has("color.minecraft." + key))
+            return Component.translatable("color.minecraft." + key);
+        return Component.literal(key);
     }
 
 
@@ -364,25 +364,25 @@ public class MineboxItem {
                 : Optional.ofNullable(mbxStats.get(statName));
     }
 
-    private static Text styled(Text base, String rarity) {
-        return base.copy().styled(style ->
+    private static Component styled(Component base, String rarity) {
+        return base.copy().withStyle(style ->
                 style.withColor(RaritiesUtils.getRarityColor(rarity.toLowerCase()).getRGB())
                         .withBold(true)
         );
     }
 
-    public static Text getColoredStatName(String stat) {
+    public static Component getColoredStatName(String stat) {
         String key = stat.toLowerCase();
-        MutableText text = switch (key) {
-            case "mbx.stats.health" -> Text.literal("❤ ").append(Text.translatable("mbx.stats.health"));
-            case "mbx.stats.strength" -> Text.literal("₪ ").append(Text.translatable("mbx.stats.strength"));
-            case "mbx.stats.agility" -> Text.literal("☄ ").append(Text.translatable("mbx.stats.agility"));
-            case "mbx.stats.intelligence" -> Text.literal("🔥 ").append(Text.translatable("mbx.stats.intelligence"));
-            case "mbx.stats.wisdom" -> Text.literal("☽ ").append(Text.translatable("mbx.stats.wisdom"));
-            case "mbx.stats.luck" -> Text.literal("🌊 ").append(Text.translatable("mbx.stats.luck"));
-            case "mbx.stats.fortune" -> Text.literal("🔱 ").append(Text.translatable("mbx.stats.fortune"));
-            case "mbx.stats.defense" -> Text.literal("🛡 ").append(Text.translatable("mbx.stats.defense"));
-            default -> Text.literal(stat);
+        MutableComponent text = switch (key) {
+            case "mbx.stats.health" -> Component.literal("❤ ").append(Component.translatable("mbx.stats.health"));
+            case "mbx.stats.strength" -> Component.literal("₪ ").append(Component.translatable("mbx.stats.strength"));
+            case "mbx.stats.agility" -> Component.literal("☄ ").append(Component.translatable("mbx.stats.agility"));
+            case "mbx.stats.intelligence" -> Component.literal("🔥 ").append(Component.translatable("mbx.stats.intelligence"));
+            case "mbx.stats.wisdom" -> Component.literal("☽ ").append(Component.translatable("mbx.stats.wisdom"));
+            case "mbx.stats.luck" -> Component.literal("🌊 ").append(Component.translatable("mbx.stats.luck"));
+            case "mbx.stats.fortune" -> Component.literal("🔱 ").append(Component.translatable("mbx.stats.fortune"));
+            case "mbx.stats.defense" -> Component.literal("🛡 ").append(Component.translatable("mbx.stats.defense"));
+            default -> Component.literal(stat);
         };
 
         return switch (key) {
@@ -394,7 +394,7 @@ public class MineboxItem {
             case "mbx.stats.wisdom" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x9457D3)));
             case "mbx.stats.luck" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x3D84A8)));
             case "mbx.stats.fortune" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xEC8C2E)));
-            default -> text.setStyle(Style.EMPTY.withColor(Formatting.WHITE));
+            default -> text.setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
         };
     }
 

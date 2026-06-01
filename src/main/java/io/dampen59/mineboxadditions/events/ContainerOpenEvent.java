@@ -7,18 +7,18 @@ import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.fabricmc.fabric.api.client.screen.v1.Screens;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextContent;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,13 +38,13 @@ public class ContainerOpenEvent {
         ScreenEvents.AFTER_INIT.register(this::onContainerOpened);
     }
 
-    private void onContainerOpened(MinecraftClient client, Screen screen, int scaledWidth, int scaledHeight) {
-        if (!(screen instanceof GenericContainerScreen containerScreen)) {
+    private void onContainerOpened(Minecraft client, Screen screen, int scaledWidth, int scaledHeight) {
+        if (!(screen instanceof ContainerScreen containerScreen)) {
             return;
         }
 
-        int slotsCount = containerScreen.getScreenHandler().slots.size();
-        Text containerTitle = containerScreen.getTitle();
+        int slotsCount = containerScreen.getMenu().slots.size();
+        Component containerTitle = containerScreen.getTitle();
         String translationKey = extractTranslationKey(containerTitle);
 
         int baseX = 5;
@@ -65,43 +65,43 @@ public class ContainerOpenEvent {
                     int yOffset = baseY * 30 + (55 * i); // 30
                     int textBoxX = baseX + 16 + 5; // 25
                     int textBoxY = baseY * 30 + 22 + 2 + (55 * i); // 30
-                    TextFieldWidget setNameTextbox = new TextFieldWidget(client.textRenderer, textBoxX, textBoxY, 96,
-                            22, Text.empty());
+                    EditBox setNameTextbox = new EditBox(client.font, textBoxX, textBoxY, 96,
+                            22, Component.empty());
 
                     int renameButtonX = baseX; // 25
                     int renameButtonY = baseY * 30 + 12 + (55 * i); // 30
                     int equipButtonX = textBoxX;
                     int equipButtonY = baseY * 30 + (55 * i); // 30
 
-                    final ButtonWidget[] equipButtonRef = new ButtonWidget[1];
+                    final Button[] equipButtonRef = new Button[1];
 
-                    ButtonWidget renameSaveButton = ButtonWidget.builder(Text.literal("\uD83D\uDCBE"), buttonWidget -> {
-                        String newName = setNameTextbox.getText();
+                    Button renameSaveButton = Button.builder(Component.literal("\uD83D\uDCBE"), buttonWidget -> {
+                        String newName = setNameTextbox.getValue();
                         if (!newName.isEmpty()) {
                             ExtraInventoryUtils.setSetName(setId, newName);
                             // Update the equip button label
                             equipButtonRef[0]
-                                    .setMessage(Text.literal("Equip [" + ExtraInventoryUtils.getSetName(setId) + "]"));
+                                    .setMessage(Component.literal("Equip [" + ExtraInventoryUtils.getSetName(setId) + "]"));
                         }
-                        ExtraInventoryUtils.saveCurrentSetToSlotId(containerScreen.getScreenHandler().slots, setId);
-                    }).dimensions(renameButtonX, renameButtonY, 16, 24).build();
+                        ExtraInventoryUtils.saveCurrentSetToSlotId(containerScreen.getMenu().slots, setId);
+                    }).bounds(renameButtonX, renameButtonY, 16, 24).build();
 
-                    ButtonWidget equipButton = ButtonWidget
-                            .builder(Text.literal("Equip [" + ExtraInventoryUtils.getSetName(setId) + "]"),
+                    Button equipButton = Button
+                            .builder(Component.literal("Equip [" + ExtraInventoryUtils.getSetName(setId) + "]"),
                                     buttonWidget -> ExtraInventoryUtils
-                                            .equipSet(containerScreen.getScreenHandler().slots, setId))
-                            .dimensions(equipButtonX, equipButtonY, 96, 22).build();
+                                            .equipSet(containerScreen.getMenu().slots, setId))
+                            .bounds(equipButtonX, equipButtonY, 96, 22).build();
 
                     // Store the equip button reference for later update
                     equipButtonRef[0] = equipButton;
 
-                    screen.addDrawableChild(setNameTextbox);
-                    Screens.getButtons(containerScreen).add(renameSaveButton);
-                    Screens.getButtons(containerScreen).add(equipButton);
+                    screen.addRenderableWidget(setNameTextbox);
+                    containerScreen.addRenderableWidget(renameSaveButton);
+                    containerScreen.addRenderableWidget(equipButton);
                 }
             } else if (Arrays.stream(mermaidMenuTitles).anyMatch(containerTitleString::contains)) {
                 client.execute(() -> {
-                    ItemStack mermaidRequest = containerScreen.getScreenHandler().getInventory().getStack(22);
+                    ItemStack mermaidRequest = containerScreen.getMenu().slots.get(22).getItem();
 
                     if (!Utils.isMineboxItem(mermaidRequest))
                         return;
@@ -109,14 +109,14 @@ public class ContainerOpenEvent {
                     String itemId = Utils.getMineboxItemId(mermaidRequest);
                     int requestedItemQuantity = mermaidRequest.getCount();
 
-                    Text nameText = mermaidRequest.getFormattedName();
+                    Component nameText = mermaidRequest.getHoverName();
                     String requestedItemTranslationKey = extractTranslationKey(nameText);
 
                     String targetResourceKey = null;
 
                     // Ressources transfos, sacs, etc
                     if (requestedItemTranslationKey.startsWith("mbx.items.container.")) {
-                        TranslatableTextContent targetResource = findDeepestTranslatableContent(nameText);
+                        TranslatableContents targetResource = findDeepestTranslatableContent(nameText);
                         targetResourceKey = targetResource.getKey();
                     }
 
@@ -125,7 +125,7 @@ public class ContainerOpenEvent {
 
                 });
             } else if (Arrays.stream(jobsMenuTitles).anyMatch(containerTitleString::contains)) {
-                final ScreenHandler handler = containerScreen.getScreenHandler();
+                final AbstractContainerMenu handler = containerScreen.getMenu();
                 final int delayTicks = 10;
 
                 class JobGuiSlotChecker {
@@ -148,10 +148,10 @@ public class ContainerOpenEvent {
                         int maxJobNameLength = 0;
                         for (int slotIndex : targetSlots) {
                             if (slotIndex < handler.slots.size()) {
-                                ItemStack stack = handler.slots.get(slotIndex).getStack();
+                                ItemStack stack = handler.slots.get(slotIndex).getItem();
                                 if (!stack.isEmpty()) {
-                                    String jobName = stack.getName().getString();
-                                    LoreComponent loreComponent = stack.get(DataComponentTypes.LORE);
+                                    String jobName = stack.getHoverName().getString();
+                                    ItemLore loreComponent = stack.get(DataComponents.LORE);
                                     if (loreComponent == null)
                                         return;
 
@@ -159,7 +159,7 @@ public class ContainerOpenEvent {
                                     Integer xp = null;
                                     Integer xpMax = null;
 
-                                    for (Text lore : loreComponent.lines()) {
+                                    for (Component lore : loreComponent.lines()) {
                                         String plain = lore.getString().replaceAll("[^\\d/]", "");
 
                                         if ((lore.getString().contains("Level") || lore.getString().contains("Niveau"))
@@ -207,7 +207,7 @@ public class ContainerOpenEvent {
                         }
 
                         String clipboardText = jobData2Clipboard.toString().trim();
-                        MinecraftClient.getInstance().keyboard.setClipboard(clipboardText);
+                        Minecraft.getInstance().keyboardHandler.setClipboard(clipboardText);
                     }
                 });
             }
@@ -215,11 +215,11 @@ public class ContainerOpenEvent {
         }
     }
 
-    private String extractTranslationKey(Text text) {
-        if (text.getContent() instanceof TranslatableTextContent translatable) {
+    private String extractTranslationKey(Component text) {
+        if (text.getContents() instanceof TranslatableContents translatable) {
             return translatable.getKey();
         }
-        for (Text sibling : text.getSiblings()) {
+        for (Component sibling : text.getSiblings()) {
             String key = extractTranslationKey(sibling);
             if (key != null) {
                 return key;
@@ -228,12 +228,12 @@ public class ContainerOpenEvent {
         return null;
     }
 
-    private TranslatableTextContent findDeepestTranslatableContent(Text text) {
-        TextContent content = text.getContent();
-        if (content instanceof TranslatableTextContent translatable) {
+    private TranslatableContents findDeepestTranslatableContent(Component text) {
+        ComponentContents content = text.getContents();
+        if (content instanceof TranslatableContents translatable) {
             for (Object arg : translatable.getArgs()) {
-                if (arg instanceof Text innerText) {
-                    TranslatableTextContent nested = findDeepestTranslatableContent(innerText);
+                if (arg instanceof Component innerText) {
+                    TranslatableContents nested = findDeepestTranslatableContent(innerText);
                     if (nested != null)
                         return nested;
                 }
@@ -241,8 +241,8 @@ public class ContainerOpenEvent {
             return translatable;
         }
 
-        for (Text sibling : text.getSiblings()) {
-            TranslatableTextContent siblingResult = findDeepestTranslatableContent(sibling);
+        for (Component sibling : text.getSiblings()) {
+            TranslatableContents siblingResult = findDeepestTranslatableContent(sibling);
             if (siblingResult != null)
                 return siblingResult;
         }

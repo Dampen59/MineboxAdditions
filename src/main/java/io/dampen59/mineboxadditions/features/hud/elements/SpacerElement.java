@@ -1,6 +1,6 @@
 package io.dampen59.mineboxadditions.features.hud.elements;
 
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class SpacerElement extends Element {
     private int size;
@@ -24,5 +24,5 @@ public class SpacerElement extends Element {
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {}
+    public void draw(GuiGraphicsExtractor context, int x, int y) {}
 }
