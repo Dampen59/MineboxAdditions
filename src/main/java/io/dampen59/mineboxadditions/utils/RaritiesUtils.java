@@ -12,12 +12,15 @@ import java.util.Map;
 
 public class RaritiesUtils {
     public static final Map<String, Integer> RARITY_ARGB = Map.of(
+            "trash",     0xFFCBD5E1,
             "common",    0xFF665466,
             "uncommon",  0xFF00C06F,
             "rare",      0xFF00A5FC,
             "epic",      0xFFF816FC,
             "legendary", 0xFFFFBE35,
-            "mythic",    0xFFA0060A
+            "mythic",    0xFFA0060A,
+            "prototype", 0xFF66FF00,
+            "contraband",0xFF66FF00
     );
 
     public static int percentToAlpha(double p) {

@@ -1,7 +1,6 @@
 package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.config.ConfigManager;
-import io.dampen59.mineboxadditions.config.huds.objects.ItemPickupHud;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -86,11 +85,7 @@ public class HudEditorScreen extends Screen {
             Point clamped = clampToScreen(hud, (int)mouseX - dragContext.offsetX, (int)mouseY - dragContext.offsetY);
             Point resolved = resolveCollisions(hud, clamped.x, clamped.y);
 
-            if (dragContext.type.equals(ItemPickupHud.class) && resolved.x > this.width / 2) {
-                hud.setX(resolved.x + hud.getWidth());
-            } else {
-                hud.setX(resolved.x);
-            }
+            hud.setX(resolved.x);
             hud.setY(resolved.y);
             dirty = true;
             return true;

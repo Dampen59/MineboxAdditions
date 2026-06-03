@@ -28,7 +28,8 @@ public class ItemListWidget extends AbstractSelectionList<ItemListWidget.ItemEnt
         return left;
     }
 
-    protected int getScrollbarX() {
+    @Override
+    protected int scrollBarX() {
         return this.getX() + this.width - 6;
     }
 
@@ -56,21 +57,23 @@ public class ItemListWidget extends AbstractSelectionList<ItemListWidget.ItemEnt
         @Override
         public void extractContent(GuiGraphicsExtractor context, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             Minecraft client = Minecraft.getInstance();
-            int rowWidth = 200;
-            int rowHeight = 25;
+            int ex = getX();
+            int ey = getY();
+            int rowWidth = getWidth();
+            int rowHeight = getHeight();
 
             boolean isSelected = parent.getSelectedItem() == item;
             int backgroundColor = isSelected ? 0x5544AAFF : hovered ? 0x33FFFFFF : 0x00000000;
-            context.fill(0, 0, rowWidth, rowHeight, backgroundColor);
+            context.fill(ex, ey, ex + rowWidth, ey + rowHeight, backgroundColor);
 
             Identifier icon = textureCache.computeIfAbsent(item.getId(), id -> loadTexture(item.getId(), item.getTexture()));
             if (icon != null) {
-                context.blit(RenderPipelines.GUI_TEXTURED, icon, 4, 4, 0, 0, 16, 16, 16, 16);
+                context.blit(RenderPipelines.GUI_TEXTURED, icon, ex + 4, ey + 4, 0, 0, 16, 16, 16, 16);
             }
 
-            context.text(client.font, MineboxItem.getDisplayName(item), 24, 4, 0xFFFFFFFF, false);
+            context.text(client.font, MineboxItem.getDisplayName(item), ex + 24, ey + 4, 0xFFFFFFFF, false);
             context.text(client.font, Component.literal("Lvl " + item.getLevel() + " • " + item.getCategory()),
-                    24, 14, 0xFFAAAAAA, false);
+                    ex + 24, ey + 14, 0xFFAAAAAA, false);
         }
 
         @Override

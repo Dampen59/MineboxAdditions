@@ -25,7 +25,11 @@ public class ImageUtils {
             for (int y = 0; y < image.getHeight(); y++) {
                 for (int x = 0; x < image.getWidth(); x++) {
                     int argb = image.getRGB(x, y);
-                    nativeImage.setPixelABGR(x, y, argb);
+                    // BufferedImage.getRGB returns ARGB; NativeImage.setPixelABGR expects ABGR — swap R and B
+                    int abgr = (argb & 0xFF00FF00)
+                             | ((argb & 0x00FF0000) >> 16)
+                             | ((argb & 0x000000FF) << 16);
+                    nativeImage.setPixelABGR(x, y, abgr);
                 }
             }
 

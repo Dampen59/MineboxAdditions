@@ -14,7 +14,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.network.chat.Component;
 
-import java.time.LocalTime;
 import java.util.Arrays;
 
 public class ShopManager {
@@ -31,7 +30,7 @@ public class ShopManager {
 
     private static void tick(Minecraft client) {
         if (!Utils.isOnMinebox() || client.level == null) return;
-        if (Utils.getTime() == LocalTime.MIDNIGHT) return;
+        if (!Utils.isTimeKnown()) return;
 
         TextElement text = HudManager.INSTANCE.get(ShopHud.class)
                 .getNamedElement("text", TextElement.class);

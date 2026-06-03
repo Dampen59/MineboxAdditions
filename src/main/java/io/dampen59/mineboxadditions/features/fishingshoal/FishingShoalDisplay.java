@@ -9,10 +9,9 @@ import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureManager;
@@ -113,11 +112,9 @@ public class FishingShoalDisplay {
         float totalWidth = (textureSize * count) + (spacing * (count - 1));
         float startOffset = -totalWidth / 2 + textureSize / 2;
 
-        matrices.popPose();
-
         for (int i = 0; i < textures.size(); i++) {
             Identifier texture = textures.get(i);
-            VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.translucent()); // TODO: fix RenderType
+            VertexConsumer buffer = vertexConsumers.getBuffer(RenderTypes.entityTranslucent(texture));
 
             matrices.pushPose();
             float xOffset = startOffset + i * (textureSize + spacing);

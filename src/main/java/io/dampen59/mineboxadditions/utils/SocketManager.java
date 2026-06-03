@@ -23,7 +23,7 @@ import java.util.List;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private static Socket socket;
-    private static final int protocol = 10;
+    private static final int protocol = 11;
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @NotNull

@@ -461,6 +461,16 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
         context.pose().popMatrix();
     }
 
+    private static Component getIngredientDisplayName(MineboxItem.Ingredient ingredient) {
+        if (ingredient.isVanilla()) {
+            Identifier rid = Identifier.fromNamespaceAndPath("minecraft", ingredient.getId());
+            Item mcItem = BuiltInRegistries.ITEM.getOptional(rid).orElse(null);
+            if (mcItem != null) return Component.translatable(mcItem.getDescriptionId());
+            return Component.literal(ingredient.getId());
+        }
+        return MineboxItem.getDisplayName(ingredient.getCustomItem());
+    }
+
     private int renderRecipeIngredient(GuiGraphicsExtractor context, Font textRenderer,
                                        MineboxItem.Ingredient ingredient, int x, int y, int depth,
                                        int amountMultiplier, boolean isLast, String path) {
@@ -518,7 +528,7 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
         }
 
         amountText.append(Component.literal(" × "))
-                .append(ingredient.getId())
+                .append(getIngredientDisplayName(ingredient))
                 .append(Component.literal(hasItem ? " ✅" : " ❌ ("+ ingredientCount + "/" + amount + ")")
                         .withStyle(style -> style.withColor(hasItem ? 0xFF55FF55 : 0xFFFF5555)));
 

@@ -135,7 +135,7 @@ public class MineboxAdditions implements ClientModInitializer {
         );
     }
 
-    private static final KeyMapping.Category MBX_CATEGORY = new KeyMapping.Category(Identifier.fromNamespaceAndPath("mineboxadditions", "mineboxadditions"));
+    private static final KeyMapping.Category MBX_CATEGORY = new KeyMapping.Category(Identifier.withDefaultNamespace(NAMESPACE));
 
     private void registerKeybinds() {
         openModSettings = KeyMappingHelper.registerKeyMapping(new KeyMapping(

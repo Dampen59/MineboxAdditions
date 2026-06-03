@@ -68,7 +68,9 @@ public class HaversackManager {
     }
 
     private void parseInformation(ItemStack stack, CompoundTag nbtData, TranslatableContents content) {
-        String quantityStr = String.valueOf(content.getArgs()[0]);
+        Object arg = content.getArgs()[0];
+        if (!(arg instanceof Component argComponent)) return;
+        String quantityStr = argComponent.getString();
         String[] parts = quantityStr.split("/");
         if (parts.length < 2) return;
         int maxQuantity = Integer.parseInt(parts[1]);

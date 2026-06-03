@@ -47,17 +47,6 @@ public class ItemPickupHud extends Hud {
     }
 
     @Override
-    public int getX() {
-        Minecraft client = Minecraft.getInstance();
-        int screenWidth = client.getWindow().getGuiScaledWidth();
-        int x = super.getX();
-        if (x > screenWidth / 2) {
-            return x - this.getWidth();
-        }
-        return x;
-    }
-
-    @Override
     public void draw(GuiGraphicsExtractor context) {
         this.draw(context, 0);
     }
@@ -66,7 +55,7 @@ public class ItemPickupHud extends Hud {
         if (getX() == -50) {
             Minecraft client = Minecraft.getInstance();
             int screenWidth = client.getWindow().getGuiScaledWidth();
-            setX(screenWidth - 4);
+            setX(screenWidth - this.getWidth() - 4);
             ConfigManager.save();
         }
 

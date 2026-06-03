@@ -5,13 +5,13 @@ import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -23,7 +23,7 @@ public class HarvestableBeam {
 
     public static void render(LevelRenderContext context) {
         var mc = Minecraft.getInstance();
-        var world = Minecraft.getInstance().level;
+        var world = mc.level;
         if (world == null || mc.player == null)
             return;
 
@@ -48,7 +48,7 @@ public class HarvestableBeam {
         if (ms == null || prov == null)
             return;
 
-        float tickDelta = 0f;
+        float tickDelta = 0f; // render distance API changed in 26.1
         float time = (mc.level.getGameTime() + tickDelta);
         float scroll = (time / 40.0f) % 1.0f;
 
@@ -110,52 +110,49 @@ public class HarvestableBeam {
 
     private static void drawBeaconBeam(PoseStack ms, MultiBufferSource prov, BlockPos base,
                                        int height, float radiusIgnored, float vOffset, int rgb) {
-        return; // RenderType.beaconBeam API pending 26.1 finalization
-        //VertexConsumer vc = null; // unreachable
-//        Matrix4f m = ms.last().pose();
-//
-//        final float cx = base.getX() + 0.5f;
-//        final float cz = base.getZ() + 0.5f;
-//        final float y0 = base.getY();
-//        final float y1 = y0 + height;
-//        final float innerR = 0.20f;
-//        final float outerR = 0.25f;
-//        final float rot = (float) (vOffset * Math.PI * 2.0); // 0..2π
-//        final float sin = (float) Math.sin(rot);
-//        final float cos = (float) Math.cos(rot);
-//        final float u0 = 0f, u1 = 1f;
-//        final float v0 = vOffset;
-//        final float v1 = vOffset + (height / 32f);
-//        final int cr = (rgb >> 16) & 0xFF;
-//        final int cg = (rgb >>  8) & 0xFF;
-//        final int cb = (rgb      ) & 0xFF;
-//        float[][] inner = new float[4][2];
-//        float[][] outer = new float[4][2];
-//
-//        fillRotatedSquare(inner, innerR, cos, sin);
-//        fillRotatedSquare(outer, outerR, cos, sin);
-//
-//        // bem core
-//        final int aInner = 200;
-//        for (int i = 0; i < 4; i++) {
-//            int j = (i + 1) & 3;
-//            addBeamSide(vc, m,
-//                    cx + inner[i][0], cz + inner[i][1],   // bottom i  (x0,z0)
-//                    cx + inner[j][0], cz + inner[j][1],   // bottom j  (x1,z1)
-//                    y0, y1, u0, v0, u1, v1,
-//                    cr, cg, cb, aInner);
-//        }
-//
-//        // out glow
-//        final int aOuter = 64;
-//        for (int i = 0; i < 4; i++) {
-//            int j = (i + 1) & 3;
-//            addBeamSide(vc, m,
-//                    cx + outer[i][0], cz + outer[i][1],
-//                    cx + outer[j][0], cz + outer[j][1],
-//                    y0, y1, u0, v0, u1, v1,
-//                    cr, cg, cb, aOuter);
-//        }
+        VertexConsumer vc = prov.getBuffer(RenderTypes.beaconBeam(BEACON_BEAM_TEXTURE, true));
+        Matrix4f m = ms.last().pose();
+
+        final float cx = base.getX() + 0.5f;
+        final float cz = base.getZ() + 0.5f;
+        final float y0 = base.getY();
+        final float y1 = y0 + height;
+        final float innerR = 0.20f;
+        final float outerR = 0.25f;
+        final float rot = (float) (vOffset * Math.PI * 2.0);
+        final float sin = (float) Math.sin(rot);
+        final float cos = (float) Math.cos(rot);
+        final float u0 = 0f, u1 = 1f;
+        final float v0 = vOffset;
+        final float v1 = vOffset + (height / 32f);
+        final int cr = (rgb >> 16) & 0xFF;
+        final int cg = (rgb >>  8) & 0xFF;
+        final int cb = (rgb      ) & 0xFF;
+        float[][] inner = new float[4][2];
+        float[][] outer = new float[4][2];
+
+        fillRotatedSquare(inner, innerR, cos, sin);
+        fillRotatedSquare(outer, outerR, cos, sin);
+
+        final int aInner = 200;
+        for (int i = 0; i < 4; i++) {
+            int j = (i + 1) & 3;
+            addBeamSide(vc, m,
+                    cx + inner[i][0], cz + inner[i][1],
+                    cx + inner[j][0], cz + inner[j][1],
+                    y0, y1, u0, v0, u1, v1,
+                    cr, cg, cb, aInner);
+        }
+
+        final int aOuter = 64;
+        for (int i = 0; i < 4; i++) {
+            int j = (i + 1) & 3;
+            addBeamSide(vc, m,
+                    cx + outer[i][0], cz + outer[i][1],
+                    cx + outer[j][0], cz + outer[j][1],
+                    y0, y1, u0, v0, u1, v1,
+                    cr, cg, cb, aOuter);
+        }
     }
 
     private static void fillRotatedSquare(float[][] out, float r, float cos, float sin) {
@@ -174,16 +171,12 @@ public class HarvestableBeam {
                                     int r, int g, int b, int a) {
         int light = 0xF000F0; // fullbright
 
-        // bottom i
         vc.addVertex(m, x0, y0, z0).setColor(r, g, b, a).setUv(u0, v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(0, 1, 0);
-        // bottom j
         vc.addVertex(m, x1, y0, z1).setColor(r, g, b, a).setUv(u1, v1)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(0, 1, 0);
-        // top j
         vc.addVertex(m, x1, y1, z1).setColor(r, g, b, a).setUv(u1, v0)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(0, 1, 0);
-        // top i
         vc.addVertex(m, x0, y1, z0).setColor(r, g, b, a).setUv(u0, v0)
                 .setOverlay(OverlayTexture.NO_OVERLAY).setLight(light).setNormal(0, 1, 0);
     }

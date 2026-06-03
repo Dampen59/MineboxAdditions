@@ -109,6 +109,7 @@
   "mineboxadditions.sharkoffe.toast": "Хотите освежиться? Коктейль-бар открыт!",
   "mineboxadditions.sharkoffe.toast.offer": "Бармен готов подать вам %1$s!",
 
+  "key.category.minecraft.mineboxadditions": "MineboxAdditions",
   "mineboxadditions.strings.keybinds.modSettings.open": "Открыть настройки мода",
   "mineboxadditions.strings.keybinds.hudEditor.open": "Открыть редактор HUD",
   "mineboxadditions.strings.keybinds.harvestables.open": "Открыть экран ресурсов",

@@ -17,6 +17,7 @@ import net.minecraft.locale.Language;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -302,6 +303,15 @@ public class MineboxItem {
             return styled(Component.translatable("mbx.attributes.emote." + emoteKey + ".title"), item.rarity.toLowerCase());
         }
 
+        // Tomes
+        if (id.startsWith("tome_")) {
+            String[] keys = id.split("_");
+            String jobKey = keys[2];
+            if (Objects.equals(jobKey, "xp")) {
+                return styled(Component.translatable("mbx.items.experience_tome.name"), item.rarity.toLowerCase());
+            }
+            return styled(Component.translatable("mbx.items.skill_experience_tome.name", Component.translatable("mbx.skills."+ jobKey +".name").getString()), item.rarity.toLowerCase());
+        }
 
         // Default
         return Component.literal(id).copy().withStyle(style -> style.withColor(0xFFFFFFFF));

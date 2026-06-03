@@ -67,8 +67,11 @@ public class ItemDurability {
         for (Component line : lore.lines()) {
             if (!(line.getContents() instanceof TranslatableContents content)) continue;
             if (content.getKey().contains("mbx.durability") ||
-                    content.getKey().contains("mbx.items.infinite_bag.amount_inside"))
-                return String.valueOf(content.getArgs()[0]).split("/");
+                    content.getKey().contains("mbx.items.infinite_bag.amount_inside")) {
+                Object arg = content.getArgs()[0];
+                if (!(arg instanceof Component argComponent)) continue;
+                return argComponent.getString().split("/");
+            }
         }
         return new String[0];
     }

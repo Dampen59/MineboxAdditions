@@ -13,6 +13,8 @@ import net.minecraft.client.gui.screens.inventory.ContainerScreen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.inventory.ChestMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.component.ItemLore;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -100,29 +102,33 @@ public class ContainerOpenEvent {
                     containerScreen.addRenderableWidget(equipButton);
                 }
             } else if (Arrays.stream(mermaidMenuTitles).anyMatch(containerTitleString::contains)) {
-                client.execute(() -> {
-                    ItemStack mermaidRequest = containerScreen.getMenu().slots.get(22).getItem();
+                if (!(containerScreen.getMenu() instanceof ChestMenu chestMenu)) return;
 
-                    if (!Utils.isMineboxItem(mermaidRequest))
-                        return;
+                final int[] ticks = {0};
+                final boolean[] done = {false};
+
+                ClientTickEvents.END_CLIENT_TICK.register(mc -> {
+                    if (done[0]) return;
+                    if (++ticks[0] < 5) return;
+                    done[0] = true;
+
+                    ItemStack mermaidRequest = chestMenu.getContainer().getItem(22);
+                    if (!Utils.isMineboxItem(mermaidRequest)) return;
 
                     String itemId = Utils.getMineboxItemId(mermaidRequest);
                     int requestedItemQuantity = mermaidRequest.getCount();
-
                     Component nameText = mermaidRequest.getHoverName();
                     String requestedItemTranslationKey = extractTranslationKey(nameText);
+                    if (requestedItemTranslationKey == null) return;
 
                     String targetResourceKey = null;
-
-                    // Ressources transfos, sacs, etc
                     if (requestedItemTranslationKey.startsWith("mbx.items.container.")) {
                         TranslatableContents targetResource = findDeepestTranslatableContent(nameText);
-                        targetResourceKey = targetResource.getKey();
+                        if (targetResource != null) targetResourceKey = targetResource.getKey();
                     }
 
                     SocketManager.getSocket().emit("C2SMermaidRequest", itemId, requestedItemQuantity,
                             requestedItemTranslationKey, targetResourceKey);
-
                 });
             } else if (Arrays.stream(jobsMenuTitles).anyMatch(containerTitleString::contains)) {
                 final AbstractContainerMenu handler = containerScreen.getMenu();

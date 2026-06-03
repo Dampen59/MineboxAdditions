@@ -30,7 +30,8 @@ import java.util.*;
 public class Utils {
     private static boolean isOnMinebox = false;
 
-    private static LocalTime time = LocalTime.parse("00:00");
+    private static LocalTime time = LocalTime.of(0, 0);
+    private static boolean timeKnown = false;
     private static Location previousLocation = Location.UNKNOWN;
     private static Location location = Location.UNKNOWN;
     private static final Map<Skill, SkillData> skills = new EnumMap<>(Skill.class);
@@ -69,8 +70,18 @@ public class Utils {
 
     public static Location getPreviousLocation() { return previousLocation; }
 
-    public static LocalTime getTime() {
-        return time;
+    public static LocalTime getTime() { return time; }
+
+    public static boolean isTimeKnown() { return timeKnown; }
+
+    public static boolean tryUpdateTime(String timeStr) {
+        try {
+            time = LocalTime.parse(timeStr.trim(), java.time.format.DateTimeFormatter.ofPattern("H:mm"));
+            timeKnown = true;
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static Location getLocation() {
@@ -119,12 +130,12 @@ public class Utils {
         Minecraft client = Minecraft.getInstance();
         if (client == null) return;
 
-        client.getToastManager().addToast(
+        client.execute(() -> client.getToastManager().addToast(
                 new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                         Component.literal(prmTitle),
                         Component.literal(prmDescription)
                 )
-        );
+        ));
     }
 
     public static Component getPlayerServerName(String playerName) {

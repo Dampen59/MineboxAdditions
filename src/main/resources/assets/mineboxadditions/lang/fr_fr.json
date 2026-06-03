@@ -109,6 +109,7 @@
   "mineboxadditions.sharkoffe.toast": "Envie d’un rafraîchissement ? Le bar à cocktails est ouvert !",
   "mineboxadditions.sharkoffe.toast.offer": "Le barman est prêt à vous servir un %1$s !",
 
+  "key.category.minecraft.mineboxadditions": "MineboxAdditions",
   "mineboxadditions.strings.keybinds.modSettings.open": "Ouvrir les paramètres du mod",
   "mineboxadditions.strings.keybinds.hudEditor.open": "Ouvrir l’éditeur de HUD",
   "mineboxadditions.strings.keybinds.harvestables.open": "Ouvrir l’écran des récoltables",
