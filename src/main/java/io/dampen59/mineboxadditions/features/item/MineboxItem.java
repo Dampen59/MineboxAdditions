@@ -383,29 +383,35 @@ public class MineboxItem {
 
     public static Component getColoredStatName(String stat) {
         String key = stat.toLowerCase();
-        MutableComponent text = switch (key) {
-            case "mbx.stats.health" -> Component.literal("❤ ").append(Component.translatable("mbx.stats.health"));
-            case "mbx.stats.strength" -> Component.literal("₪ ").append(Component.translatable("mbx.stats.strength"));
-            case "mbx.stats.agility" -> Component.literal("☄ ").append(Component.translatable("mbx.stats.agility"));
-            case "mbx.stats.intelligence" -> Component.literal("🔥 ").append(Component.translatable("mbx.stats.intelligence"));
-            case "mbx.stats.wisdom" -> Component.literal("☽ ").append(Component.translatable("mbx.stats.wisdom"));
-            case "mbx.stats.luck" -> Component.literal("🌊 ").append(Component.translatable("mbx.stats.luck"));
-            case "mbx.stats.fortune" -> Component.literal("🔱 ").append(Component.translatable("mbx.stats.fortune"));
-            case "mbx.stats.defense" -> Component.literal("🛡 ").append(Component.translatable("mbx.stats.defense"));
-            default -> Component.literal(stat);
+        record S(String icon, String translatable, int color) {}
+        S s = switch (key) {
+            case "mbx.stats.health"                -> new S("❤ ",  "mbx.stats.health",             0xE62046);
+            case "mbx.stats.strength"              -> new S("₪ ",  "mbx.stats.strength",           0x5A370B);
+            case "mbx.stats.agility"               -> new S("☄ ",  "mbx.stats.agility",            0x89C464);
+            case "mbx.stats.intelligence"          -> new S("🔥 ", "mbx.stats.intelligence",       0xE5412B);
+            case "mbx.stats.wisdom"                -> new S("☽ ",  "mbx.stats.wisdom",             0x886EF6);
+            case "mbx.stats.luck"                  -> new S("🌊 ", "mbx.stats.luck",               0x7ED0FF);
+            case "mbx.stats.fortune"               -> new S("🔱 ", "mbx.stats.fortune",            0xF79440);
+            case "mbx.stats.defense"               -> new S("🛡 ", "mbx.stats.defense",            0xCCCCCC);
+            case "mbx.stats.energy"                -> new S("⚡ ", "mbx.stats.energy",             0xEDBA21);
+            case "mbx.stats.endurance"             -> new S("💪 ", "mbx.stats.endurance",          0x28A12C);
+            case "mbx.stats.charisma"              -> new S("⚓ ", "mbx.stats.charisma",           0xD15FB4);
+            case "mbx.stats.dexterity"             -> new S("⚔ ",  "mbx.stats.dexterity",          0xE0E0E0);
+            case "mbx.stats.vitality"              -> new S("♥ ",  "mbx.stats.vitality",           0x4CAF50);
+            case "mbx.stats.attack.speed"          -> new S("🗡 ", "mbx.stats.attack_speed",       0xD7BF71);
+            case "mbx.stats.movement.speed"        -> new S("⏪ ", "mbx.stats.movement_speed",     0x87CEEB);
+            case "mbx.stats.farming.fortune"       -> new S("🌾 ", "mbx.stats.farming_fortune",    0x7BC74D);
+            case "mbx.stats.woodcutting.fortune"   -> new S("🪓 ", "mbx.stats.woodcutting_fortune",0x8B6914);
+            case "mbx.stats.mining.fortune"        -> new S("⛏ ",  "mbx.stats.mining_fortune",     0xA0826D);
+            case "mbx.stats.fishing.fortune"       -> new S("🎣 ", "mbx.stats.fishing_fortune",    0x5B9BD5);
+            case "mbx.stats.gathering.fortune"     -> new S("🌿 ", "mbx.stats.gathering_fortune",  0x5BAE4E);
+            case "mbx.stats.looting.fortune"       -> new S("🗡 ", "mbx.stats.looting_fortune",    0xE05555);
+            default -> null;
         };
-
-        return switch (key) {
-            case "mbx.stats.health" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xE24A63)));
-            case "mbx.stats.strength" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xA55F26)));
-            case "mbx.stats.agility" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x6BC047)));
-            case "mbx.stats.intelligence" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xE24A2E)));
-            case "mbx.stats.defense" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x1F8ECD)));
-            case "mbx.stats.wisdom" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x9457D3)));
-            case "mbx.stats.luck" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x3D84A8)));
-            case "mbx.stats.fortune" -> text.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0xEC8C2E)));
-            default -> text.setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
-        };
+        if (s == null) return Component.literal(stat).setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
+        return Component.literal(s.icon())
+                .append(Component.translatable(s.translatable()))
+                .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(s.color())));
     }
 
 
