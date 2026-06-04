@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.features.shop;
 
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
+import io.dampen59.mineboxadditions.config.notifications.NotificationsConfig;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.network.chat.Component;
 
@@ -8,10 +9,10 @@ import java.time.LocalTime;
 import java.util.function.Supplier;
 
 public enum Shop {
-    BUCKSTAR(LocalTime.parse("06:00"), LocalTime.parse("12:00"), () -> HudsConfig.shop.buckstar),
-    BAKERY(LocalTime.parse("12:00"), LocalTime.parse("18:00"), () -> HudsConfig.shop.bakery),
-    SHARKOFFE(LocalTime.parse("18:00"), LocalTime.parse("19:30"), () -> HudsConfig.shop.sharkoffe),
-    MOUSE(LocalTime.parse("19:30"), LocalTime.parse("02:00"), () -> HudsConfig.shop.mouse);
+    BUCKSTAR(LocalTime.parse("06:00"), LocalTime.parse("12:00"), () -> NotificationsConfig.shop.buckstarToast || NotificationsConfig.shop.buckstarBell),
+    BAKERY(LocalTime.parse("12:00"), LocalTime.parse("18:00"), () -> NotificationsConfig.shop.bakeryToast || NotificationsConfig.shop.bakeryBell),
+    SHARKOFFE(LocalTime.parse("18:00"), LocalTime.parse("19:30"), () -> NotificationsConfig.shop.sharkoffeToast || NotificationsConfig.shop.sharkoffeBell),
+    MOUSE(LocalTime.parse("19:30"), LocalTime.parse("02:00"), () -> NotificationsConfig.shop.mouseToast || NotificationsConfig.shop.mouseBell);
 
     private final Supplier<Boolean> state;
     private final LocalTime start;

@@ -1,7 +1,7 @@
 package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
+import io.dampen59.mineboxadditions.config.render.categories.FishingShoals;
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
 import io.dampen59.mineboxadditions.features.harvestable.HarvestableBeam;
@@ -91,7 +91,7 @@ public class WorldRendererEvent {
         if (client.player == null || client.level == null) return;
         if (!Utils.isOnMinebox()) return;
 
-        if (FishingDrops.enabled)
+        if (FishingShoals.enabled)
             FishingShoalDisplay.handle(context);
 
         HarvestableBeam.render(context);

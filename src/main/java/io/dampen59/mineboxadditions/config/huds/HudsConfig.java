@@ -1,14 +1,12 @@
 package io.dampen59.mineboxadditions.config.huds;
 
 import com.teamresourceful.resourcefulconfig.api.annotations.*;
-import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
 import io.dampen59.mineboxadditions.config.huds.objects.HaversackHud;
 import io.dampen59.mineboxadditions.config.huds.objects.ItemPickupHud;
 import io.dampen59.mineboxadditions.config.huds.objects.ShopHud;
 
 @Category(value = "huds", categories = {
-        FishingDrops.class,
         HudPositions.class
 })
 @ConfigInfo(

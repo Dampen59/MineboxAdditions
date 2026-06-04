@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions.features.shop;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
+import io.dampen59.mineboxadditions.config.notifications.NotificationsConfig;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.features.hud.huds.ShopHud;
@@ -68,10 +69,10 @@ public class ShopManager {
             shop.setOffer(itemName);
 
             boolean shopEnabled = switch (shop.name().toLowerCase()) {
-                case "mouse" -> HudsConfig.shop.mouse;
-                case "bakery" -> HudsConfig.shop.bakery;
-                case "buckstar" -> HudsConfig.shop.buckstar;
-                case "sharkoffe" -> HudsConfig.shop.sharkoffe;
+                case "mouse" -> NotificationsConfig.shop.mouseToast || NotificationsConfig.shop.mouseBell;
+                case "bakery" -> NotificationsConfig.shop.bakeryToast || NotificationsConfig.shop.bakeryBell;
+                case "buckstar" -> NotificationsConfig.shop.buckstarToast || NotificationsConfig.shop.buckstarBell;
+                case "sharkoffe" -> NotificationsConfig.shop.sharkoffeToast || NotificationsConfig.shop.sharkoffeBell;
                 default -> false;
             };
 
@@ -95,17 +96,38 @@ public class ShopManager {
         Minecraft client = Minecraft.getInstance();
         if (client == null || client.player == null) return;
 
-        Component text = offer != null
-                ? Component.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast.offer", offer)
-                : Component.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast");
+        boolean toastEnabled = switch (shop.name().toLowerCase()) {
+            case "mouse" -> NotificationsConfig.shop.mouseToast;
+            case "bakery" -> NotificationsConfig.shop.bakeryToast;
+            case "buckstar" -> NotificationsConfig.shop.buckstarToast;
+            case "sharkoffe" -> NotificationsConfig.shop.sharkoffeToast;
+            default -> false;
+        };
 
-        client.getToastManager().addToast(new MineboxToast(
-                client.font,
-                MineboxAdditions.id("textures/gui/toasts/" + shop.name().toLowerCase() + ".png"),
-                shop.getName(),
-                text
-        ));
-        client.player.playSound(SoundEvents.BELL_BLOCK, 1.0f, 1.0f);
+        boolean bellEnabled = switch (shop.name().toLowerCase()) {
+            case "mouse" -> NotificationsConfig.shop.mouseBell;
+            case "bakery" -> NotificationsConfig.shop.bakeryBell;
+            case "buckstar" -> NotificationsConfig.shop.buckstarBell;
+            case "sharkoffe" -> NotificationsConfig.shop.sharkoffeBell;
+            default -> false;
+        };
+
+        if (toastEnabled) {
+            Component text = offer != null
+                    ? Component.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast.offer", offer)
+                    : Component.translatable("mineboxadditions." + shop.name().toLowerCase() + ".toast");
+
+            client.getToastManager().addToast(new MineboxToast(
+                    client.font,
+                    MineboxAdditions.id("textures/gui/toasts/" + shop.name().toLowerCase() + ".png"),
+                    shop.getName(),
+                    text
+            ));
+        }
+
+        if (bellEnabled) {
+            client.player.playSound(SoundEvents.BELL_BLOCK, 1.0f, 1.0f);
+        }
     }
 
     public static class MermaidItemOffer {

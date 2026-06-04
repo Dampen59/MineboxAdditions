@@ -7,6 +7,8 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
+import io.dampen59.mineboxadditions.config.notifications.NotificationsConfig;
+import io.dampen59.mineboxadditions.config.render.RenderConfig;
 import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import io.dampen59.mineboxadditions.config.other.WardrobePresets;
 
@@ -16,6 +18,8 @@ import io.dampen59.mineboxadditions.config.other.WardrobePresets;
         version = 1,
         categories = {
                 HudsConfig.class,
+                NotificationsConfig.class,
+                RenderConfig.class,
                 ItemsConfig.class
         }
 )

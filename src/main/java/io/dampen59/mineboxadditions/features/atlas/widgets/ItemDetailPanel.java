@@ -468,7 +468,8 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
             if (mcItem != null) return Component.translatable(mcItem.getDescriptionId());
             return Component.literal(ingredient.getId());
         }
-        return MineboxItem.getDisplayName(ingredient.getCustomItem());
+        MineboxItem item = ingredient.getCustomItem();
+        return item != null ? MineboxItem.getDisplayName(item) : Component.literal(ingredient.getId());
     }
 
     private int renderRecipeIngredient(GuiGraphicsExtractor context, Font textRenderer,

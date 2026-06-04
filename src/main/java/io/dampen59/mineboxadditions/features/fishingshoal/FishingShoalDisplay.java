@@ -3,7 +3,7 @@ package io.dampen59.mineboxadditions.features.fishingshoal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
+import io.dampen59.mineboxadditions.config.render.categories.FishingShoals;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.SocketManager;
@@ -72,7 +72,7 @@ public class FishingShoalDisplay {
     public static void handle(LevelRenderContext context) {
         Minecraft client = Minecraft.getInstance();
         AABB box = client.player.getBoundingBox()
-                .inflate(FishingDrops.renderRadius);
+                .inflate(FishingShoals.renderRadius);
         Map<Entity, String> shoals = new HashMap<>();
 
         for (Entity entity : client.level.getEntities(client.player, box,

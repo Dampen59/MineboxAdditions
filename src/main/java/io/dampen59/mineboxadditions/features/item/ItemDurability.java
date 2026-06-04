@@ -33,6 +33,14 @@ public class ItemDurability {
         return parts.length == 2 && !parts[0].equals(parts[1]);
     }
 
+    public static boolean hasToolDurability(ItemStack item) {
+        return hasPartsByKey(item, "mbx.durability");
+    }
+
+    public static boolean hasHaversackFill(ItemStack item) {
+        return hasPartsByKey(item, "mbx.items.infinite_bag.amount_inside");
+    }
+
     public static Integer getDurabilityStep(ItemStack item) {
         return getDurability(item)
                 .map(d -> {
@@ -48,6 +56,26 @@ public class ItemDurability {
                     return Mth.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
                 })
                 .orElse(-1);
+    }
+
+    @Unique
+    private static boolean hasPartsByKey(ItemStack item, String filterKey) {
+        CustomData customData = item.get(DataComponents.CUSTOM_DATA);
+        if (customData == null) return false;
+        CompoundTag nbt = customData.copyTag();
+        if (!nbt.contains("mbitems:id")) return false;
+        ItemLore lore = item.get(DataComponents.LORE);
+        if (lore == null) return false;
+        for (Component line : lore.lines()) {
+            if (!(line.getContents() instanceof TranslatableContents content)) continue;
+            if (content.getKey().contains(filterKey) && content.getArgs().length > 0) {
+                Object arg = content.getArgs()[0];
+                if (!(arg instanceof Component argComponent)) continue;
+                String[] parts = argComponent.getString().split("/");
+                return parts.length == 2 && !parts[0].equals(parts[1]);
+            }
+        }
+        return false;
     }
 
     @Unique

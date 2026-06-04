@@ -1,6 +1,7 @@
 package io.dampen59.mineboxadditions.mixins;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.features.item.ItemDurability;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,7 +15,9 @@ public abstract class ItemStackMixin {
 
     @ModifyReturnValue(method = "isBarVisible", at = @At("RETURN"))
     private boolean mbx$isBarVisible(boolean original) {
-        return ItemDurability.hasDurability(self()) || original;
+        boolean toolBar = ItemsConfig.durabilityBar && ItemDurability.hasToolDurability(self());
+        boolean fillBar = ItemsConfig.haversackFillBar && ItemDurability.hasHaversackFill(self());
+        return toolBar || fillBar || original;
     }
 
     @ModifyReturnValue(method = "getBarWidth", at = @At("RETURN"))
