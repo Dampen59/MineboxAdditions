@@ -1,9 +1,7 @@
 package io.dampen59.mineboxadditions.mixins;
 
-import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
-import io.dampen59.mineboxadditions.features.hud.huds.WeatherHud;
 import io.dampen59.mineboxadditions.features.hud.huds.haversack.HaversackHud;
 import io.dampen59.mineboxadditions.features.hud.huds.itempickup.ItemPickupHud;
 import net.minecraft.client.Minecraft;
@@ -24,16 +22,14 @@ public abstract class InGameHudMixin {
     )
     private void mbx$render(GuiGraphicsExtractor context, DeltaTracker tickCounter, CallbackInfo ci) {
         Minecraft client = Minecraft.getInstance();
-        if (client == null || client.player == null || client.options.hideGui) return;
+        if (client == null || client.player == null || client.gui.hud.isHidden()) return;
 
         for (Hud hud : HudManager.INSTANCE.getAll()) {
             if (hud instanceof ItemPickupHud) continue;
             if (hud instanceof HaversackHud.RateHud) continue;
             if (hud instanceof HaversackHud.FullHud) continue;
-            if (hud instanceof WeatherHud.FullMoonHud &&
-                MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() != 0) continue;
 
-            if (hud.getState()) hud.draw(context);
+            if (hud.getState() && hud.shouldRender()) hud.draw(context);
         }
     }
 }

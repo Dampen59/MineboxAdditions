@@ -9,8 +9,10 @@ import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
 import io.dampen59.mineboxadditions.config.notifications.NotificationsConfig;
 import io.dampen59.mineboxadditions.config.render.RenderConfig;
+import io.dampen59.mineboxadditions.config.spells.SpellsConfig;
 import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import io.dampen59.mineboxadditions.config.other.WardrobePresets;
+import io.dampen59.mineboxadditions.features.ahlerter.AhAlerterConfig;
 
 @ConfigInfo.Provider(ConfigInfoProvider.class)
 @com.teamresourceful.resourcefulconfig.api.annotations.Config(
@@ -20,7 +22,8 @@ import io.dampen59.mineboxadditions.config.other.WardrobePresets;
                 HudsConfig.class,
                 NotificationsConfig.class,
                 RenderConfig.class,
-                ItemsConfig.class
+                ItemsConfig.class,
+                SpellsConfig.class
         }
 )
 public class Config {
@@ -35,6 +38,10 @@ public class Config {
         @ConfigOption.Hidden
         @ConfigEntry(id = "harvestables")
         public static final HarvestablesSettings harvestables = new HarvestablesSettings();
+
+        @ConfigOption.Hidden
+        @ConfigEntry(id = "ahAlerts")
+        public static final AhAlerterConfig ahAlerts = new AhAlerterConfig();
 
         @ConfigEntry(id = "autoIsland", translation = "mineboxadditions.config.autoIsland")
         @Comment(value = "", translation = "mineboxadditions.config.autoIsland.desc")

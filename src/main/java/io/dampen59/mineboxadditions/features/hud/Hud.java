@@ -38,6 +38,10 @@ public abstract class Hud {
         return onGetState.get();
     }
 
+    public boolean shouldRender() {
+        return true;
+    }
+
     public void setState(boolean state) {
         onSetState.accept(state);
     }

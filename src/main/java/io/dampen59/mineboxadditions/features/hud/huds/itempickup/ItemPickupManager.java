@@ -13,6 +13,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
@@ -50,7 +51,7 @@ public class ItemPickupManager {
     }
 
     private void updateInventorySnapshot(int duration, int max, boolean merge) {
-        if (client.screen != null || client.player == null) return;
+        if (client.gui.screen() != null || client.player == null) return;
 
         var inv = client.player.getInventory();
         int invSize = inv.getContainerSize();
@@ -80,7 +81,7 @@ public class ItemPickupManager {
 
         if (merge) {
             for (ItemPickupNotification notif : itemPickupNotifications) {
-                if (ItemStack.isSameItemSameComponents(notif.stack, stack)) {
+                if (ItemStack.isSameItemSameComponents(stripLore(notif.stack), stripLore(stack))) {
                     notif.add(count, duration);
                     return;
                 }
@@ -91,6 +92,12 @@ public class ItemPickupManager {
         if (itemPickupNotifications.size() > max) {
             itemPickupNotifications.removeFirst();
         }
+    }
+
+    private static ItemStack stripLore(ItemStack stack) {
+        ItemStack copy = stack.copy();
+        copy.remove(DataComponents.LORE);
+        return copy;
     }
 
     private static class ItemPickupNotification {

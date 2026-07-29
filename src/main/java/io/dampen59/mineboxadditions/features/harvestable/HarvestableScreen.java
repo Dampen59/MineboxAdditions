@@ -15,6 +15,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
@@ -24,9 +25,14 @@ import java.util.function.IntConsumer;
 public class HarvestableScreen extends Screen {
     private static final int PADDING = 8;
     private static final int ROW_H = 20;
+    private static final int TAB_Y = PADDING + 12;
+    private static final int TAB_H = 14;
+    private static final int LIST_TOP = PADDING + 30;
 
     private final Minecraft mc = Minecraft.getInstance();
 
+    private String forcedIslandKey = null;
+    private List<String> availableWorlds = new ArrayList<>();
     private String islandKeyPath;
     private List<Harvestable> data = List.of();
 
@@ -55,13 +61,21 @@ public class HarvestableScreen extends Screen {
 
         Identifier worldId = mc.level != null ? mc.level.dimension().identifier()
                 : Identifier.fromNamespaceAndPath("minecraft", "overworld");
-        islandKeyPath = worldId.getPath();
+
+        if (forcedIslandKey != null) {
+            islandKeyPath = forcedIslandKey;
+        } else {
+            islandKeyPath = worldId.getPath();
+        }
+
+        availableWorlds = new ArrayList<>(MineboxAdditions.INSTANCE.state.getAllHarvestableKeys());
+        Collections.sort(availableWorlds);
 
         prefs = Config.harvestables.harvestables.computeIfAbsent(islandKeyPath, k -> new HarvestablesSettings.Harvestable());
 
         var modState = MineboxAdditions.INSTANCE.state;
         List<Harvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
-        if (raw == null || raw.isEmpty())
+        if (raw == null || raw.isEmpty() && forcedIslandKey == null)
             raw = modState.getMineboxHarvestables(worldId.toString());
         data = raw != null ? raw : List.of();
 
@@ -97,7 +111,7 @@ public class HarvestableScreen extends Screen {
         colorButtons.clear();
         currentColors.clear();
 
-        int startY = PADDING + 28;
+        int startY = LIST_TOP;
         int curY = startY;
 
         for (String cat : sortedCategories()) {
@@ -143,7 +157,7 @@ public class HarvestableScreen extends Screen {
 
                 // btn set color
                 Button swatch = Button.builder(Component.literal(""), b -> {
-                            this.minecraft.setScreen(new ColorPickerScreen(
+                            this.minecraft.gui.setScreen(new ColorPickerScreen(
                                     savedColorOrCurrent(rep),
                                     picked -> {
                                         currentColors.put(rep, picked);
@@ -151,7 +165,7 @@ public class HarvestableScreen extends Screen {
                                                 .computeIfAbsent(cat, k -> new HashMap<>())
                                                 .put(name, picked);
                                         ConfigManager.save();
-                                        this.minecraft.setScreen(this);
+                                        this.minecraft.gui.setScreen(this);
                                     },
                                     this
                             ));
@@ -180,7 +194,7 @@ public class HarvestableScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
-        int listTop = PADDING + 28;
+        int listTop = LIST_TOP;
         int listBottom = this.height - PADDING - 26;
         int listH = Math.max(0, listBottom - listTop);
         int maxScroll = Math.max(0, contentHeight - listH);
@@ -194,13 +208,23 @@ public class HarvestableScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor draw, int mouseX, int mouseY, float delta) {
-        //this.renderBackground(draw, mouseX, mouseY, delta);
+        if (!availableWorlds.isEmpty()) {
+            int tx = PADDING;
+            for (String world : availableWorlds) {
+                Component label = formatWorldName(world);
+                int tw = this.font.width(label) + 10;
+                boolean selected = world.equals(islandKeyPath);
+                boolean hovered = mouseX >= tx && mouseX < tx + tw
+                               && mouseY >= TAB_Y && mouseY < TAB_Y + TAB_H;
+                int bg = selected ? 0xFF607090 : (hovered ? 0xFF404060 : 0xFF2A2A3A);
+                draw.fill(tx, TAB_Y, tx + tw, TAB_Y + TAB_H, bg);
+                if (selected) draw.fill(tx, TAB_Y + TAB_H - 2, tx + tw, TAB_Y + TAB_H, 0xFFAABBFF);
+                draw.text(this.font, label, tx + 5, TAB_Y + 3, 0xFFFFFFFF, false);
+                tx += tw + 4;
+            }
+        }
 
-        draw.text(this.font,
-                "Harvestables — " + islandKeyPath + " (" + data.size() + ")",
-                PADDING, PADDING + 2, 0xFFFFFFFF, false);
-
-        int listTop = PADDING + 28;
+        int listTop = LIST_TOP;
         int listBottom = this.height - PADDING - 26;
         int listLeft = PADDING;
         int listRight = this.width - PADDING;
@@ -270,6 +294,11 @@ public class HarvestableScreen extends Screen {
                             ? MineboxItem.getDisplayName(item)
                             : Component.translatable("mbx.harvestables." + id + ".name");
 
+                    int lvl = rep.getRequiredLevel();
+                    if (lvl > 0) {
+                        nameText = Component.empty().append(nameText).append(" (Lvl. " + lvl + ")");
+                    }
+
                     int nameColor = 0xFFFFFFFF;
                     if (item != null && item.getRarity() != null) {
                         nameColor = RaritiesUtils
@@ -301,6 +330,28 @@ public class HarvestableScreen extends Screen {
         }
 
         draw.disableScissor();
+    }
+
+    @Override
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.y() >= TAB_Y && event.y() < TAB_Y + TAB_H) {
+            int tx = PADDING;
+            for (String world : availableWorlds) {
+                int tw = mc.font.width(formatWorldName(world)) + 10;
+                if (event.x() >= tx && event.x() < tx + tw) {
+                    forcedIslandKey = world;
+                    scrollY = 0;
+                    rebuildWidgets();
+                    return true;
+                }
+                tx += tw + 4;
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
+    }
+
+    private static Component formatWorldName(String key) {
+        return Component.translatable("mineboxadditions.strings.zones." + key);
     }
 
     public void close() {
@@ -369,7 +420,7 @@ public class HarvestableScreen extends Screen {
                     }).bounds(cx - 80, y, 70, 20).build());
 
             this.addRenderableWidget(Button.builder(Component.literal("Cancel"), b -> {
-                        this.minecraft.setScreen(parent);
+                        this.minecraft.gui.setScreen(parent);
                     }).bounds(cx + 10, y, 70, 20).build());
         }
 
@@ -406,7 +457,7 @@ public class HarvestableScreen extends Screen {
         }
 
         public void close() {
-            this.minecraft.setScreen(parent);
+            this.minecraft.gui.setScreen(parent);
         }
 
         private static String toHex(int rgb) {

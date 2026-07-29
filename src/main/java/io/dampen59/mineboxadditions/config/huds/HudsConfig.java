@@ -2,11 +2,14 @@ package io.dampen59.mineboxadditions.config.huds;
 
 import com.teamresourceful.resourcefulconfig.api.annotations.*;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.categories.MineboxDefaultHuds;
 import io.dampen59.mineboxadditions.config.huds.objects.HaversackHud;
+import io.dampen59.mineboxadditions.config.huds.objects.InsectsHud;
 import io.dampen59.mineboxadditions.config.huds.objects.ItemPickupHud;
 import io.dampen59.mineboxadditions.config.huds.objects.ShopHud;
 
 @Category(value = "huds", categories = {
+        MineboxDefaultHuds.class,
         HudPositions.class
 })
 @ConfigInfo(
@@ -14,21 +17,6 @@ import io.dampen59.mineboxadditions.config.huds.objects.ShopHud;
         descriptionTranslation = "mineboxadditions.config.huds.desc"
 )
 public class HudsConfig {
-    @ConfigOption.Hidden
-    @ConfigEntry(id = "island", translation = "mineboxadditions.config.huds.island")
-    @Comment(value = "", translation = "mineboxadditions.config.huds.island.desc")
-    public static boolean island = true;
-
-    @ConfigOption.Hidden
-    @ConfigEntry(id = "time", translation = "mineboxadditions.config.huds.time")
-    @Comment(value = "", translation = "mineboxadditions.config.huds.time.desc")
-    public static boolean time = true;
-
-    @ConfigOption.Hidden
-    @ConfigEntry(id = "vote", translation = "mineboxadditions.config.huds.vote")
-    @Comment(value = "", translation = "mineboxadditions.config.huds.vote.desc")
-    public static boolean vote = true;
-
     @ConfigEntry(id = "shop", translation = "mineboxadditions.config.huds.shop")
     @Comment(value = "", translation = "mineboxadditions.config.huds.shop.desc")
     public static final ShopHud shop = new ShopHud();
@@ -45,9 +33,9 @@ public class HudsConfig {
     @Comment(value = "", translation = "mineboxadditions.config.huds.storm.desc")
     public static boolean storm = true;
 
-    @ConfigEntry(id = "fullmoon", translation = "mineboxadditions.config.huds.fullmoon")
-    @Comment(value = "", translation = "mineboxadditions.config.huds.fullmoon.desc")
-    public static boolean fullmoon = true;
+    @ConfigEntry(id = "moon", translation = "mineboxadditions.config.huds.moon")
+    @Comment(value = "", translation = "mineboxadditions.config.huds.moon.desc")
+    public static boolean moon = true;
 
     @ConfigEntry(id = "haversack", translation = "mineboxadditions.config.huds.haversack")
     @Comment(value = "", translation = "mineboxadditions.config.huds.haversack.desc")
@@ -56,4 +44,8 @@ public class HudsConfig {
     @ConfigEntry(id = "itempickup", translation = "mineboxadditions.config.huds.itempickup")
     @Comment(value = "", translation = "mineboxadditions.config.huds.itempickup.desc")
     public static final ItemPickupHud itempickup = new ItemPickupHud();
+
+    @ConfigEntry(id = "insects", translation = "mineboxadditions.config.huds.insects")
+    @Comment(value = "", translation = "mineboxadditions.config.huds.insects.desc")
+    public static final InsectsHud insects = new InsectsHud();
 }

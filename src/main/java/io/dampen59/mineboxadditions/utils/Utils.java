@@ -130,7 +130,7 @@ public class Utils {
         Minecraft client = Minecraft.getInstance();
         if (client == null) return;
 
-        client.execute(() -> client.getToastManager().addToast(
+        client.execute(() -> client.gui.toastManager().addToast(
                 new SystemToast(SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
                         Component.literal(prmTitle),
                         Component.literal(prmDescription)

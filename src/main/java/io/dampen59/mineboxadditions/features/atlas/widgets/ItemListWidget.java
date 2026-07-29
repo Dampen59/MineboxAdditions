@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions.features.atlas.widgets;
 import io.dampen59.mineboxadditions.features.atlas.MineboxAtlasScreen;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
+import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -19,7 +20,7 @@ public class ItemListWidget extends AbstractSelectionList<ItemListWidget.ItemEnt
     private final int left;
 
     public ItemListWidget(Minecraft client, int left, int top, int width, int forcedHeight, int itemHeight) {
-        super(client, width, top + forcedHeight, top, itemHeight);
+        super(client, width, forcedHeight, top, itemHeight);
         this.left = left;
         this.setX(left);
     }
@@ -63,17 +64,22 @@ public class ItemListWidget extends AbstractSelectionList<ItemListWidget.ItemEnt
             int rowHeight = getHeight();
 
             boolean isSelected = parent.getSelectedItem() == item;
-            int backgroundColor = isSelected ? 0x5544AAFF : hovered ? 0x33FFFFFF : 0x00000000;
+            int backgroundColor = isSelected ? 0x4400AAFF : hovered ? 0x22FFFFFF : 0x00000000;
             context.fill(ex, ey, ex + rowWidth, ey + rowHeight, backgroundColor);
+
+            if (item.getRarity() != null) {
+                int rarityColor = RaritiesUtils.getRarityColor(item.getRarity().toLowerCase()).getRGB() | 0xFF000000;
+                context.fill(ex, ey + 1, ex + 3, ey + rowHeight - 1, rarityColor);
+            }
 
             Identifier icon = textureCache.computeIfAbsent(item.getId(), id -> loadTexture(item.getId(), item.getTexture()));
             if (icon != null) {
-                context.blit(RenderPipelines.GUI_TEXTURED, icon, ex + 4, ey + 4, 0, 0, 16, 16, 16, 16);
+                context.blit(RenderPipelines.GUI_TEXTURED, icon, ex + 7, ey + 4, 0, 0, 16, 16, 16, 16);
             }
 
-            context.text(client.font, MineboxItem.getDisplayName(item), ex + 24, ey + 4, 0xFFFFFFFF, false);
+            context.text(client.font, MineboxItem.getDisplayName(item), ex + 27, ey + 4, 0xFFFFFFFF, false);
             context.text(client.font, Component.literal("Lvl " + item.getLevel() + " • " + item.getCategory()),
-                    ex + 24, ey + 14, 0xFFAAAAAA, false);
+                    ex + 27, ey + 14, 0xFFAAAAAA, false);
         }
 
         @Override

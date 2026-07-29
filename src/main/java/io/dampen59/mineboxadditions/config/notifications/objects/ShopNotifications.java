@@ -45,6 +45,33 @@ public class ShopNotifications implements Translatable {
     @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.sharkoffe.bell.desc")
     public boolean sharkoffeBell = true;
 
+    @ConfigOption.Separator(value = "Reggae Dealer")
+    @ConfigEntry(id = "reggaeDealerToast", translation = "mineboxadditions.config.notifications.shop.reggae_dealer.toast")
+    @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.reggae_dealer.toast.desc")
+    public boolean reggaeDealerToast = true;
+
+    @ConfigEntry(id = "reggaeDealerBell", translation = "mineboxadditions.config.notifications.shop.reggae_dealer.bell")
+    @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.reggae_dealer.bell.desc")
+    public boolean reggaeDealerBell = true;
+
+    @ConfigOption.Separator(value = "Paintings Seller")
+    @ConfigEntry(id = "paintingsSellerToast", translation = "mineboxadditions.config.notifications.shop.paintings_seller.toast")
+    @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.paintings_seller.toast.desc")
+    public boolean paintingsSellerToast = true;
+
+    @ConfigEntry(id = "paintingsSellerBell", translation = "mineboxadditions.config.notifications.shop.paintings_seller.bell")
+    @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.paintings_seller.bell.desc")
+    public boolean paintingsSellerBell = true;
+
+    @ConfigOption.Separator(value = "Sushi Seller")
+    @ConfigEntry(id = "sushiSellerToast", translation = "mineboxadditions.config.notifications.shop.sushi_seller.toast")
+    @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.sushi_seller.toast.desc")
+    public boolean sushiSellerToast = true;
+
+    @ConfigEntry(id = "sushiSellerBell", translation = "mineboxadditions.config.notifications.shop.sushi_seller.bell")
+    @Comment(value = "", translation = "mineboxadditions.config.notifications.shop.sushi_seller.bell.desc")
+    public boolean sushiSellerBell = true;
+
     @Override
     public String getTranslationKey() {
         return Component.translatable("mineboxadditions.config.notifications.shop").getString();

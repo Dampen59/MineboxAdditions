@@ -1,6 +1,8 @@
 package io.dampen59.mineboxadditions.config.render;
 
 import com.teamresourceful.resourcefulconfig.api.annotations.Category;
+import com.teamresourceful.resourcefulconfig.api.annotations.Comment;
+import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigInfo;
 import io.dampen59.mineboxadditions.config.render.categories.FishingShoals;
 
@@ -12,4 +14,7 @@ import io.dampen59.mineboxadditions.config.render.categories.FishingShoals;
         descriptionTranslation = "mineboxadditions.config.render.desc"
 )
 public class RenderConfig {
+    @ConfigEntry(id = "containerSearch", translation = "mineboxadditions.config.render.containerSearch")
+    @Comment(value = "", translation = "mineboxadditions.config.render.containerSearch.desc")
+    public static boolean containerSearch = true;
 }

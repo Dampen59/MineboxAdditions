@@ -13,6 +13,9 @@ public enum Location implements StringRepresentable {
     BAMBOO_PEAK("island_bamboo"),
     FROSTBITE_FORTRESS("island_snow"),
     SANDWHISPER_DUNES("island_desert"),
+    AFK("afk"),
+    VILLAGE("player_villages"),
+    RAID("raid"),
     UNKNOWN("unknown");
 
     @NotNull

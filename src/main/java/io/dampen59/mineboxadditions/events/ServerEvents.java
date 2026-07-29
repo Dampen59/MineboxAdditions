@@ -1,13 +1,12 @@
 package io.dampen59.mineboxadditions.events;
 
-import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.state.State;
+import io.dampen59.mineboxadditions.utils.ApiUtils;
+import io.dampen59.mineboxadditions.utils.security.SessionConnector;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 
 import java.util.List;
-import java.util.Objects;
 
 public class ServerEvents {
     private static final List<String> MINEBOX_HOSTNAMES = List.of("minebox.fr", "minebox.co");
@@ -26,6 +25,7 @@ public class ServerEvents {
                 String serverAddress = serverEntry.ip;
                 if (isMineboxServer(serverAddress)) {
                     SocketManager.getSocket().connect();
+                    //SessionConnector.fetch(SocketManager::connectWithSessionToken);
                 }
             }
         });

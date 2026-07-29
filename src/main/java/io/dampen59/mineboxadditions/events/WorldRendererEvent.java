@@ -10,6 +10,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.world.clock.WorldClocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -74,7 +75,7 @@ public class WorldRendererEvent {
             BlockPos clicked = hit.getBlockPos();
             BlockPos target = clicked.relative(facing, itemSize);
 
-            long now = world.getGameTime();
+            long now = world.clockManager().getTotalTicks(world.registryAccess().getOrThrow(WorldClocks.OVERWORLD));
             if (ENTRIES.size() >= MAX_HIGHLIGHTS) {
                 ENTRIES.removeFirst();
             }
@@ -82,7 +83,7 @@ public class WorldRendererEvent {
             return InteractionResult.PASS;
         });
 
-        // Block highlight rendering temporarily disabled pending 26.1 RenderType/DebugRenderer API finalization
+        // TODO: fix this (tool use block highlight)
 
     }
 

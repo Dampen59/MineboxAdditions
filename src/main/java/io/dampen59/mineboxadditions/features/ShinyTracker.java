@@ -56,10 +56,12 @@ public class ShinyTracker {
                         .withClickEvent(new ClickEvent.RunCommand("/tpa " + playerName)));
 
         Minecraft client = Minecraft.getInstance();
-        if (client.player != null) {
-            client.player.sendSystemMessage(message);
-            client.player.playSound(SoundEvents.PLAYER_LEVELUP, 1.0f, 1.0f);
-        }
+        client.execute(() -> {
+            if (client.player != null) {
+                client.player.sendSystemMessage(message);
+                client.player.playSound(SoundEvents.PLAYER_LEVELUP, 1.0f, 1.0f);
+            }
+        });
     }
 
     private static void tick(Minecraft client) {

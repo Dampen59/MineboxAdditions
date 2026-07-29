@@ -46,5 +46,6 @@ public abstract class BossBarMixin {
                 }
             }
         }
+
     }
 }

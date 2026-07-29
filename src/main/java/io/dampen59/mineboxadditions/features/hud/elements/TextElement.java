@@ -40,6 +40,12 @@ public class TextElement extends Element {
         setText(text);
     }
 
+    public void setLines(List<Component> components) {
+        lines = components.stream()
+                .map(c -> net.minecraft.locale.Language.getInstance().getVisualOrder(c))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public void setMaxWidth(int maxWidth) {
         this.maxWidth = maxWidth;
         updateText();

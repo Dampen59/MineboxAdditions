@@ -1,23 +1,21 @@
 package io.dampen59.mineboxadditions.features.fishingshoal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.render.categories.FishingShoals;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
-import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.texture.TextureManager;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.clock.WorldClocks;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.Display;
@@ -37,36 +35,19 @@ import static io.dampen59.mineboxadditions.utils.ImageUtils.textureExists;
 public class FishingShoalDisplay {
     private static List<FishingShoal.Item> shoalItems = new ArrayList<>();
 
-    public static void init() {
-        SocketManager.getSocket().on("S2CMineboxFishables", FishingShoalDisplay::update);
-    }
+    public static void init() { }
 
-    private static void update(Object[] args) {
-        String jsonData = (String) args[0];
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            List<FishingShoal.Item> items = mapper.readValue(jsonData,
-                    mapper.getTypeFactory().constructCollectionType(List.class,
-                            FishingShoal.Item.class));
-
-            for (FishingShoal.Item item : items) {
-                if (item.getTexture() == null) {
-                    MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
-                    continue;
-                }
-
-                String textureName = "textures/fish/" + item.getName() + ".png";
-                Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
-                if (resource != null)
-                    item.setResource(resource);
+    public static void loadFromApi(List<FishingShoal.Item> items) {
+        for (FishingShoal.Item item : items) {
+            if (item.getTexture() == null) {
+                MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
+                continue;
             }
-
-            shoalItems = items;
-        } catch (JsonProcessingException e) {
-            MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
-                    e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            String textureName = "textures/fish/" + item.getName() + ".png";
+            Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
+            if (resource != null) item.setResource(resource);
         }
+        shoalItems = items;
     }
 
     public static void handle(LevelRenderContext context) {
@@ -94,8 +75,8 @@ public class FishingShoalDisplay {
         String shoalName = translationKey.split("harvestables\\.")[1].split("\\.name")[0];
 
         PoseStack matrices = context.poseStack();
-        MultiBufferSource vertexConsumers = context.bufferSource();
-        if (matrices == null || vertexConsumers == null) return;
+        SubmitNodeCollector collector = context.submitNodeCollector();
+        if (matrices == null || collector == null) return;
 
         matrices.pushPose();
         Vec3 entityPos = entity.position().subtract(context.levelState().cameraRenderState.pos);
@@ -114,7 +95,6 @@ public class FishingShoalDisplay {
 
         for (int i = 0; i < textures.size(); i++) {
             Identifier texture = textures.get(i);
-            VertexConsumer buffer = vertexConsumers.getBuffer(RenderTypes.entityTranslucent(texture));
 
             matrices.pushPose();
             float xOffset = startOffset + i * (textureSize + spacing);
@@ -123,17 +103,19 @@ public class FishingShoalDisplay {
                     .rotationYXZ((float) Math.toRadians(-yaw), (float) Math.toRadians(pitch), 0));
             matrices.translate(xOffset, 0, 0);
 
-            Matrix4f matrix = matrices.last().pose();
             float half = textureSize / 2;
 
-            buffer.addVertex(matrix, -half, -half, 0).setColor(255, 255, 255, 255).setUv(1, 1)
-                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
-            buffer.addVertex(matrix, -half, half, 0).setColor(255, 255, 255, 255).setUv(1, 0)
-                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
-            buffer.addVertex(matrix, half, half, 0).setColor(255, 255, 255, 255).setUv(0, 0)
-                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
-            buffer.addVertex(matrix, half, -half, 0).setColor(255, 255, 255, 255).setUv(0, 1)
-                    .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+            collector.submitCustomGeometry(matrices, RenderTypes.entityTranslucent(texture), (pose, buffer) -> {
+                Matrix4f matrix = pose.pose();
+                buffer.addVertex(matrix, -half, -half, 0).setColor(255, 255, 255, 255).setUv(1, 1)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+                buffer.addVertex(matrix, -half, half, 0).setColor(255, 255, 255, 255).setUv(1, 0)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+                buffer.addVertex(matrix, half, half, 0).setColor(255, 255, 255, 255).setUv(0, 0)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+                buffer.addVertex(matrix, half, -half, 0).setColor(255, 255, 255, 255).setUv(0, 1)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+            });
 
             matrices.popPose();
         }
@@ -159,9 +141,9 @@ public class FishingShoalDisplay {
 
         boolean isStationary = entity.isNoGravity() || entity.getDeltaMovement().lengthSqr() < 0.0001;
         boolean hasText = getEntityText(entity) != null;
-        boolean isSpecial = entity.getType() == EntityType.INTERACTION
-                || entity.getType() == EntityType.AREA_EFFECT_CLOUD
-                || entity.getType() == EntityType.MARKER;
+        boolean isSpecial = entity.getType() == EntityTypes.INTERACTION
+                || entity.getType() == EntityTypes.AREA_EFFECT_CLOUD
+                || entity.getType() == EntityTypes.MARKER;
 
         return (isStationary && hasText) || isSpecial;
     }
@@ -185,7 +167,7 @@ public class FishingShoalDisplay {
         boolean isRaining = world.isRaining();
         boolean isStorming = world.isThundering();
         boolean isFullMoon = state.getCurrentMoonPhase() == 0;
-        long currentWorldTicks = world.getGameTime() % 24000;
+        long currentWorldTicks = world.clockManager().getTotalTicks(world.registryAccess().getOrThrow(WorldClocks.OVERWORLD)) % 24000;
 
         for (FishingShoal.Item item : shoalItems) {
             if (!item.getShoal().equals(shoal)) continue;

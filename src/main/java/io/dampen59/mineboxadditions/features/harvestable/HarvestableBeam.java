@@ -5,13 +5,14 @@ import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.clock.WorldClocks;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
@@ -44,12 +45,12 @@ public class HarvestableBeam {
             return;
 
         PoseStack ms = context.poseStack();
-        MultiBufferSource prov = context.bufferSource();
+        SubmitNodeCollector prov = context.submitNodeCollector();
         if (ms == null || prov == null)
             return;
 
         float tickDelta = 0f; // render distance API changed in 26.1
-        float time = (mc.level.getGameTime() + tickDelta);
+        float time = (mc.level.clockManager().getTotalTicks(mc.level.registryAccess().getOrThrow(WorldClocks.OVERWORLD)) + tickDelta);
         float scroll = (time / 40.0f) % 1.0f;
 
         // sft cull : as in vanilla mc render
@@ -108,11 +109,8 @@ public class HarvestableBeam {
         ms.popPose();
     }
 
-    private static void drawBeaconBeam(PoseStack ms, MultiBufferSource prov, BlockPos base,
+    private static void drawBeaconBeam(PoseStack ms, SubmitNodeCollector prov, BlockPos base,
                                        int height, float radiusIgnored, float vOffset, int rgb) {
-        VertexConsumer vc = prov.getBuffer(RenderTypes.beaconBeam(BEACON_BEAM_TEXTURE, true));
-        Matrix4f m = ms.last().pose();
-
         final float cx = base.getX() + 0.5f;
         final float cz = base.getZ() + 0.5f;
         final float y0 = base.getY();
@@ -134,25 +132,29 @@ public class HarvestableBeam {
         fillRotatedSquare(inner, innerR, cos, sin);
         fillRotatedSquare(outer, outerR, cos, sin);
 
-        final int aInner = 200;
-        for (int i = 0; i < 4; i++) {
-            int j = (i + 1) & 3;
-            addBeamSide(vc, m,
-                    cx + inner[i][0], cz + inner[i][1],
-                    cx + inner[j][0], cz + inner[j][1],
-                    y0, y1, u0, v0, u1, v1,
-                    cr, cg, cb, aInner);
-        }
+        prov.submitCustomGeometry(ms, RenderTypes.beaconBeam(BEACON_BEAM_TEXTURE, true), (pose, vc) -> {
+            Matrix4f m = pose.pose();
 
-        final int aOuter = 64;
-        for (int i = 0; i < 4; i++) {
-            int j = (i + 1) & 3;
-            addBeamSide(vc, m,
-                    cx + outer[i][0], cz + outer[i][1],
-                    cx + outer[j][0], cz + outer[j][1],
-                    y0, y1, u0, v0, u1, v1,
-                    cr, cg, cb, aOuter);
-        }
+            final int aInner = 200;
+            for (int i = 0; i < 4; i++) {
+                int j = (i + 1) & 3;
+                addBeamSide(vc, m,
+                        cx + inner[i][0], cz + inner[i][1],
+                        cx + inner[j][0], cz + inner[j][1],
+                        y0, y1, u0, v0, u1, v1,
+                        cr, cg, cb, aInner);
+            }
+
+            final int aOuter = 64;
+            for (int i = 0; i < 4; i++) {
+                int j = (i + 1) & 3;
+                addBeamSide(vc, m,
+                        cx + outer[i][0], cz + outer[i][1],
+                        cx + outer[j][0], cz + outer[j][1],
+                        y0, y1, u0, v0, u1, v1,
+                        cr, cg, cb, aOuter);
+            }
+        });
     }
 
     private static void fillRotatedSquare(float[][] out, float r, float cos, float sin) {

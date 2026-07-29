@@ -21,6 +21,18 @@ public class HudPositions {
     public static final HudPosition vote = new HudPosition(120, 4);
 
     @ConfigOption.Hidden
+    @ConfigEntry(id = "keyfragment")
+    public static final HudPosition keyfragment = new HudPosition(200, 4);
+
+    @ConfigOption.Hidden
+    @ConfigEntry(id = "statspoints")
+    public static final HudPosition statspoints = new HudPosition(4, 100);
+
+    @ConfigOption.Hidden
+    @ConfigEntry(id = "freeitem")
+    public static final HudPosition freeitem = new HudPosition(4, 116);
+
+    @ConfigOption.Hidden
     @ConfigEntry(id = "shop")
     public static final HudPosition shop = new HudPosition(4, 4);
 
@@ -37,8 +49,8 @@ public class HudPositions {
     public static final HudPosition storm = new HudPosition(68, 36);
 
     @ConfigOption.Hidden
-    @ConfigEntry(id = "fullMoon")
-    public static final HudPosition fullMoon = new HudPosition(132, 36);
+    @ConfigEntry(id = "moon")
+    public static final HudPosition moon = new HudPosition(132, 36);
 
     @ConfigOption.Hidden
     @ConfigEntry(id = "haversackRate")
@@ -51,4 +63,8 @@ public class HudPositions {
     @ConfigOption.Hidden
     @ConfigEntry(id = "itempickup")
     public static final HudPosition itempickup = new HudPosition(-50, 4);
+
+    @ConfigOption.Hidden
+    @ConfigEntry(id = "insects")
+    public static final HudPosition insects = new HudPosition(4, 84);
 }

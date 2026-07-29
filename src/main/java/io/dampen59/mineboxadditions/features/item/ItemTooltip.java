@@ -3,6 +3,7 @@ package io.dampen59.mineboxadditions.features.item;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
+import io.dampen59.mineboxadditions.features.item.Insect;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.minecraft.client.Minecraft;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -17,6 +18,7 @@ import net.minecraft.ChatFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemTooltip {
     private static final int TOOLTIP_KEY = InputConstants.KEY_LALT;
@@ -96,12 +98,40 @@ public class ItemTooltip {
                 }
             }
 
-            lines.add(Component.literal(""));
+            Insect insect = MineboxAdditions.INSTANCE.state.getInsectById(itemId);
+            if (insect != null) {
+                lines.add(Component.literal(""));
+                lines.add(Component.literal("Spawn Conditions").withColor(0xFFD700));
 
-            Component firstPart = Component.literal("Minebox ID: ").withColor(0x4497CE);
-            Component endPart = Component.literal(itemId).withColor(0x1D4159);
-            Component mineboxItemId = firstPart.copy().append(endPart);
-            lines.add(mineboxItemId);
+                String timeStr = insect.getTimeRanges().stream()
+                        .map(Insect.TimeRange::toString)
+                        .collect(Collectors.joining(", "));
+                lines.add(Component.literal("Time: ").withColor(0x4497CE)
+                        .append(Component.literal(timeStr).withColor(0xFFFFFF)));
+
+                lines.add(Component.literal("Weather: ").withColor(0x4497CE)
+                        .append(Component.literal(insect.getWeather().display()).withColor(0xFFFFFF)));
+
+                if (insect.requiresMoon()) {
+                    lines.add(Component.literal("Moon: ").withColor(0x4497CE)
+                            .append(Component.literal("Full / New Moon").withColor(0xFFFFFF)));
+                }
+
+                if (!insect.getLocations().isEmpty()) {
+                    lines.add(Component.literal("Locations:").withColor(0x4497CE));
+                    for (var loc : insect.getLocations()) {
+                        lines.add(Component.literal("  • ")
+                                .withColor(0xAAAAAA)
+                                .append(Component.translatable(loc.getZone()).withColor(0xAAAAAA))
+                                .append(Component.literal(" - ").withColor(0xAAAAAA))
+                                .append(Component.translatable(loc.getSubarea()).withColor(0xAAAAAA)));
+                    }
+                }
+            }
+
+            lines.add(Component.literal(""));
+            lines.add(Component.literal("Minebox ID: ").withColor(0x4497CE)
+                    .append(Component.literal(itemId).withColor(0x1D4159)));
         } else {
             lines.add(Component.literal(""));
 

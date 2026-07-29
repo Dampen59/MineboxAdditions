@@ -1,24 +1,41 @@
 package io.dampen59.mineboxadditions.features.hud.huds;
 
-import io.dampen59.mineboxadditions.config.huds.HudsConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.categories.MineboxDefaultHuds;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.elements.SpacerElement;
 import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 public class VoteHud extends Hud {
     public VoteHud() {
         super(
-                () -> HudsConfig.vote,
-                s -> HudsConfig.vote = s,
+                () -> MineboxDefaultHuds.vote,
+                s -> MineboxDefaultHuds.vote = s,
                 () -> HudPositions.vote.x,
                 x -> HudPositions.vote.x = x,
                 () -> HudPositions.vote.y,
                 y -> HudPositions.vote.y = y);
+
+        ClientTickEvents.END_CLIENT_TICK.register(this::update);
+    }
+
+    private void update(Minecraft client) {
+        Component votes = MineboxAdditions.INSTANCE.state.getBossbarVotes();
+        if (votes != null) {
+            getNamedElement("text", TextElement.class).setValue(votes);
+        }
+    }
+
+    @Override
+    public boolean shouldRender() {
+        return MineboxAdditions.INSTANCE.state.getBossbarVotes() != null;
     }
 
     @Override
