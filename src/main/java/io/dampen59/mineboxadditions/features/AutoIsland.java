@@ -5,9 +5,9 @@ import io.dampen59.mineboxadditions.utils.Utils;
 import io.dampen59.mineboxadditions.utils.models.Location;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.c2s.play.CommandExecutionC2SPacket;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 
 import java.util.Objects;
 
@@ -16,10 +16,10 @@ public class AutoIsland {
         ClientPlayConnectionEvents.JOIN.register(AutoIsland::onJoin);
     }
 
-    private static void onJoin(ClientPlayNetworkHandler handler, PacketSender sender, MinecraftClient client) {
+    private static void onJoin(ClientPacketListener handler, PacketSender sender, Minecraft client) {
         if (!Utils.isOnMinebox()) return;
         if (Config.autoIsland && Utils.getPreviousLocation() == Location.UNKNOWN) {
-            Objects.requireNonNull(client.getNetworkHandler()).sendPacket(new CommandExecutionC2SPacket("is"));
+            Objects.requireNonNull(client.getConnection()).send(new ServerboundChatCommandPacket("is"));
         }
     }
 }

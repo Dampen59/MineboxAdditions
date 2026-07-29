@@ -10,9 +10,9 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextureElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class HaversackHud {
     public static class RateHud extends Hud {
@@ -28,8 +28,8 @@ public class HaversackHud {
 
         @Override
         public StackElement init() {
-            Identifier texture = Identifier.of("mineboxadditions", "textures/icons/haversack.png");
-            TextElement text = new TextElement(Text.of("0.0/s"));
+            Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/haversack.png");
+            TextElement text = new TextElement(Component.literal("0.0/s"));
 
             HStackElement hstack = new HStackElement()
                     .add(new SpacerElement(4))
@@ -37,7 +37,7 @@ public class HaversackHud {
                     .add(new SpacerElement(4))
                     .add(new VStackElement()
                             .add(new SpacerElement(1))
-                            .add(new HStackElement().add(new TextElement(Text.of("Fill Rate:")), new SpacerElement(3), text)))
+                            .add(new HStackElement().add(new TextElement(Component.literal("Fill Rate:")), new SpacerElement(3), text)))
                     .add(new SpacerElement(4));
             addNamedElement("text", text);
 
@@ -46,7 +46,7 @@ public class HaversackHud {
 
         public void update(double rate) {
             String text = String.format("%.2f/s", rate);
-            getNamedElement("text", TextElement.class).setText(Text.of(text));
+            getNamedElement("text", TextElement.class).setText(Component.literal(text));
         }
     }
 
@@ -63,8 +63,8 @@ public class HaversackHud {
 
         @Override
         public StackElement init() {
-            Identifier texture = Identifier.of("mineboxadditions", "textures/icons/haversack.png");
-            TextElement text = new TextElement(Text.of("00:00:00"));
+            Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/haversack.png");
+            TextElement text = new TextElement(Component.literal("00:00:00"));
 
             HStackElement hstack = new HStackElement()
                     .add(new SpacerElement(4))
@@ -72,7 +72,7 @@ public class HaversackHud {
                     .add(new SpacerElement(4))
                     .add(new VStackElement()
                             .add(new SpacerElement(1))
-                            .add(new HStackElement().add(new TextElement(Text.of("Full In:")), new SpacerElement(3), text)))
+                            .add(new HStackElement().add(new TextElement(Component.literal("Full In:")), new SpacerElement(3), text)))
                     .add(new SpacerElement(4));
             addNamedElement("text", text);
 
@@ -80,7 +80,7 @@ public class HaversackHud {
         }
 
         public void update(String time) {
-            getNamedElement("text", TextElement.class).setText(Text.of(time));
+            getNamedElement("text", TextElement.class).setText(Component.literal(time));
         }
     }
 }

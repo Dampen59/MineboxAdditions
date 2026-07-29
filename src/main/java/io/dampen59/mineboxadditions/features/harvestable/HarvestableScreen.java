@@ -8,15 +8,16 @@ import io.dampen59.mineboxadditions.features.atlas.widgets.ItemListWidget;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.CheckboxWidget;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.*;
 import java.util.function.IntConsumer;
@@ -24,19 +25,24 @@ import java.util.function.IntConsumer;
 public class HarvestableScreen extends Screen {
     private static final int PADDING = 8;
     private static final int ROW_H = 20;
+    private static final int TAB_Y = PADDING + 12;
+    private static final int TAB_H = 14;
+    private static final int LIST_TOP = PADDING + 30;
 
-    private final MinecraftClient mc = MinecraftClient.getInstance();
+    private final Minecraft mc = Minecraft.getInstance();
 
+    private String forcedIslandKey = null;
+    private List<String> availableWorlds = new ArrayList<>();
     private String islandKeyPath;
     private List<Harvestable> data = List.of();
 
     private final Map<String, List<Harvestable>> byCategory = new HashMap<>();
     private final Map<Harvestable, List<Harvestable>> groupMembers = new HashMap<>();
 
-    private final Map<String, CheckboxWidget> catChecks = new HashMap<>();
-    private final Map<Harvestable, CheckboxWidget> itemChecks = new HashMap<>();
+    private final Map<String, Checkbox> catChecks = new HashMap<>();
+    private final Map<Harvestable, Checkbox> itemChecks = new HashMap<>();
 
-    private final Map<Harvestable, ButtonWidget> colorButtons = new HashMap<>();
+    private final Map<Harvestable, Button> colorButtons = new HashMap<>();
     private final Map<Harvestable, Integer> currentColors = new HashMap<>();
 
 
@@ -46,22 +52,30 @@ public class HarvestableScreen extends Screen {
     private HarvestablesSettings.Harvestable prefs;
 
     public HarvestableScreen() {
-        super(Text.literal("Harvestables"));
+        super(Component.literal("Harvestables"));
     }
 
     @Override
     protected void init() {
         super.init();
 
-        Identifier worldId = mc.world != null ? mc.world.getRegistryKey().getValue()
-                : Identifier.of("minecraft", "overworld");
-        islandKeyPath = worldId.getPath();
+        Identifier worldId = mc.level != null ? mc.level.dimension().identifier()
+                : Identifier.fromNamespaceAndPath("minecraft", "overworld");
+
+        if (forcedIslandKey != null) {
+            islandKeyPath = forcedIslandKey;
+        } else {
+            islandKeyPath = worldId.getPath();
+        }
+
+        availableWorlds = new ArrayList<>(MineboxAdditions.INSTANCE.state.getAllHarvestableKeys());
+        Collections.sort(availableWorlds);
 
         prefs = Config.harvestables.harvestables.computeIfAbsent(islandKeyPath, k -> new HarvestablesSettings.Harvestable());
 
         var modState = MineboxAdditions.INSTANCE.state;
         List<Harvestable> raw = modState.getMineboxHarvestables(islandKeyPath);
-        if (raw == null || raw.isEmpty())
+        if (raw == null || raw.isEmpty() && forcedIslandKey == null)
             raw = modState.getMineboxHarvestables(worldId.toString());
         data = raw != null ? raw : List.of();
 
@@ -91,27 +105,27 @@ public class HarvestableScreen extends Screen {
 
         preloadAllHarvestableTextures();
 
-        this.clearChildren();
+        this.clearWidgets();
         catChecks.clear();
         itemChecks.clear();
         colorButtons.clear();
         currentColors.clear();
 
-        int startY = PADDING + 28;
+        int startY = LIST_TOP;
         int curY = startY;
 
         for (String cat : sortedCategories()) {
             boolean catChecked = prefs.categories.getOrDefault(cat, true);
 
-            CheckboxWidget catCb = CheckboxWidget.builder(Text.literal(cat), this.textRenderer)
+            Checkbox catCb = Checkbox.builder(Component.literal(cat), this.font)
                     .pos(PADDING + 16, curY)
-                    .checked(catChecked)
-                    .callback((cb, checked) -> {
+                    .selected(catChecked)
+                    .onValueChange((cb, checked) -> {
                         prefs.categories.put(cat, checked);
                         ConfigManager.save();
                     })
                     .build();
-            addDrawableChild(catCb);
+            addRenderableWidget(catCb);
             catChecks.put(cat, catCb);
             curY += ROW_H;
 
@@ -127,10 +141,10 @@ public class HarvestableScreen extends Screen {
 
                 int count = groupMembers.getOrDefault(rep, List.of()).size();
 
-                CheckboxWidget itCb = CheckboxWidget.builder(Text.literal(""), this.textRenderer)
+                Checkbox itCb = Checkbox.builder(Component.literal(""), this.font)
                         .pos(PADDING + 36, curY)
-                        .checked(itemChecked)
-                        .callback((cb, checked) -> {
+                        .selected(itemChecked)
+                        .onValueChange((cb, checked) -> {
                             prefs.items
                                     .computeIfAbsent(cat, k -> new HashMap<>())
                                     .put(name, checked);
@@ -138,12 +152,12 @@ public class HarvestableScreen extends Screen {
                         })
                         .build();
 
-                addDrawableChild(itCb);
+                addRenderableWidget(itCb);
                 itemChecks.put(rep, itCb);
 
                 // btn set color
-                ButtonWidget swatch = ButtonWidget.builder(Text.literal(""), b -> {
-                            this.client.setScreen(new ColorPickerScreen(
+                Button swatch = Button.builder(Component.literal(""), b -> {
+                            this.minecraft.gui.setScreen(new ColorPickerScreen(
                                     savedColorOrCurrent(rep),
                                     picked -> {
                                         currentColors.put(rep, picked);
@@ -151,14 +165,14 @@ public class HarvestableScreen extends Screen {
                                                 .computeIfAbsent(cat, k -> new HashMap<>())
                                                 .put(name, picked);
                                         ConfigManager.save();
-                                        this.client.setScreen(this);
+                                        this.minecraft.gui.setScreen(this);
                                     },
                                     this
                             ));
                         })
-                        .dimensions(this.width - PADDING - 18, curY + 3, 14, 14)
+                        .bounds(this.width - PADDING - 18, curY + 3, 14, 14)
                         .build();
-                addDrawableChild(swatch);
+                addRenderableWidget(swatch);
                 colorButtons.put(rep, swatch);
                 currentColors.put(rep, savedColor);
 
@@ -180,7 +194,7 @@ public class HarvestableScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
-        int listTop = PADDING + 28;
+        int listTop = LIST_TOP;
         int listBottom = this.height - PADDING - 26;
         int listH = Math.max(0, listBottom - listTop);
         int maxScroll = Math.max(0, contentHeight - listH);
@@ -193,14 +207,24 @@ public class HarvestableScreen extends Screen {
     }
 
     @Override
-    public void render(DrawContext draw, int mouseX, int mouseY, float delta) {
-        //this.renderBackground(draw, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor draw, int mouseX, int mouseY, float delta) {
+        if (!availableWorlds.isEmpty()) {
+            int tx = PADDING;
+            for (String world : availableWorlds) {
+                Component label = formatWorldName(world);
+                int tw = this.font.width(label) + 10;
+                boolean selected = world.equals(islandKeyPath);
+                boolean hovered = mouseX >= tx && mouseX < tx + tw
+                               && mouseY >= TAB_Y && mouseY < TAB_Y + TAB_H;
+                int bg = selected ? 0xFF607090 : (hovered ? 0xFF404060 : 0xFF2A2A3A);
+                draw.fill(tx, TAB_Y, tx + tw, TAB_Y + TAB_H, bg);
+                if (selected) draw.fill(tx, TAB_Y + TAB_H - 2, tx + tw, TAB_Y + TAB_H, 0xFFAABBFF);
+                draw.text(this.font, label, tx + 5, TAB_Y + 3, 0xFFFFFFFF, false);
+                tx += tw + 4;
+            }
+        }
 
-        draw.drawText(this.textRenderer,
-                "Harvestables — " + islandKeyPath + " (" + data.size() + ")",
-                PADDING, PADDING + 2, 0xFFFFFFFF, false);
-
-        int listTop = PADDING + 28;
+        int listTop = LIST_TOP;
         int listBottom = this.height - PADDING - 26;
         int listLeft = PADDING;
         int listRight = this.width - PADDING;
@@ -211,22 +235,22 @@ public class HarvestableScreen extends Screen {
 
         int y = listTop - scrollY;
         for (String cat : sortedCategories()) {
-            CheckboxWidget catCb = catChecks.get(cat);
+            Checkbox catCb = catChecks.get(cat);
             if (catCb != null) catCb.setPosition(listLeft + 16, y);
             y += ROW_H;
 
             for (var rep : byCategory.getOrDefault(cat, List.of())) {
-                CheckboxWidget itCb = itemChecks.get(rep);
+                Checkbox itCb = itemChecks.get(rep);
                 if (itCb != null) itCb.setPosition(listLeft + 36, y);
 
-                ButtonWidget sw = colorButtons.get(rep);
+                Button sw = colorButtons.get(rep);
                 if (sw != null) sw.setPosition(listRight - 18, y + 3);
 
                 y += ROW_H;
             }
         }
 
-        super.render(draw, mouseX, mouseY, delta);
+        super.extractRenderState(draw, mouseX, mouseY, delta);
 
         {
             int rowY = listTop - scrollY;
@@ -253,7 +277,7 @@ public class HarvestableScreen extends Screen {
                     }
 
                     if (icon != null) {
-                        draw.drawTexture(
+                        draw.blit(
                                 RenderPipelines.GUI_TEXTURED,
                                 icon,
                                 iconX, iconY,
@@ -266,9 +290,14 @@ public class HarvestableScreen extends Screen {
                     int textX = iconX + (icon != null ? 16 + 4 : 0);
                     int nameY = rowY + 4;
 
-                    Text nameText = (item != null)
+                    Component nameText = (item != null)
                             ? MineboxItem.getDisplayName(item)
-                            : Text.translatable("mbx.harvestables." + id + ".name");
+                            : Component.translatable("mbx.harvestables." + id + ".name");
+
+                    int lvl = rep.getRequiredLevel();
+                    if (lvl > 0) {
+                        nameText = Component.empty().append(nameText).append(" (Lvl. " + lvl + ")");
+                    }
 
                     int nameColor = 0xFFFFFFFF;
                     if (item != null && item.getRarity() != null) {
@@ -277,12 +306,12 @@ public class HarvestableScreen extends Screen {
                                 .getRGB() | 0xFF000000;
                     }
 
-                    draw.drawText(this.textRenderer, nameText, textX, nameY, nameColor, false);
+                    draw.text(this.font, nameText, textX, nameY, nameColor, false);
 
-                    int nameW = this.textRenderer.getWidth(nameText);
+                    int nameW = this.font.width(nameText);
                     int cnt = groupMembers.getOrDefault(rep, List.of()).size();
                     String cntStr = " (" + cnt + ")";
-                    draw.drawText(this.textRenderer, cntStr, textX + nameW, nameY, 0xFFAAAAAA, false);
+                    draw.text(this.font, cntStr, textX + nameW, nameY, 0xFFAAAAAA, false);
 
                     rowY += ROW_H;
                 }
@@ -290,25 +319,45 @@ public class HarvestableScreen extends Screen {
         }
 
         for (var e : colorButtons.entrySet()) {
-            ButtonWidget sw = e.getValue();
+            Button sw = e.getValue();
             int col = currentColors.getOrDefault(e.getKey(), 0xFFFFFFFF) | 0xFF000000;
             String hash = "#";
-            int tw = this.textRenderer.getWidth(hash);
-            int th = this.textRenderer.fontHeight;
+            int tw = this.font.width(hash);
+            int th = this.font.lineHeight;
             int cx = sw.getX() + (sw.getWidth() - tw) / 2;
             int cy = sw.getY() + (sw.getHeight() - th) / 2 + 1;
-            draw.drawText(this.textRenderer, hash, cx, cy, col, false);
+            draw.text(this.font, hash, cx, cy, col, false);
         }
 
         draw.disableScissor();
     }
 
     @Override
-    public void close() {
-        super.close();
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (event.y() >= TAB_Y && event.y() < TAB_Y + TAB_H) {
+            int tx = PADDING;
+            for (String world : availableWorlds) {
+                int tw = mc.font.width(formatWorldName(world)) + 10;
+                if (event.x() >= tx && event.x() < tx + tw) {
+                    forcedIslandKey = world;
+                    scrollY = 0;
+                    rebuildWidgets();
+                    return true;
+                }
+                tx += tw + 4;
+            }
+        }
+        return super.mouseClicked(event, doubleClick);
     }
 
-    @Override
+    private static Component formatWorldName(String key) {
+        return Component.translatable("mineboxadditions.strings.zones." + key);
+    }
+
+    public void close() {
+        onClose();
+    }
+
     public boolean shouldPause() {
         return false;
     }
@@ -319,14 +368,14 @@ public class HarvestableScreen extends Screen {
         private final IntConsumer onPicked;
         private final Screen parent;
 
-        private TextFieldWidget hexField;
+        private EditBox hexField;
         private int color; // 0xRRGGBB
 
-        private final List<ButtonWidget> presetButtons = new ArrayList<>();
-        private final Map<ButtonWidget, Integer> presetColors = new HashMap<>();
+        private final List<Button> presetButtons = new ArrayList<>();
+        private final Map<Button, Integer> presetColors = new HashMap<>();
 
         protected ColorPickerScreen(int initialColor, IntConsumer onPicked, Screen parent) {
-            super(Text.literal("Pick Color"));
+            super(Component.literal("Pick Color"));
             this.initialColor = initialColor & 0xFFFFFF;
             this.color = this.initialColor;
             this.onPicked = onPicked;
@@ -338,11 +387,11 @@ public class HarvestableScreen extends Screen {
             int cx = this.width / 2;
             int y = 40;
 
-            hexField = new TextFieldWidget(this.textRenderer, cx - 60, y, 120, 20, Text.literal("Hex"));
+            hexField = new EditBox(this.font, cx - 60, y, 120, 20, Component.literal("Hex"));
             hexField.setMaxLength(7);
-            hexField.setText("#" + toHex(color));
-            hexField.setChangedListener(this::onHexChanged);
-            this.addDrawableChild(hexField);
+            hexField.setValue("#" + toHex(color));
+            hexField.setResponder(this::onHexChanged);
+            this.addRenderableWidget(hexField);
             y += 26;
 
             // waypoints xaero inspired lol
@@ -353,26 +402,26 @@ public class HarvestableScreen extends Screen {
             int startX = cx - (presets.length * 22) / 2;
             for (int i = 0; i < presets.length; i++) {
                 final int c = presets[i];
-                ButtonWidget presetBtn = ButtonWidget.builder(Text.literal(""), b -> {
+                Button presetBtn = Button.builder(Component.literal(""), b -> {
                             color = c;
-                            hexField.setText("#" + toHex(color));
+                            hexField.setValue("#" + toHex(color));
                         })
-                        .dimensions(startX + i * 22, y, 18, 18)
+                        .bounds(startX + i * 22, y, 18, 18)
                         .build();
-                this.addDrawableChild(presetBtn);
+                this.addRenderableWidget(presetBtn);
                 presetButtons.add(presetBtn);
                 presetColors.put(presetBtn, c);
             }
             y += 28;
 
-            this.addDrawableChild(ButtonWidget.builder(Text.literal("Done"), b -> {
+            this.addRenderableWidget(Button.builder(Component.literal("Done"), b -> {
                         onPicked.accept(color);
                         this.close();
-                    }).dimensions(cx - 80, y, 70, 20).build());
+                    }).bounds(cx - 80, y, 70, 20).build());
 
-            this.addDrawableChild(ButtonWidget.builder(Text.literal("Cancel"), b -> {
-                        this.client.setScreen(parent);
-                    }).dimensions(cx + 10, y, 70, 20).build());
+            this.addRenderableWidget(Button.builder(Component.literal("Cancel"), b -> {
+                        this.minecraft.gui.setScreen(parent);
+                    }).bounds(cx + 10, y, 70, 20).build());
         }
 
         private void onHexChanged(String text) {
@@ -383,33 +432,32 @@ public class HarvestableScreen extends Screen {
         }
 
         @Override
-        public void render(DrawContext draw, int mouseX, int mouseY, float delta) {
+        public void extractRenderState(GuiGraphicsExtractor draw, int mouseX, int mouseY, float delta) {
             //this.renderBackground(draw, mouseX, mouseY, delta);
             int cx = this.width / 2;
 
-            draw.drawText(this.textRenderer, "Pick Beam Color", cx - 50, 16, 0xFFFFFF, false);
+            draw.text(this.font, "Pick Beam Color", cx - 50, 16, 0xFFFFFF, false);
 
             int px0 = cx - 40, py0 = 20, px1 = cx + 40, py1 = 36;
             int col = 0xFF000000 | color;
             draw.fill(px0 - 1, py0 - 1, px1 + 1, py1 + 1, 0xFF000000);
             draw.fill(px0, py0, px1, py1, col);
 
-            super.render(draw, mouseX, mouseY, delta);
+            super.extractRenderState(draw, mouseX, mouseY, delta);
 
-            for (ButtonWidget btn : presetButtons) {
+            for (Button btn : presetButtons) {
                 int c = presetColors.getOrDefault(btn, 0xFFFFFFFF) | 0xFF000000;
                 String hash = "#";
-                int tw = this.textRenderer.getWidth(hash);
-                int th = this.textRenderer.fontHeight;
+                int tw = this.font.width(hash);
+                int th = this.font.lineHeight;
                 int cxTxt = btn.getX() + (btn.getWidth() - tw) / 2;
                 int cyTxt = btn.getY() + (btn.getHeight() - th) / 2 + 1;
-                draw.drawText(this.textRenderer, hash, cxTxt, cyTxt, c, false);
+                draw.text(this.font, hash, cxTxt, cyTxt, c, false);
             }
         }
 
-        @Override
         public void close() {
-            this.client.setScreen(parent);
+            this.minecraft.gui.setScreen(parent);
         }
 
         private static String toHex(int rgb) {
@@ -502,7 +550,7 @@ public class HarvestableScreen extends Screen {
                 }
             } else {
                 String vid = ing.getId();
-                cache.putIfAbsent(vid, Identifier.of("minecraft", "textures/item/" + vid + ".png"));
+                cache.putIfAbsent(vid, Identifier.fromNamespaceAndPath("minecraft", "textures/item/" + vid + ".png"));
             }
         }
     }

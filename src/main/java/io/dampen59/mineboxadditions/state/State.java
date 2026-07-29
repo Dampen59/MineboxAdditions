@@ -1,10 +1,12 @@
 package io.dampen59.mineboxadditions.state;
 
+import io.dampen59.mineboxadditions.features.bestiary.BestiaryEntry;
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
-import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
 import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
+import io.dampen59.mineboxadditions.features.item.Insect;
+import net.minecraft.network.chat.Component;
 
 import java.util.*;
 
@@ -14,11 +16,13 @@ public class State {
     private String shopDisplay = null;
     private int currentMoonPhase = -1;
     private List<MineboxItem> mbxItems = null;
+    private Set<String> auctionCatalogIds = new HashSet<>();
+    private List<BestiaryEntry> mbxBestiary = null;
+    private List<Insect> insects = null;
+    private Map<String, Insect> insectById = new HashMap<>();
     private Map<String, List<Harvestable>> mbxHarvestables = new HashMap<>();
     private List<FishingShoal.Item> shoalItems = new ArrayList<>();
     private final Map<String, Boolean> mbxShiniesUuids = new HashMap<>();
-
-    private AudioManager audioManager = null;
 
     private String lastSentCommand = null;
     private String lockedItemId = null;
@@ -27,6 +31,13 @@ public class State {
     private Set<String> lockedCollapsedKeys = new HashSet<>();
 
     private List<String> missingMuseumItemIds = new ArrayList<>();
+
+    private Component bossbarIsland = null;
+    private Component bossbarTime = null;
+    private Component bossbarKeyFragment = null;
+    private Component bossbarStatsPoints = null;
+    private Component bossbarFreeItem = null;
+    private Component bossbarVotes = null;
 
     private final Map<String, String> entityTextCache = new HashMap<>();
 
@@ -39,8 +50,28 @@ public class State {
     public List<MineboxItem> getMbxItems() { return mbxItems; }
     public void setMbxItems(List<MineboxItem> items) { this.mbxItems = items; }
 
+    public Set<String> getAuctionCatalogIds() { return auctionCatalogIds; }
+    public void setAuctionCatalogIds(Set<String> ids) {
+        this.auctionCatalogIds = (ids == null) ? new HashSet<>() : ids;
+    }
+
+    public List<BestiaryEntry> getMbxBestiary() { return mbxBestiary; }
+    public void setMbxBestiary(List<BestiaryEntry> bestiary) { this.mbxBestiary = bestiary; }
+
+    public List<Insect> getInsects() { return insects; }
+    public Insect getInsectById(String id) { return insectById.get(id); }
+    public void setInsects(List<Insect> list) {
+        this.insects = list;
+        this.insectById = new HashMap<>();
+        if (list != null) list.forEach(i -> insectById.put(i.getId(), i));
+    }
+
     public List<Harvestable> getMineboxHarvestables(String islandName) {
         return mbxHarvestables.get(islandName);
+    }
+
+    public Set<String> getAllHarvestableKeys() {
+        return mbxHarvestables.keySet();
     }
 
     public void addMineboxHarvestables(String islandName, List<Harvestable> data) {
@@ -51,9 +82,6 @@ public class State {
     public Map<String, Boolean> getMbxShiniesUuids() { return mbxShiniesUuids; }
     public void resetShinyList() { mbxShiniesUuids.clear(); }
     public void addShinyUuid(String uuid) { mbxShiniesUuids.put(uuid, false); }
-
-    public AudioManager getAudioManager() { return audioManager; }
-    public void setAudioManager(AudioManager audioManager) { this.audioManager = audioManager; }
 
     public WeatherState getWeatherState() { return weatherState; }
 
@@ -115,6 +143,24 @@ public class State {
         this.missingMuseumItemIds = (ids == null) ? new ArrayList<>() : new ArrayList<>(ids);
     }
 
+    public Component getBossbarIsland() { return bossbarIsland; }
+    public void setBossbarIsland(Component c) { this.bossbarIsland = c; }
+
+    public Component getBossbarTime() { return bossbarTime; }
+    public void setBossbarTime(Component c) { this.bossbarTime = c; }
+
+    public Component getBossbarKeyFragment() { return bossbarKeyFragment; }
+    public void setBossbarKeyFragment(Component c) { this.bossbarKeyFragment = c; }
+
+    public Component getBossbarStatsPoints() { return bossbarStatsPoints; }
+    public void setBossbarStatsPoints(Component c) { this.bossbarStatsPoints = c; }
+
+    public Component getBossbarFreeItem() { return bossbarFreeItem; }
+    public void setBossbarFreeItem(Component c) { this.bossbarFreeItem = c; }
+
+    public Component getBossbarVotes() { return bossbarVotes; }
+    public void setBossbarVotes(Component c) { this.bossbarVotes = c; }
+
     public void reset() {
         ShopManager.reset();
         setShopDisplay(null);
@@ -122,5 +168,11 @@ public class State {
         resetShinyList();
         weatherState.clear();
         missingMuseumItemIds.clear();
+        bossbarIsland = null;
+        bossbarTime = null;
+        bossbarKeyFragment = null;
+        bossbarStatsPoints = null;
+        bossbarFreeItem = null;
+        bossbarVotes = null;
     }
 }

@@ -8,10 +8,9 @@ import io.dampen59.mineboxadditions.features.hud.elements.*;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemPickupHud extends Hud {
     public ItemPickupHud() {
@@ -26,7 +25,7 @@ public class ItemPickupHud extends Hud {
 
     @Override
     public StackElement init() {
-        ItemStack stack = new ItemStack(Items.DIAMOND, 64);
+        ItemStack stack = ItemStack.EMPTY;
 
         ItemStackElement item = new ItemStackElement(stack);
         VStackElement vstack1 = new VStackElement()
@@ -36,7 +35,7 @@ public class ItemPickupHud extends Hud {
         addNamedElement("item", item);
         addNamedElement("vstack1", vstack1);
 
-        TextElement name = new TextElement(stack.getName(), 100);
+        TextElement name = new TextElement(net.minecraft.network.chat.Component.empty(), 100);
         VStackElement vstack2 = new VStackElement()
                 .add(new SpacerElement(5))
                 .add(new HStackElement().add(new SpacerElement(4), name, new SpacerElement(4)))
@@ -48,26 +47,15 @@ public class ItemPickupHud extends Hud {
     }
 
     @Override
-    public int getX() {
-        MinecraftClient client = MinecraftClient.getInstance();
-        int screenWidth = client.getWindow().getScaledWidth();
-        int x = super.getX();
-        if (x > screenWidth / 2) {
-            return x - this.getWidth();
-        }
-        return x;
-    }
-
-    @Override
-    public void draw(DrawContext context) {
+    public void draw(GuiGraphicsExtractor context) {
         this.draw(context, 0);
     }
 
-    public void draw(DrawContext context, int offset) {
+    public void draw(GuiGraphicsExtractor context, int offset) {
         if (getX() == -50) {
-            MinecraftClient client = MinecraftClient.getInstance();
-            int screenWidth = client.getWindow().getScaledWidth();
-            setX(screenWidth - 4);
+            Minecraft client = Minecraft.getInstance();
+            int screenWidth = client.getWindow().getGuiScaledWidth();
+            setX(screenWidth - this.getWidth() - 4);
             ConfigManager.save();
         }
 
@@ -77,7 +65,7 @@ public class ItemPickupHud extends Hud {
     }
 
     @Override
-    public void drawDisabled(DrawContext context) {
+    public void drawDisabled(GuiGraphicsExtractor context) {
         getNamedElement("vstack1", VStackElement.class).setColor(0x40FF0000);
         getNamedElement("vstack2", VStackElement.class).setColor(0x40FF0000);
         mainStack.draw(context, getX(), getY());

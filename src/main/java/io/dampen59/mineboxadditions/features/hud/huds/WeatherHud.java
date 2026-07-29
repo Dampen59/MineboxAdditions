@@ -10,36 +10,56 @@ import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class WeatherHud {
-    public static class FullMoonHud extends Hud {
-        public FullMoonHud() {
+    public static class MoonHud extends Hud {
+        public MoonHud() {
             super(
-                    () -> HudsConfig.fullmoon,
-                    s -> HudsConfig.fullmoon = s,
-                    () -> HudPositions.fullMoon.x,
-                    x -> HudPositions.fullMoon.x = x,
-                    () -> HudPositions.fullMoon.y,
-                    y -> HudPositions.fullMoon.y = y);
+                    () -> HudsConfig.moon,
+                    s -> HudsConfig.moon = s,
+                    () -> HudPositions.moon.x,
+                    x -> HudPositions.moon.x = x,
+                    () -> HudPositions.moon.y,
+                    y -> HudPositions.moon.y = y);
+
+            ClientTickEvents.END_CLIENT_TICK.register(this::update);
         }
 
         @Override
         public StackElement init() {
-            Identifier texture = Identifier.of("mineboxadditions", "textures/icons/full_moon.png");
+            Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/full_moon.png");
+            TextElement text = new TextElement(Component.translatable("mineboxadditions.hud.moon.full_moon"));
 
             HStackElement hstack = new HStackElement()
-                    .add(new SpacerElement(2))
+                    .add(new SpacerElement(4))
                     .add(new TextureElement(texture, 10, 10))
-                    .add(new SpacerElement(2));
+                    .add(new SpacerElement(4))
+                    .add(new VStackElement().add(new SpacerElement(1), text))
+                    .add(new SpacerElement(4));
+            addNamedElement("text", text);
 
             return new VStackElement().add(new SpacerElement(2), hstack, new SpacerElement(2));
+        }
+
+        private void update(Minecraft client) {
+            int phase = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase();
+            Component label = phase == 4
+                    ? Component.translatable("mineboxadditions.hud.moon.new_moon")
+                    : Component.translatable("mineboxadditions.hud.moon.full_moon");
+            getNamedElement("text", TextElement.class).setValue(label);
+        }
+
+        @Override
+        public boolean shouldRender() {
+            int phase = MineboxAdditions.INSTANCE.state.getCurrentMoonPhase();
+            return phase == 0 || phase == 4;
         }
     }
 
@@ -58,8 +78,8 @@ public class WeatherHud {
 
         @Override
         public StackElement init() {
-            Identifier texture = Identifier.of("mineboxadditions", "textures/icons/rain.png");
-            TextElement text = new TextElement(Text.of("00:00:00"));
+            Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/rain.png");
+            TextElement text = new TextElement(Component.literal("00:00:00"));
 
             HStackElement hstack = new HStackElement()
                     .add(new SpacerElement(4))
@@ -72,12 +92,12 @@ public class WeatherHud {
             return new VStackElement().add(new SpacerElement(2), hstack, new SpacerElement(2));
         }
 
-        private void update(MinecraftClient client) {
-            if (client.world == null) return;
-            String text = (client.world.isRaining()
+        private void update(Minecraft client) {
+            if (client.level == null) return;
+            String text = (client.level.isRaining()
                     ? "Now!"
                     : formatNextEventCountdown(MineboxAdditions.INSTANCE.state.getWeatherState().getRainTimestamps()));
-            getNamedElement("text", TextElement.class).setText(Text.of(text));
+            getNamedElement("text", TextElement.class).setValue(Component.literal(text));
         }
     }
 
@@ -96,8 +116,8 @@ public class WeatherHud {
 
         @Override
         public StackElement init() {
-            Identifier texture = Identifier.of("mineboxadditions", "textures/icons/storm.png");
-            TextElement text = new TextElement(Text.of("00:00:00"));
+            Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/storm.png");
+            TextElement text = new TextElement(Component.literal("00:00:00"));
 
             HStackElement hstack = new HStackElement()
                     .add(new SpacerElement(4))
@@ -110,12 +130,12 @@ public class WeatherHud {
             return new VStackElement().add(new SpacerElement(2), hstack, new SpacerElement(2));
         }
 
-        private void update(MinecraftClient client) {
-            if (client.world == null) return;
-            String text = (client.world.isThundering()
+        private void update(Minecraft client) {
+            if (client.level == null) return;
+            String text = (client.level.isThundering()
                     ? "Now!"
                     : formatNextEventCountdown(MineboxAdditions.INSTANCE.state.getWeatherState().getStormTimestamps()));
-            getNamedElement("text", TextElement.class).setText(Text.of(text));
+            getNamedElement("text", TextElement.class).setValue(Component.literal(text));
         }
     }
 

@@ -1,58 +1,77 @@
 package io.dampen59.mineboxadditions.features.shop;
 
-import io.dampen59.mineboxadditions.config.huds.HudsConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.config.notifications.NotificationsConfig;
 import io.dampen59.mineboxadditions.utils.Utils;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 import java.time.LocalTime;
 import java.util.function.Supplier;
 
 public enum Shop {
-    BUCKSTAR(LocalTime.parse("06:00"), LocalTime.parse("12:00"), () -> HudsConfig.shop.buckstar),
-    BAKERY(LocalTime.parse("12:00"), LocalTime.parse("18:00"), () -> HudsConfig.shop.bakery),
-    SHARKOFFE(LocalTime.parse("18:00"), LocalTime.parse("19:30"), () -> HudsConfig.shop.sharkoffe),
-    MOUSE(LocalTime.parse("19:30"), LocalTime.parse("02:00"), () -> HudsConfig.shop.mouse);
+    BUCKSTAR(LocalTime.parse("06:00"), LocalTime.parse("12:00"),
+            () -> NotificationsConfig.shop.buckstarToast || NotificationsConfig.shop.buckstarBell,
+            null),
+    BAKERY(LocalTime.parse("12:00"), LocalTime.parse("18:00"),
+            () -> NotificationsConfig.shop.bakeryToast || NotificationsConfig.shop.bakeryBell,
+            null),
+    SHARKOFFE(LocalTime.parse("18:00"), LocalTime.parse("19:30"),
+            () -> NotificationsConfig.shop.sharkoffeToast || NotificationsConfig.shop.sharkoffeBell,
+            null),
+    MOUSE(LocalTime.parse("19:30"), LocalTime.parse("02:00"),
+            () -> NotificationsConfig.shop.mouseToast || NotificationsConfig.shop.mouseBell,
+            null),
+    REGGAE_DEALER(LocalTime.parse("19:30"), LocalTime.parse("02:00"),
+            () -> NotificationsConfig.shop.reggaeDealerToast || NotificationsConfig.shop.reggaeDealerBell,
+            () -> MineboxAdditions.INSTANCE.state.getCurrentMoonPhase() == 0),
+    PAINTINGS_SELLER(LocalTime.parse("18:00"), LocalTime.parse("19:30"),
+            () -> NotificationsConfig.shop.paintingsSellerToast || NotificationsConfig.shop.paintingsSellerBell,
+            null),
+    SUSHI_SELLER(LocalTime.parse("18:00"), LocalTime.parse("19:30"),
+            () -> NotificationsConfig.shop.sushiSellerToast || NotificationsConfig.shop.sushiSellerBell,
+            null);
 
-    private final Supplier<Boolean> state;
     private final LocalTime start;
     private final LocalTime end;
+    private final Supplier<Boolean> notifState;
+    private final Supplier<Boolean> extraCondition;
     private boolean alerted = false;
-    private Text offer;
+    private Component offer;
 
-    Shop(LocalTime start, LocalTime end, Supplier<Boolean> state) {
+    Shop(LocalTime start, LocalTime end, Supplier<Boolean> notifState, Supplier<Boolean> extraCondition) {
         this.start = start;
         this.end = end;
-        this.state = state;
+        this.notifState = notifState;
+        this.extraCondition = extraCondition;
     }
 
-    public Text getName() {
-        return Text.translatable("mineboxadditions." + this.name().toLowerCase());
+    public Component getName() {
+        return Component.translatable("mineboxadditions." + this.name().toLowerCase());
     }
 
     public boolean isEnabled() {
-        return state.get();
+        return notifState.get();
     }
 
     public boolean isOpen() {
         LocalTime server = Utils.getTime();
-        if (end.isBefore(start)) return !server.isBefore(start) || !server.isAfter(end);
-        return !server.isBefore(start) && !server.isAfter(end);
+        boolean timeOk;
+        if (end.isBefore(start)) {
+            timeOk = !server.isBefore(start) || !server.isAfter(end);
+        } else {
+            timeOk = !server.isBefore(start) && !server.isAfter(end);
+        }
+        if (!timeOk) return false;
+        return extraCondition == null
+                || (MineboxAdditions.INSTANCE != null && extraCondition.get());
     }
 
-    public boolean isAlerted() {
-        return alerted;
-    }
-
-    public void setAlerted(boolean alerted) {
-        this.alerted = alerted;
-    }
-
-    public Text getOffer() {
-        return offer;
-    }
+    public boolean isAlerted()              { return alerted; }
+    public void setAlerted(boolean alerted) { this.alerted = alerted; }
+    public Component getOffer()             { return offer; }
 
     public void setOffer(String offer) {
-        this.offer = Text.translatable(offer);
+        this.offer = Component.translatable(offer);
     }
 
     public void reset() {

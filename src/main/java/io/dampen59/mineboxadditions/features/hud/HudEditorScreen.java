@@ -1,10 +1,10 @@
 package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.config.ConfigManager;
-import io.dampen59.mineboxadditions.config.huds.objects.ItemPickupHud;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 
 import java.util.Map;
 
@@ -15,7 +15,7 @@ public class HudEditorScreen extends Screen {
     private static final int MARGIN = 4;
 
     public HudEditorScreen() {
-        super(Text.of("HUD Editor"));
+        super(Component.literal("HUD Editor"));
     }
 
     private boolean isInBounds(double mouseX, double mouseY, int x, int y, int w, int h) {
@@ -59,7 +59,8 @@ public class HudEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double mouseX = event.x(); double mouseY = event.y(); int button = event.button();
         for (Hud hud : HudManager.INSTANCE.getAll()) {
             int hudX = hud.getX();
             int hudY = hud.getY();
@@ -73,30 +74,27 @@ public class HudEditorScreen extends Screen {
                 return true;
             }
         }
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+    public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+        double mouseX = event.x(); double mouseY = event.y();
         if (dragContext != null && dragContext.button == 0) {
             Hud hud = HudManager.INSTANCE.get(dragContext.type);
             Point clamped = clampToScreen(hud, (int)mouseX - dragContext.offsetX, (int)mouseY - dragContext.offsetY);
             Point resolved = resolveCollisions(hud, clamped.x, clamped.y);
 
-            if (dragContext.type.equals(ItemPickupHud.class) && resolved.x > this.width / 2) {
-                hud.setX(resolved.x + hud.getWidth());
-            } else {
-                hud.setX(resolved.x);
-            }
+            hud.setX(resolved.x);
             hud.setY(resolved.y);
             dirty = true;
             return true;
         }
-        return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return super.mouseDragged(event, deltaX, deltaY);
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (dragContext != null) {
             Hud hud = HudManager.INSTANCE.get(dragContext.type);
             boolean outOfBounds = hud.getX() < 0 || hud.getX() + hud.getWidth() > this.width ||
@@ -114,19 +112,18 @@ public class HudEditorScreen extends Screen {
             dirty = false;
         }
         dragContext = null;
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
     @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        super.render(context, mouseX, mouseY, delta);
+    public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
+        super.extractRenderState(context, mouseX, mouseY, delta);
         for (Hud hud : HudManager.INSTANCE.getAll()) {
             if (hud.getState()) hud.draw(context);
             else hud.drawDisabled(context);
         }
     }
 
-    @Override
     public boolean shouldPause() {
         return false;
     }

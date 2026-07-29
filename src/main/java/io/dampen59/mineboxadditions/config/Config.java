@@ -7,8 +7,12 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.HudsConfig;
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
+import io.dampen59.mineboxadditions.config.notifications.NotificationsConfig;
+import io.dampen59.mineboxadditions.config.render.RenderConfig;
+import io.dampen59.mineboxadditions.config.spells.SpellsConfig;
 import io.dampen59.mineboxadditions.config.other.HarvestablesSettings;
 import io.dampen59.mineboxadditions.config.other.WardrobePresets;
+import io.dampen59.mineboxadditions.features.ahlerter.AhAlerterConfig;
 
 @ConfigInfo.Provider(ConfigInfoProvider.class)
 @com.teamresourceful.resourcefulconfig.api.annotations.Config(
@@ -16,7 +20,10 @@ import io.dampen59.mineboxadditions.config.other.WardrobePresets;
         version = 1,
         categories = {
                 HudsConfig.class,
-                ItemsConfig.class
+                NotificationsConfig.class,
+                RenderConfig.class,
+                ItemsConfig.class,
+                SpellsConfig.class
         }
 )
 public class Config {
@@ -25,28 +32,16 @@ public class Config {
         public static String socketServerAddress = "https://mineboxadditions.bartier.me";
 
         @ConfigOption.Hidden
-        @ConfigEntry(id = "selectedMicName")
-        public static String selectedMicName = "";
-
-        @ConfigOption.Hidden
-        @ConfigEntry(id = "selectedSpeakerName")
-        public static String selectedSpeakerName = "";
-
-        @ConfigOption.Hidden
-        @ConfigEntry(id = "micGainDb")
-        public static float micGainDb = 0.0f;
-
-        @ConfigOption.Hidden
-        @ConfigEntry(id = "speakerVolumeMultiplier")
-        public static float speakerVolumeMultiplier = 1.0f;
-
-        @ConfigOption.Hidden
         @ConfigEntry(id = "wardrobe")
         public static final WardrobePresets wardrobe = new WardrobePresets();
 
         @ConfigOption.Hidden
         @ConfigEntry(id = "harvestables")
         public static final HarvestablesSettings harvestables = new HarvestablesSettings();
+
+        @ConfigOption.Hidden
+        @ConfigEntry(id = "ahAlerts")
+        public static final AhAlerterConfig ahAlerts = new AhAlerterConfig();
 
         @ConfigEntry(id = "autoIsland", translation = "mineboxadditions.config.autoIsland")
         @Comment(value = "", translation = "mineboxadditions.config.autoIsland.desc")

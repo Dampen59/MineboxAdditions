@@ -1,8 +1,14 @@
 package io.dampen59.mineboxadditions.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import io.dampen59.mineboxadditions.utils.models.Harvestable;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.dampen59.mineboxadditions.features.bestiary.BestiaryEntry;
+import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoal;
+import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
+import io.dampen59.mineboxadditions.features.harvestable.Harvestable;
+import io.dampen59.mineboxadditions.features.item.Insect;
+import io.dampen59.mineboxadditions.features.item.MineboxItem;
+import io.dampen59.mineboxadditions.state.State;
 
 import java.io.IOException;
 import java.net.URI;
@@ -10,37 +16,52 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class ApiUtils {
-    private static final Gson GSON = new Gson();
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .followRedirects(HttpClient.Redirect.ALWAYS)
             .build();
-
-    private static List<Harvestable> harvestables;
+    private static final String BASE_URL = "https://mineboxadditions.bartier.me";
 
     private static String request(String url) throws IOException, InterruptedException {
-        HttpRequest.Builder builder = HttpRequest.newBuilder().GET().uri(URI.create(url));
-        HttpRequest request = builder.build();
-        HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+        HttpRequest req = HttpRequest.newBuilder().GET().uri(URI.create(url)).build();
+        return HTTP_CLIENT.send(req, HttpResponse.BodyHandlers.ofString()).body();
     }
 
-    public static <T> List<T> getList(String url, Class<T> clazz) {
+    private static <T> List<T> fetchList(String path, Class<T> clazz) {
         try {
-            String json = request(url);
-            if (json.isEmpty()) return List.of();
-            return GSON.fromJson(json, TypeToken.getParameterized(List.class, clazz).getType());
+            String json = request(BASE_URL + path);
+            return MAPPER.readValue(json, MAPPER.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (Exception e) {
+            System.out.println("[ApiUtils] Failed " + path + ": " + e.getMessage());
             return List.of();
         }
     }
 
-    public static List<Harvestable> getHarvestables() {
-        if (harvestables == null)
-            harvestables = getList("https://api.minebox.co/files/harvestables", Harvestable.class);
-        return harvestables;
+    public static void fetchAll(State state) {
+        async(() -> state.setMbxItems(fetchList("/items", MineboxItem.class)));
+        async(() -> state.setMbxBestiary(fetchList("/bestiary", BestiaryEntry.class)));
+        async(() -> state.setInsects(fetchList("/insects", Insect.class)));
+        async(() -> {
+            try {
+                String json = request(BASE_URL + "/harvestables");
+                Map<String, List<Harvestable>> map = MAPPER.readValue(json, new TypeReference<>() {});
+                map.forEach(state::addMineboxHarvestables);
+            } catch (Exception e) {
+                System.out.println("[ApiUtils] Failed /harvestables: " + e.getMessage());
+            }
+        });
+        async(() -> FishingShoalDisplay.loadFromApi(fetchList("/fishables", FishingShoal.Item.class)));
+        async(() -> state.setAuctionCatalogIds(new HashSet<>(fetchList("/auctionCatalog", String.class))));
+    }
+
+    private static void async(Runnable r) {
+        new Thread(r).start();
     }
 }

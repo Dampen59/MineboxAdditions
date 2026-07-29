@@ -5,7 +5,7 @@ import com.teamresourceful.resourcefulconfig.api.annotations.ConfigEntry;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigObject;
 import com.teamresourceful.resourcefulconfig.api.annotations.ConfigOption;
 import com.teamresourceful.resourcefulconfig.api.types.info.Translatable;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 @ConfigObject
 public class ItemPickupHud implements Translatable {
@@ -31,6 +31,6 @@ public class ItemPickupHud implements Translatable {
 
     @Override
     public String getTranslationKey() {
-        return Text.translatable("mineboxadditions.config.huds.itempickup").getString();
+        return Component.translatable("mineboxadditions.config.huds.itempickup").getString();
     }
 }

@@ -1,23 +1,26 @@
 package io.dampen59.mineboxadditions.utils;
 
 import io.dampen59.mineboxadditions.config.items.ItemsConfig;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.awt.*;
 import java.util.Map;
 
 public class RaritiesUtils {
     public static final Map<String, Integer> RARITY_ARGB = Map.of(
+            "trash",     0xFFCBD5E1,
             "common",    0xFF665466,
             "uncommon",  0xFF00C06F,
             "rare",      0xFF00A5FC,
             "epic",      0xFFF816FC,
             "legendary", 0xFFFFBE35,
-            "mythic",    0xFFA0060A
+            "mythic",    0xFFA0060A,
+            "prototype", 0xFF66FF00,
+            "contraband",0xFF66FF00
     );
 
     public static int percentToAlpha(double p) {
@@ -49,14 +52,14 @@ public class RaritiesUtils {
 
 
     public static Color getItemRarityColorFromLore(ItemStack itemStack) {
-        LoreComponent loreComponent = itemStack.get(DataComponentTypes.LORE);
+        ItemLore loreComponent = itemStack.get(DataComponents.LORE);
         if (loreComponent == null) return null;
 
         final String PREFIX = "mbx.rarities.";
         final String SUFFIX = ".icon";
 
-        for (Text loreLine : loreComponent.lines()) {
-            String key = loreLine.getContent() instanceof TranslatableTextContent translatable
+        for (Component loreLine : loreComponent.lines()) {
+            String key = loreLine.getContents() instanceof TranslatableContents translatable
                     ? translatable.getKey()
                     : loreLine.getString();
             if (key.startsWith(PREFIX) && key.endsWith(SUFFIX)) {

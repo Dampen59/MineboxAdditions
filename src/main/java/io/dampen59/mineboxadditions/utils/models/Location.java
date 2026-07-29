@@ -1,11 +1,11 @@
 package io.dampen59.mineboxadditions.utils.models;
 
-import net.minecraft.util.StringIdentifiable;
+import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 
-public enum Location implements StringIdentifiable {
+public enum Location implements StringRepresentable {
     SPAWN("spawn"),
     HOME("player_islands"),
     KOKOKO("island_tropical"),
@@ -13,6 +13,9 @@ public enum Location implements StringIdentifiable {
     BAMBOO_PEAK("island_bamboo"),
     FROSTBITE_FORTRESS("island_snow"),
     SANDWHISPER_DUNES("island_desert"),
+    AFK("afk"),
+    VILLAGE("player_villages"),
+    RAID("raid"),
     UNKNOWN("unknown");
 
     @NotNull
@@ -28,7 +31,7 @@ public enum Location implements StringIdentifiable {
     }
 
     @Override
-    public String asString() {
+    public String getSerializedName() {
         return id();
     }
 

@@ -1,63 +1,53 @@
 package io.dampen59.mineboxadditions.features.shop;
 
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.toast.Toast;
-import net.minecraft.client.toast.ToastManager;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.toasts.Toast;
+import net.minecraft.client.gui.components.toasts.ToastManager;
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MineboxToast implements Toast {
+    private static final int WIDTH = 160;
     private final Identifier iconTexture;
-    private final List<OrderedText> text;
-    private Visibility visibility = Visibility.SHOW;
+    private final List<FormattedCharSequence> text;
+    private long startTime = -1;
 
-    public MineboxToast(TextRenderer textRenderer, Identifier iconTexture, Text title, Text description) {
+    public MineboxToast(Font textRenderer, Identifier iconTexture, Component title, Component description) {
         this.iconTexture = iconTexture;
         this.text = new ArrayList<>(2);
-        this.text.addAll(textRenderer.wrapLines(title.copy().withColor(Color.YELLOW.getRGB()), 126));
+        this.text.addAll(textRenderer.split(title.copy().withColor(Color.YELLOW.getRGB()), 126));
         if (description != null) {
-            this.text.addAll(textRenderer.wrapLines(description, 126));
+            this.text.addAll(textRenderer.split(description, 126));
         }
     }
 
     @Override
-    public Visibility getVisibility() {
-        return this.visibility;
-    }
+    public void extractRenderState(GuiGraphicsExtractor context, Font textRenderer, long time) {
+        if (startTime < 0) startTime = time;
+        int height = 7 + Math.max(this.text.size(), 2) * 11 + 3;
 
-    @Override
-    public void update(ToastManager manager, long time) {
-        this.visibility = time > (5 * 1000L) ? Visibility.HIDE : Visibility.SHOW;
-    }
-
-    @Override
-    public int getHeight() {
-        return 7 + this.getTextHeight() + 3;
-    }
-
-    private int getTextHeight() {
-        return Math.max(this.text.size(), 2) * 11;
-    }
-
-    @Override
-    public void draw(DrawContext context, TextRenderer textRenderer, long startTime) {
-        int width = this.getWidth();
-        int height = this.getHeight();
-
-        context.drawGuiTexture(RenderPipelines.GUI_TEXTURED, Identifier.ofVanilla("toast/advancement"), 0, 0, width, height);
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, iconTexture, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
+        context.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace("toast/advancement"), 0, 0, WIDTH, height);
+        context.blit(RenderPipelines.GUI_TEXTURED, iconTexture, 6, 6, 0, 0, 20, 20, 20, 20, 20, 20);
 
         int textY = (height - (this.text.size() * 11)) / 2;
         for (int i = 0; i < this.text.size(); i++) {
-            OrderedText line = this.text.get(i);
-            context.drawText(textRenderer, line, 30, textY + i * 11, 0xFFFFFFFF, false);
+            context.text(textRenderer, this.text.get(i), 30, textY + i * 11, 0xFFFFFFFF, false);
         }
+    }
+
+    @Override
+    public Visibility getWantedVisibility() {
+        return (startTime >= 0 && (System.currentTimeMillis() - startTime) > 5000L) ? Visibility.HIDE : Visibility.SHOW;
+    }
+
+    public void update(ToastManager manager, long time) {
+        if (startTime < 0) startTime = time;
     }
 }

@@ -7,26 +7,28 @@ import io.dampen59.mineboxadditions.features.hud.elements.ItemStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.collection.DefaultedList;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.*;
 
 public class ItemPickupManager {
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final Minecraft client = Minecraft.getInstance();
     private final Map<Integer, Integer> previousInventoryCounts = new HashMap<>();
     private final Deque<ItemPickupNotification> itemPickupNotifications = new ArrayDeque<>();
 
     public ItemPickupManager() {
         ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
-        HudRenderCallback.EVENT.register(this::onRender);
+        HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, Identifier.fromNamespaceAndPath("mineboxadditions", "itempickup"), this::onRender);
     }
 
-    private void onTick(MinecraftClient client) {
+    private void onTick(Minecraft client) {
         var settings = HudsConfig.itempickup;
         if (!settings.enabled) return;
 
@@ -35,25 +37,26 @@ public class ItemPickupManager {
         tickNotifications();
     }
 
-    private void onRender(DrawContext context, RenderTickCounter tickCounter) {
+    private void onRender(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         var hud = HudManager.INSTANCE.get(ItemPickupHud.class);
         int offsetY = 0;
         for (ItemPickupNotification notif : itemPickupNotifications) {
             ItemStack item = notif.stack.copy();
             item.setCount(notif.count);
             hud.getNamedElement("item", ItemStackElement.class).setItem(item);
-            hud.getNamedElement("name", TextElement.class).setText(item.getName());
+            hud.getNamedElement("name", TextElement.class).setValue(item.getHoverName());
             if (hud.getState()) hud.draw(context, offsetY);
             offsetY += hud.getHeight() + 2;
         }
     }
 
     private void updateInventorySnapshot(int duration, int max, boolean merge) {
-        if (client.currentScreen != null || client.player == null) return;
+        if (client.gui.screen() != null || client.player == null) return;
 
-        DefaultedList<ItemStack> currentInv = client.player.getInventory().getMainStacks();
-        for (int slot = 0; slot < currentInv.size(); slot++) {
-            ItemStack currentStack = currentInv.get(slot);
+        var inv = client.player.getInventory();
+        int invSize = inv.getContainerSize();
+        for (int slot = 0; slot < invSize; slot++) {
+            ItemStack currentStack = inv.getItem(slot);
             int currentCount = currentStack.getCount();
             int previousCount = previousInventoryCounts.getOrDefault(slot, 0);
 
@@ -64,8 +67,8 @@ public class ItemPickupManager {
         }
 
         previousInventoryCounts.clear();
-        for (int i = 0; i < currentInv.size(); i++) {
-            previousInventoryCounts.put(i, currentInv.get(i).getCount());
+        for (int i = 0; i < invSize; i++) {
+            previousInventoryCounts.put(i, inv.getItem(i).getCount());
         }
     }
 
@@ -78,7 +81,7 @@ public class ItemPickupManager {
 
         if (merge) {
             for (ItemPickupNotification notif : itemPickupNotifications) {
-                if (ItemStack.areItemsAndComponentsEqual(notif.stack, stack)) {
+                if (ItemStack.isSameItemSameComponents(stripLore(notif.stack), stripLore(stack))) {
                     notif.add(count, duration);
                     return;
                 }
@@ -89,6 +92,12 @@ public class ItemPickupManager {
         if (itemPickupNotifications.size() > max) {
             itemPickupNotifications.removeFirst();
         }
+    }
+
+    private static ItemStack stripLore(ItemStack stack) {
+        ItemStack copy = stack.copy();
+        copy.remove(DataComponents.LORE);
+        return copy;
     }
 
     private static class ItemPickupNotification {

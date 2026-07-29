@@ -4,10 +4,11 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "BossBarMixin",
+    "BossHealthOverlayAccessor",
+    "BossHealthOverlayMixin",
     "ChatMessageMixin",
     "ChatScreenMixin",
     "HandledScreenMixin",
-    "InGameHudMixin",
     "ItemStackMixin",
     "PlayerListHudMixin"
   ],

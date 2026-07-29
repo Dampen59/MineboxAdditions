@@ -2,7 +2,7 @@ package io.dampen59.mineboxadditions.features.hud;
 
 import io.dampen59.mineboxadditions.features.hud.elements.Element;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +36,10 @@ public abstract class Hud {
 
     public boolean getState() {
         return onGetState.get();
+    }
+
+    public boolean shouldRender() {
+        return true;
     }
 
     public void setState(boolean state) {
@@ -78,12 +82,12 @@ public abstract class Hud {
         else throw new IllegalStateException();
     }
 
-    public void draw(DrawContext context) {
+    public void draw(GuiGraphicsExtractor context) {
         mainStack.setColor(0x40000000);
         mainStack.draw(context, getX(), getY());
     }
 
-    public void drawDisabled(DrawContext context) {
+    public void drawDisabled(GuiGraphicsExtractor context) {
         mainStack.setColor(0x40FF0000);
         mainStack.draw(context, getX(), getY());
     }

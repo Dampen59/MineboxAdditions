@@ -9,8 +9,8 @@ import io.dampen59.mineboxadditions.features.hud.elements.TextureElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 
 public class ShopHud extends Hud {
     public ShopHud() {
@@ -25,8 +25,8 @@ public class ShopHud extends Hud {
 
     @Override
     public StackElement init() {
-        Identifier texture = Identifier.of("mineboxadditions", "textures/icons/shop.png");
-        TextElement text = new TextElement(Text.of("Bakery"));
+        Identifier texture = Identifier.fromNamespaceAndPath("mineboxadditions", "textures/icons/shop.png");
+        TextElement text = new TextElement(Component.literal("Bakery"));
 
         HStackElement hstack = new HStackElement()
                 .add(new SpacerElement(4))

@@ -1,8 +1,8 @@
 package io.dampen59.mineboxadditions.features.hud.elements;
 
-import net.minecraft.client.gl.RenderPipelines;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.resources.Identifier;
 
 public class TextureElement extends Element {
     private Identifier texture;
@@ -30,7 +30,7 @@ public class TextureElement extends Element {
     }
 
     @Override
-    public void draw(DrawContext context, int x, int y) {
-        context.drawTexture(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
+    public void draw(GuiGraphicsExtractor context, int x, int y) {
+        context.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
     }
 }

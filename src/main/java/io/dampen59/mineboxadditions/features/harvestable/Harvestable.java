@@ -14,6 +14,9 @@ public class Harvestable {
     @JsonProperty("coordinates")
     private List<Double> coordinates;
 
+    @JsonProperty("requiredLevel")
+    private int requiredLevel;
+
     public String getCategory() {
         return category;
     }
@@ -25,4 +28,6 @@ public class Harvestable {
     public List<Double> getCoordinates() {
         return coordinates;
     }
+
+    public int getRequiredLevel() { return requiredLevel; }
 }

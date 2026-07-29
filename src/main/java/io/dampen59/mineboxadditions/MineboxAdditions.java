@@ -2,44 +2,41 @@ package io.dampen59.mineboxadditions;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.StringArgumentType;
-import com.teamresourceful.resourcefulconfig.api.client.ResourcefulConfigScreen;
-import io.dampen59.mineboxadditions.config.Config;
 import io.dampen59.mineboxadditions.config.ConfigManager;
 import io.dampen59.mineboxadditions.features.AutoIsland;
 import io.dampen59.mineboxadditions.features.ShinyTracker;
+import io.dampen59.mineboxadditions.features.SpellsThrottler;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
-import io.dampen59.mineboxadditions.features.harvestable.HarvestableScreen;
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
-import io.dampen59.mineboxadditions.features.voicechat.AudioManager;
 import io.dampen59.mineboxadditions.events.*;
+import io.dampen59.mineboxadditions.features.hud.BossBarScanner;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
-import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceScreen;
-import io.dampen59.mineboxadditions.features.hud.HudEditorScreen;
-import io.dampen59.mineboxadditions.features.atlas.MineboxAtlasScreen;
+import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
+import io.dampen59.mineboxadditions.features.hud.huds.ShopHud;
+import io.dampen59.mineboxadditions.features.menu.MineboxMenuScreen;
 import io.dampen59.mineboxadditions.utils.SocketManager;
-import io.dampen59.mineboxadditions.features.voicechat.AudioDeviceState;
 import io.dampen59.mineboxadditions.state.State;
-import io.dampen59.mineboxadditions.utils.AudioUtils;
 import io.dampen59.mineboxadditions.utils.Scheduler;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.KeyMapping;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
+import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class MineboxAdditions implements ClientModInitializer {
@@ -48,14 +45,15 @@ public class MineboxAdditions implements ClientModInitializer {
     public static MineboxAdditions INSTANCE;
 
     public State state = null;
-    private static KeyBinding openModSettings;
-    private static KeyBinding openAudioSettings;
-    public static KeyBinding openEditMode;
-    public static KeyBinding openHarvestables;
-    public static KeyBinding openAtlas;
+    public static KeyMapping openMenu;
+    public static KeyMapping mountDismount;
+    public static KeyMapping castSpellOne;
+    public static KeyMapping castSpellTwo;
+    public static KeyMapping castSpellThree;
+    public static KeyMapping castSpellFour;
 
     public static Identifier id(String path) {
-        return Identifier.of(NAMESPACE, path);
+        return Identifier.fromNamespaceAndPath(NAMESPACE, path);
     }
 
     @Override
@@ -76,100 +74,40 @@ public class MineboxAdditions implements ClientModInitializer {
         ShinyTracker.init();
         ShopManager.init();
         ItemTooltip.init();
+        SpellsThrottler.init();
 
         new SkyEvent();
+        new BossBarScanner();
         new ServerEvents(state);
         new ContainerOpenEvent(state);
         new WorldRendererEvent();
-        new AudioManager(state);
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> registerCommands(dispatcher));
         this.registerKeybinds();
 
-        AudioDeviceState.micGainDb = Config.micGainDb;
-        AudioDeviceState.selectedInput = AudioUtils.getMixerByName(Config.selectedMicName, true);
-        AudioDeviceState.selectedOutput = AudioUtils.getMixerByName(Config.selectedSpeakerName, false);
-
         INSTANCE = this;
     }
 
-    public void tick(MinecraftClient client) {
+    public void tick(Minecraft client) {
         Scheduler.INSTANCE.tick();
 
-        while (openAudioSettings.wasPressed()) {
-            MinecraftClient.getInstance().setScreen(new AudioDeviceScreen());
+        if (openMenu.consumeClick()) {
+            client.gui.setScreen(new MineboxMenuScreen());
         }
-        if (openEditMode.wasPressed()) {
-            client.setScreen(new HudEditorScreen());
+
+        if (mountDismount.consumeClick() && client.player != null) {
+            Objects.requireNonNull(client.getConnection()).send(new ServerboundChatCommandPacket("ride"));
         }
-        if (openAtlas.wasPressed()) {
-            if (state.getMbxItems() == null || state.getMbxItems().isEmpty()) {
-                Utils.displayChatErrorMessage(Text.translatable("mineboxadditions.strings.errors.missing_atlas_data").getString());
-                return;
-            }
-            client.setScreen(new MineboxAtlasScreen());
-        }
-        if (openHarvestables.wasPressed()) {
-            client.setScreen(new HarvestableScreen());
-            //client.setScreen(new HarvestableMapScreen());
-        }
-        if (openModSettings.wasPressed()) {
-            if (client.currentScreen == null) {
-                client.setScreen(ResourcefulConfigScreen.make(ConfigManager.configurator, Config.class).build());
-            }
-        }
+
+        if (castSpellOne.consumeClick()) SpellsThrottler.tryCast(1, client);
+        if (castSpellTwo.consumeClick()) SpellsThrottler.tryCast(2, client);
+        if (castSpellThree.consumeClick()) SpellsThrottler.tryCast(3, client);
+        if (castSpellFour.consumeClick()) SpellsThrottler.tryCast(4, client);
     }
 
     private void registerCommands(CommandDispatcher<FabricClientCommandSource> dispatcher) {
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("create")
-                                .executes(context -> {
-                                    SocketManager.getSocket().emit("C2SCreateAudioRoom");
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("join")
-                                .then(ClientCommandManager.argument("code", StringArgumentType.string())
-                                        .executes(context -> {
-                                            String code = StringArgumentType.getString(context, "code");
-                                            SocketManager.getSocket().emit("C2SJoinAudioRoom", code);
-                                            return Command.SINGLE_SUCCESS;
-                                        })
-                                )
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("proximity")
-                                .executes(context -> {
-                                    SocketManager.getSocket().emit("C2SToggleProximityAudio");
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("vc")
-                        .then(ClientCommandManager.literal("leave")
-                                .executes(context -> {
-                                    SocketManager.getSocket().emit("C2SLeaveAudioRoom");
-                                    return Command.SINGLE_SUCCESS;
-                                })
-                        )
-                )
-        );
-
-        dispatcher.register(ClientCommandManager.literal("mba")
-                .then(ClientCommandManager.literal("debug")
+        dispatcher.register(ClientCommands.literal("mba")
+                .then(ClientCommands.literal("debug")
                     .executes(context -> {
                         Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
                         Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
@@ -192,45 +130,72 @@ public class MineboxAdditions implements ClientModInitializer {
 
                         return Command.SINGLE_SUCCESS;
                     })
+                    .then(ClientCommands.literal("test_shops")
+                        .executes(context -> {
+                            boolean frozen = ShopManager.toggleHudFreeze();
+                            if (frozen) {
+                                TextElement text = HudManager.INSTANCE.get(ShopHud.class)
+                                        .getNamedElement("text", TextElement.class);
+                                text.setLines(java.util.List.of(
+                                        Component.literal("Shop 1: Item 1"),
+                                        Component.literal("Shop 2: Item 2"),
+                                        Component.literal("Shop 3: Item 3"),
+                                        Component.literal("/mba debug test_shops to exit test mode")
+                                ));
+                                Utils.displayChatInfoMessage("Shop HUD is now in test mode. Rerun the command to exit.");
+                            } else {
+                                Utils.displayChatInfoMessage("Shop HUD test mode disabled.");
+                            }
+                            return Command.SINGLE_SUCCESS;
+                        })
+                    )
                 )
         );
     }
 
+    private static final KeyMapping.Category MBX_CATEGORY = new KeyMapping.Category(Identifier.withDefaultNamespace(NAMESPACE));
+
     private void registerKeybinds() {
-        openModSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.modSettings.open",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_O,
-                "MineboxAdditions"
+        openMenu = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "mineboxadditions.strings.keybinds.menu.open",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_M,
+                MBX_CATEGORY
         ));
 
-        openAudioSettings = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.audioSettings.open",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_L,
-                "MineboxAdditions"
+        mountDismount = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "mineboxadditions.strings.keybinds.mount",
+                InputConstants.Type.KEYSYM,
+                GLFW.GLFW_KEY_R,
+                MBX_CATEGORY
         ));
 
-        openEditMode = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.hudEditor.open",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_I,
-                "MineboxAdditions"
+        castSpellOne = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "mineboxadditions.strings.keybinds.spellcast.one",
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
+                MBX_CATEGORY
         ));
 
-        openHarvestables = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.harvestables.open",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_P,
-                "MineboxAdditions"
+        castSpellTwo = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "mineboxadditions.strings.keybinds.spellcast.two",
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
+                MBX_CATEGORY
         ));
 
-        openAtlas = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "mineboxadditions.strings.keybinds.atlas.open",
-                InputUtil.Type.KEYSYM,
-                GLFW.GLFW_KEY_RIGHT_SHIFT,
-                "MineboxAdditions"
+        castSpellThree = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "mineboxadditions.strings.keybinds.spellcast.three",
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
+                MBX_CATEGORY
         ));
 
+        castSpellFour = KeyMappingHelper.registerKeyMapping(new KeyMapping(
+                "mineboxadditions.strings.keybinds.spellcast.four",
+                InputConstants.Type.KEYSYM,
+                InputConstants.UNKNOWN.getValue(),
+                MBX_CATEGORY
+        ));
     }
 }

@@ -1,36 +1,48 @@
 package io.dampen59.mineboxadditions.features.hud.huds;
 
-import io.dampen59.mineboxadditions.config.huds.HudsConfig;
+import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.config.huds.categories.HudPositions;
+import io.dampen59.mineboxadditions.config.huds.categories.MineboxDefaultHuds;
 import io.dampen59.mineboxadditions.features.hud.Hud;
 import io.dampen59.mineboxadditions.features.hud.elements.SpacerElement;
 import io.dampen59.mineboxadditions.features.hud.elements.TextElement;
-import io.dampen59.mineboxadditions.features.hud.elements.TextureElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.HStackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.StackElement;
 import io.dampen59.mineboxadditions.features.hud.elements.stack.VStackElement;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 
 public class IslandHud extends Hud {
     public IslandHud() {
         super(
-                () -> HudsConfig.island,
-                s -> HudsConfig.island = s,
+                () -> MineboxDefaultHuds.island,
+                s -> MineboxDefaultHuds.island = s,
                 () -> HudPositions.island.x,
                 x -> HudPositions.island.x = x,
                 () -> HudPositions.island.y,
                 y -> HudPositions.island.y = y);
+
+        ClientTickEvents.END_CLIENT_TICK.register(this::update);
+    }
+
+    private void update(Minecraft client) {
+        Component island = MineboxAdditions.INSTANCE.state.getBossbarIsland();
+        if (island != null) {
+            getNamedElement("text", TextElement.class).setValue(island);
+        }
+    }
+
+    @Override
+    public boolean shouldRender() {
+        return MineboxAdditions.INSTANCE.state.getBossbarIsland() != null;
     }
 
     @Override
     public StackElement init() {
-        Identifier texture = Identifier.of("mineboxadditions", "textures/icons/island.png");
-        TextElement text = new TextElement(Text.of("Island"));
+        TextElement text = new TextElement(Component.literal("Island"));
 
         HStackElement hstack = new HStackElement()
-                .add(new SpacerElement(4))
-                .add(new TextureElement(texture, 10, 10))
                 .add(new SpacerElement(4))
                 .add(new VStackElement().add(new SpacerElement(1), text))
                 .add(new SpacerElement(4));

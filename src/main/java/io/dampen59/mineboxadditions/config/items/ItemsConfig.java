@@ -23,4 +23,12 @@ public class ItemsConfig {
     @ConfigEntry(id = "rangeDisplay", translation = "mineboxadditions.config.items.rangeDisplay")
     @Comment(value = "", translation = "mineboxadditions.config.items.rangeDisplay.desc")
     public static boolean rangeDisplay = false;
+
+    @ConfigEntry(id = "durabilityBar", translation = "mineboxadditions.config.items.durabilityBar")
+    @Comment(value = "", translation = "mineboxadditions.config.items.durabilityBar.desc")
+    public static boolean durabilityBar = true;
+
+    @ConfigEntry(id = "haversackFillBar", translation = "mineboxadditions.config.items.haversackFillBar")
+    @Comment(value = "", translation = "mineboxadditions.config.items.haversackFillBar.desc")
+    public static boolean haversackFillBar = true;
 }

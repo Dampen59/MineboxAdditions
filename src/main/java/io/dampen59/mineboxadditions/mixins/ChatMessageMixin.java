@@ -4,9 +4,9 @@ import io.dampen59.mineboxadditions.MineboxAdditions;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import io.dampen59.mineboxadditions.utils.WeatherUtils;
-import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.text.Text;
+import net.minecraft.client.multiplayer.ClientPacketListener;
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket;
+import net.minecraft.network.chat.Component;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ClientPlayNetworkHandler.class)
+@Mixin(ClientPacketListener.class)
 public class ChatMessageMixin {
 
-    @Inject(method = "onGameMessage", at = @At("HEAD"))
-    private void mbx$onGameMessage(GameMessageS2CPacket packet, CallbackInfo ci) throws JSONException {
-        Text messageText = packet.content();
+    @Inject(method = "handleSystemChat", at = @At("HEAD"))
+    private void mbx$onGameMessage(ClientboundSystemChatPacket packet, CallbackInfo ci) throws JSONException {
+        Component messageText = packet.content();
         String rawMessage = messageText.getString();
 
         if (!WeatherUtils.isFullWeatherMessage(rawMessage)) return;

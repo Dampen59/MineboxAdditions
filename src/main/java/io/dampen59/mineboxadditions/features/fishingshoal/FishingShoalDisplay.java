@@ -1,31 +1,30 @@
 package io.dampen59.mineboxadditions.features.fishingshoal;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dampen59.mineboxadditions.MineboxAdditions;
-import io.dampen59.mineboxadditions.config.huds.categories.FishingDrops;
+import io.dampen59.mineboxadditions.config.render.categories.FishingShoals;
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.ImageUtils;
-import io.dampen59.mineboxadditions.utils.SocketManager;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.texture.TextureManager;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.entity.decoration.DisplayEntity;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.texture.TextureManager;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.world.clock.WorldClocks;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.Display;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 
@@ -36,46 +35,29 @@ import static io.dampen59.mineboxadditions.utils.ImageUtils.textureExists;
 public class FishingShoalDisplay {
     private static List<FishingShoal.Item> shoalItems = new ArrayList<>();
 
-    public static void init() {
-        SocketManager.getSocket().on("S2CMineboxFishables", FishingShoalDisplay::update);
-    }
+    public static void init() { }
 
-    private static void update(Object[] args) {
-        String jsonData = (String) args[0];
-
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            List<FishingShoal.Item> items = mapper.readValue(jsonData,
-                    mapper.getTypeFactory().constructCollectionType(List.class,
-                            FishingShoal.Item.class));
-
-            for (FishingShoal.Item item : items) {
-                if (item.getTexture() == null) {
-                    MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
-                    continue;
-                }
-
-                String textureName = "textures/fish/" + item.getName() + ".png";
-                Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
-                if (resource != null)
-                    item.setResource(resource);
+    public static void loadFromApi(List<FishingShoal.Item> items) {
+        for (FishingShoal.Item item : items) {
+            if (item.getTexture() == null) {
+                MineboxAdditions.LOGGER.warn("Fish {} has null texture data", item.getName());
+                continue;
             }
-
-            shoalItems = items;
-        } catch (JsonProcessingException e) {
-            MineboxAdditions.LOGGER.error("[SocketManager] Failed to load Minebox Fishables JSON: {}",
-                    e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            String textureName = "textures/fish/" + item.getName() + ".png";
+            Identifier resource = ImageUtils.createTextureFromBase64(item.getTexture(), textureName);
+            if (resource != null) item.setResource(resource);
         }
+        shoalItems = items;
     }
 
-    public static void handle(WorldRenderContext context) {
-        MinecraftClient client = MinecraftClient.getInstance();
-        Box box = client.player.getBoundingBox()
-                .expand(FishingDrops.renderRadius);
+    public static void handle(LevelRenderContext context) {
+        Minecraft client = Minecraft.getInstance();
+        AABB box = client.player.getBoundingBox()
+                .inflate(FishingShoals.renderRadius);
         Map<Entity, String> shoals = new HashMap<>();
 
-        for (Entity entity : client.world.getOtherEntities(client.player, box,
-                e -> e instanceof DisplayEntity.TextDisplayEntity)) {
+        for (Entity entity : client.level.getEntities(client.player, box,
+                e -> e instanceof Display.TextDisplay)) {
             String key = getCachedEntityTextKey(entity);
             if (key != null && key.startsWith("mbx.harvestables.shoal")) {
                 shoals.put(entity, key);
@@ -87,23 +69,23 @@ public class FishingShoalDisplay {
         }
     }
 
-    private static void render(Entity entity, String translationKey, WorldRenderContext context) {
+    private static void render(Entity entity, String translationKey, LevelRenderContext context) {
         if (!isBillboardEntity(entity)) return;
         if (!translationKey.contains("shoal")) return;
         String shoalName = translationKey.split("harvestables\\.")[1].split("\\.name")[0];
 
-        MatrixStack matrices = context.matrixStack();
-        VertexConsumerProvider vertexConsumers = context.consumers();
-        if (matrices == null || vertexConsumers == null) return;
+        PoseStack matrices = context.poseStack();
+        SubmitNodeCollector collector = context.submitNodeCollector();
+        if (matrices == null || collector == null) return;
 
-        matrices.push();
-        Vec3d entityPos = entity.getPos().subtract(context.camera().getPos());
+        matrices.pushPose();
+        Vec3 entityPos = entity.position().subtract(context.levelState().cameraRenderState.pos);
         matrices.translate(entityPos.x, entityPos.y - 0.5, entityPos.z);
 
-        List<Identifier> textures = getTexture(shoalName, context.world());
-        var camera = MinecraftClient.getInstance().gameRenderer.getCamera();
-        float yaw = camera.getYaw();
-        float pitch = camera.getPitch();
+        List<Identifier> textures = getTexture(shoalName, Minecraft.getInstance().level);
+        var localPlayer = Minecraft.getInstance().player;
+        float yaw = (localPlayer != null) ? localPlayer.getYRot() : 0f;
+        float pitch = (localPlayer != null) ? localPlayer.getXRot() : 0f;
 
         float textureSize = 0.5f;
         float spacing = 0.2f;
@@ -113,64 +95,65 @@ public class FishingShoalDisplay {
 
         for (int i = 0; i < textures.size(); i++) {
             Identifier texture = textures.get(i);
-            VertexConsumer buffer = vertexConsumers.getBuffer(RenderLayer.getEntityTranslucent(texture));
 
-            matrices.push();
+            matrices.pushPose();
             float xOffset = startOffset + i * (textureSize + spacing);
 
-            matrices.multiply(new Quaternionf()
+            matrices.mulPose(new Quaternionf()
                     .rotationYXZ((float) Math.toRadians(-yaw), (float) Math.toRadians(pitch), 0));
             matrices.translate(xOffset, 0, 0);
 
-            Matrix4f matrix = matrices.peek().getPositionMatrix();
             float half = textureSize / 2;
 
-            buffer.vertex(matrix, -half, -half, 0).color(255, 255, 255, 255).texture(1, 1)
-                    .overlay(OverlayTexture.DEFAULT_UV).light(15728880).normal(0, 0, 1);
-            buffer.vertex(matrix, -half, half, 0).color(255, 255, 255, 255).texture(1, 0)
-                    .overlay(OverlayTexture.DEFAULT_UV).light(15728880).normal(0, 0, 1);
-            buffer.vertex(matrix, half, half, 0).color(255, 255, 255, 255).texture(0, 0)
-                    .overlay(OverlayTexture.DEFAULT_UV).light(15728880).normal(0, 0, 1);
-            buffer.vertex(matrix, half, -half, 0).color(255, 255, 255, 255).texture(0, 1)
-                    .overlay(OverlayTexture.DEFAULT_UV).light(15728880).normal(0, 0, 1);
+            collector.submitCustomGeometry(matrices, RenderTypes.entityTranslucent(texture), (pose, buffer) -> {
+                Matrix4f matrix = pose.pose();
+                buffer.addVertex(matrix, -half, -half, 0).setColor(255, 255, 255, 255).setUv(1, 1)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+                buffer.addVertex(matrix, -half, half, 0).setColor(255, 255, 255, 255).setUv(1, 0)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+                buffer.addVertex(matrix, half, half, 0).setColor(255, 255, 255, 255).setUv(0, 0)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+                buffer.addVertex(matrix, half, -half, 0).setColor(255, 255, 255, 255).setUv(0, 1)
+                        .setOverlay(OverlayTexture.NO_OVERLAY).setLight(15728880).setNormal(0, 0, 1);
+            });
 
-            matrices.pop();
+            matrices.popPose();
         }
-        matrices.pop();
+        matrices.popPose();
     }
 
     private static boolean isBillboardEntity(Entity entity) {
-        if (entity instanceof ArmorStandEntity stand) {
+        if (entity instanceof ArmorStand stand) {
             boolean hasEquipment =
-                    !stand.getEquippedStack(EquipmentSlot.HEAD).isEmpty()  ||
-                            !stand.getEquippedStack(EquipmentSlot.CHEST).isEmpty() ||
-                            !stand.getEquippedStack(EquipmentSlot.LEGS).isEmpty()  ||
-                            !stand.getEquippedStack(EquipmentSlot.FEET).isEmpty();
+                    !stand.getItemBySlot(EquipmentSlot.HEAD).isEmpty()  ||
+                            !stand.getItemBySlot(EquipmentSlot.CHEST).isEmpty() ||
+                            !stand.getItemBySlot(EquipmentSlot.LEGS).isEmpty()  ||
+                            !stand.getItemBySlot(EquipmentSlot.FEET).isEmpty();
 
-            if (!hasEquipment && (stand.hasNoGravity() || stand.isInvisible())) {
+            if (!hasEquipment && (stand.isNoGravity() || stand.isInvisible())) {
                 return true;
             }
         }
 
-        if (entity instanceof DisplayEntity.TextDisplayEntity) {
+        if (entity instanceof Display.TextDisplay) {
             return true;
         }
 
-        boolean isStationary = entity.hasNoGravity() || entity.getVelocity().lengthSquared() < 0.0001;
+        boolean isStationary = entity.isNoGravity() || entity.getDeltaMovement().lengthSqr() < 0.0001;
         boolean hasText = getEntityText(entity) != null;
-        boolean isSpecial = entity.getType() == EntityType.INTERACTION
-                || entity.getType() == EntityType.AREA_EFFECT_CLOUD
-                || entity.getType() == EntityType.MARKER;
+        boolean isSpecial = entity.getType() == EntityTypes.INTERACTION
+                || entity.getType() == EntityTypes.AREA_EFFECT_CLOUD
+                || entity.getType() == EntityTypes.MARKER;
 
         return (isStationary && hasText) || isSpecial;
     }
 
-    private static Text getEntityText(Entity entity) {
+    private static Component getEntityText(Entity entity) {
         if (entity.hasCustomName()) {
             return entity.getCustomName();
         }
-        if (entity instanceof DisplayEntity.TextDisplayEntity textDisplay) {
-            Text t = textDisplay.getText();
+        if (entity instanceof Display.TextDisplay textDisplay) {
+            Component t = textDisplay.getText();
             if (t != null && !t.getString().isEmpty()) {
                 return t;
             }
@@ -178,13 +161,13 @@ public class FishingShoalDisplay {
         return null;
     }
 
-    private static List<Identifier> getTexture(String shoal, World world) {
+    private static List<Identifier> getTexture(String shoal, Level world) {
         State state = MineboxAdditions.INSTANCE.state;
         List<Identifier> textures = new ArrayList<>();
         boolean isRaining = world.isRaining();
         boolean isStorming = world.isThundering();
         boolean isFullMoon = state.getCurrentMoonPhase() == 0;
-        long currentWorldTicks = world.getTimeOfDay() % 24000;
+        long currentWorldTicks = world.clockManager().getTotalTicks(world.registryAccess().getOrThrow(WorldClocks.OVERWORLD)) % 24000;
 
         for (FishingShoal.Item item : shoalItems) {
             if (!item.getShoal().equals(shoal)) continue;
@@ -198,7 +181,7 @@ public class FishingShoalDisplay {
                     (!Boolean.TRUE.equals(conditions.getFullMoon()) || isFullMoon);
 
             if (!weatherRequired || weatherMet) {
-                TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+                TextureManager textureManager = Minecraft.getInstance().getTextureManager();
                 Identifier resourceID = item.getResource();
                 if (textureExists(textureManager, resourceID)) {
                     textures.add(resourceID);
@@ -217,7 +200,7 @@ public class FishingShoalDisplay {
     }
 
     private static String getCachedEntityTextKey(Entity entity) {
-        String uuid = entity.getUuid().toString();
+        String uuid = entity.getUUID().toString();
         State state = MineboxAdditions.INSTANCE.state;
         if (state.hasEntityTextCached(uuid)) {
             return state.getCachedEntityText(uuid);
@@ -228,31 +211,31 @@ public class FishingShoalDisplay {
     }
 
     private static String getEntityTextKeyUncached(Entity entity) {
-        Text t = entity.hasCustomName() ? entity.getCustomName() : null;
-        if (t == null && entity instanceof DisplayEntity.TextDisplayEntity td) {
+        Component t = entity.hasCustomName() ? entity.getCustomName() : null;
+        if (t == null && entity instanceof Display.TextDisplay td) {
             t = td.getText();
         }
         if (t == null) return null;
         return extractShoalTranslationKey(t);
     }
 
-    private static String extractShoalTranslationKey(Text text) {
+    private static String extractShoalTranslationKey(Component text) {
         if (text == null) return null;
 
-        if (text.getContent() instanceof TranslatableTextContent tc) {
+        if (text.getContents() instanceof TranslatableContents tc) {
             String key = tc.getKey();
             if (key != null && key.startsWith("mbx.harvestables.shoal")) {
                 return key;
             }
             for (Object arg : tc.getArgs()) {
-                if (arg instanceof Text tArg) {
+                if (arg instanceof Component tArg) {
                     String found = extractShoalTranslationKey(tArg);
                     if (found != null) return found;
                 }
             }
         }
 
-        for (Text sibling : text.getSiblings()) {
+        for (Component sibling : text.getSiblings()) {
             String found = extractShoalTranslationKey(sibling);
             if (found != null) return found;
         }

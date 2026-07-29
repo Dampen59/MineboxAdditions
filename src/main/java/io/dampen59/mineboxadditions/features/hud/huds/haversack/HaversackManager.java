@@ -3,17 +3,18 @@ package io.dampen59.mineboxadditions.features.hud.huds.haversack;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.render.RenderTickCounter;
-import net.minecraft.component.DataComponentTypes;
-import net.minecraft.component.type.LoreComponent;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableTextContent;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.minecraft.resources.Identifier;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 public class HaversackManager {
     private int lastAmountInside = -1;
@@ -23,12 +24,12 @@ public class HaversackManager {
 
     public HaversackManager() {
         ClientTickEvents.END_CLIENT_TICK.register(this::handle);
-        HudRenderCallback.EVENT.register(this::render);
+        HudElementRegistry.attachElementBefore(VanillaHudElements.CHAT, Identifier.fromNamespaceAndPath("mineboxadditions", "haversack"), this::render);
     }
 
-    private void handle(MinecraftClient client) {
-        if (client.player == null || client.world == null || !Utils.isOnMinebox()) return;
-        ItemStack offHandStack = client.player.getOffHandStack();
+    private void handle(Minecraft client) {
+        if (client.player == null || client.level == null || !Utils.isOnMinebox()) return;
+        ItemStack offHandStack = client.player.getOffhandItem();
         String offHandStackId = Utils.getMineboxItemId(offHandStack);
         if (offHandStackId != null && offHandStackId.startsWith("haversack_")) {
             handleStack(offHandStack);
@@ -37,7 +38,7 @@ public class HaversackManager {
         }
     }
 
-    private void render(DrawContext context, RenderTickCounter tickCounter) {
+    private void render(GuiGraphicsExtractor context, DeltaTracker tickCounter) {
         if (fillRatePerSecond != 0) {
             var rate = HudManager.INSTANCE.get(HaversackHud.RateHud.class);
             rate.update(fillRatePerSecond);
@@ -50,28 +51,30 @@ public class HaversackManager {
     }
 
     private void handleStack(ItemStack stack) {
-        var itemData = stack.get(DataComponentTypes.CUSTOM_DATA);
+        var itemData = stack.get(DataComponents.CUSTOM_DATA);
         if (itemData == null) return;
-        NbtCompound nbtData = itemData.copyNbt();
+        CompoundTag nbtData = itemData.copyTag();
         if (nbtData == null || !nbtData.contains("mbitems:id")) return;
         String id = nbtData.getString("mbitems:id").orElse("");
-        LoreComponent loreComponent = stack.get(DataComponentTypes.LORE);
+        ItemLore loreComponent = stack.get(DataComponents.LORE);
         if (loreComponent == null) return;
 
-        for (Text lore : loreComponent.lines()) {
-            if (!(lore.getContent() instanceof TranslatableTextContent translatableContent)) continue;
+        for (Component lore : loreComponent.lines()) {
+            if (!(lore.getContents() instanceof TranslatableContents translatableContent)) continue;
             if (id.contains("haversack") && translatableContent.getKey().contains("mbx.items.infinite_bag.amount_inside")) {
                 parseInformation(stack, nbtData, translatableContent);
             }
         }
     }
 
-    private void parseInformation(ItemStack stack, NbtCompound nbtData, TranslatableTextContent content) {
-        StringVisitable quantityArg = content.getArg(0);
-        String[] parts = quantityArg.getString().split("/");
+    private void parseInformation(ItemStack stack, CompoundTag nbtData, TranslatableContents content) {
+        Object arg = content.getArgs()[0];
+        if (!(arg instanceof Component argComponent)) return;
+        String quantityStr = argComponent.getString();
+        String[] parts = quantityStr.split("/");
         if (parts.length < 2) return;
         int maxQuantity = Integer.parseInt(parts[1]);
-        NbtCompound persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
+        CompoundTag persistentData = nbtData.getCompound("mbitems:persistent").orElse(null);
         int amountInside = persistentData.getInt("mbitems:amount_inside").orElse(0);
         long currentTime = System.currentTimeMillis();
         if (lastAmountInside >= 0) {
