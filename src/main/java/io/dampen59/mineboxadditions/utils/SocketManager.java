@@ -27,7 +27,7 @@ import java.util.Map;
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private static Socket socket;
-    private static final int protocol = 13;
+    private static final int protocol = 14;
     private static volatile String pendingSessionToken = null;
     @NotNull
     public static Socket getSocket() {
@@ -36,8 +36,12 @@ public class SocketManager {
     }
 
     public static void connectWithSessionToken(String sessionToken) {
-        pendingSessionToken = sessionToken;
-        getSocket().connect();
+        pendingSessionToken = sessionToken != null ? sessionToken : "";
+        Socket s = getSocket();
+        if (s.connected()) {
+            s.disconnect();
+        }
+        s.connect();
     }
 
     public static void init() {
@@ -45,13 +49,20 @@ public class SocketManager {
 
         socket.on(Socket.EVENT_CONNECT, args -> {
             Minecraft client = Minecraft.getInstance();
-            if (client != null && client.player != null) {
-                String playerName = client.player.getName().getString();
-                String playerUuid = client.player.getUUID().toString();
-                String playerLang = client.getLanguageManager().getSelected();
-                socket.emit("C2SHelloConnectMessage", playerUuid, playerName, playerLang, protocol, pendingSessionToken != null ? pendingSessionToken : "");
-                ApiUtils.fetchAll(MineboxAdditions.INSTANCE.state);
+            if (client == null || client.player == null) return;
+
+            String token = pendingSessionToken;
+            pendingSessionToken = null;
+            if (token == null) {
+                SessionConnector.fetch(SocketManager::connectWithSessionToken);
+                return;
             }
+
+            String playerName = client.player.getName().getString();
+            String playerUuid = client.player.getUUID().toString();
+            String playerLang = client.getLanguageManager().getSelected();
+            socket.emit("C2SHelloConnectMessage", playerUuid, playerName, playerLang, protocol, token);
+            ApiUtils.fetchAll(MineboxAdditions.INSTANCE.state);
         });
 
         socket.on("S2CProtocolMismatch", args -> Utils.showToastNotification(

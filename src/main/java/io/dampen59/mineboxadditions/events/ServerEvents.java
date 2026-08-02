@@ -24,8 +24,7 @@ public class ServerEvents {
             if (serverEntry != null) {
                 String serverAddress = serverEntry.ip;
                 if (isMineboxServer(serverAddress)) {
-                    SocketManager.getSocket().connect();
-                    //SessionConnector.fetch(SocketManager::connectWithSessionToken);
+                    SessionConnector.fetch(SocketManager::connectWithSessionToken);
                 }
             }
         });
@@ -33,9 +32,7 @@ public class ServerEvents {
 
     private void registerServerLeaveEvent() {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
-            if (SocketManager.getSocket().connected()) {
-                SocketManager.getSocket().disconnect();
-            }
+            SocketManager.getSocket().disconnect();
             modState.reset();
         });
     }
