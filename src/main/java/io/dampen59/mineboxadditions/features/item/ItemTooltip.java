@@ -52,26 +52,23 @@ public class ItemTooltip {
                                     String jsonKey = translationKey.replace(".", "_");
                                     MineboxStat stat = mbxItem.getStat(jsonKey).orElse(null);
                                     if (stat != null && stat.getMin() != null && stat.getMax() != null) {
-                                        int minRoll = stat.getMin();
-                                        int maxRoll = stat.getMax();
-
-                                        ChatFormatting color = (minRoll < 0 && maxRoll < 0)
-                                                ? ChatFormatting.RED
-                                                : ChatFormatting.DARK_GREEN;
-
-                                        String numericRange = (minRoll == maxRoll)
-                                                ? " [" + maxRoll + "]"
-                                                : " [" + minRoll + " to " + maxRoll + "]";
-
-                                        newNestedSiblings.add(
-                                                Component.literal(numericRange)
-                                                        .setStyle(Style.EMPTY.withColor(color))
-                                        );
+                                        newNestedSiblings.add(buildRollRange(stat));
                                         modified = true;
                                         continue;
                                     }
                                 }
                             }
+
+                            String resistanceKey = getResistanceStatKey(nestedSibling);
+                            if (resistanceKey != null) {
+                                MineboxStat stat = mbxItem.getStat(resistanceKey).orElse(null);
+                                if (stat != null && stat.getMin() != null && stat.getMax() != null) {
+                                    newNestedSiblings.add(buildRollRange(stat));
+                                    modified = true;
+                                    continue;
+                                }
+                            }
+
                             newNestedSiblings.add(nestedSibling);
                         }
 
@@ -142,5 +139,36 @@ public class ItemTooltip {
             Component moreInfos = firstPart.copy().append(midPart).append(endPart);
             lines.add(moreInfos);
         }
+    }
+
+    private static String getResistanceStatKey(Component component) {
+        String element = null;
+        boolean hasResistance = false;
+        for (Component child : component.getSiblings()) {
+            if (child.getContents() instanceof TranslatableContents translatableContent) {
+                String key = translatableContent.getKey();
+                if (key.startsWith("mbx.elements.")) {
+                    element = key.substring("mbx.elements.".length());
+                } else if (key.equals("mbx.resistance")) {
+                    hasResistance = true;
+                }
+            }
+        }
+        return (element != null && hasResistance) ? "mbx_stats_" + element + "_resistance" : null;
+    }
+
+    private static Component buildRollRange(MineboxStat stat) {
+        int minRoll = stat.getMin();
+        int maxRoll = stat.getMax();
+
+        ChatFormatting color = (minRoll < 0 && maxRoll < 0)
+                ? ChatFormatting.RED
+                : ChatFormatting.DARK_GREEN;
+
+        String numericRange = (minRoll == maxRoll)
+                ? " [" + maxRoll + "]"
+                : " [" + minRoll + " to " + maxRoll + "]";
+
+        return Component.literal(numericRange).setStyle(Style.EMPTY.withColor(color));
     }
 }
