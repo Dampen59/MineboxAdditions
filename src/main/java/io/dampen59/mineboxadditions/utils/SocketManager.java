@@ -49,7 +49,10 @@ public class SocketManager {
 
         socket.on(Socket.EVENT_CONNECT, args -> {
             Minecraft client = Minecraft.getInstance();
-            if (client == null || client.player == null) return;
+            if (client == null || client.player == null) {
+                socket.disconnect();
+                return;
+            }
 
             String token = pendingSessionToken;
             pendingSessionToken = null;
