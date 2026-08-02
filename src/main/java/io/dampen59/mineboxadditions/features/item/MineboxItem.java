@@ -383,14 +383,20 @@ public class MineboxItem {
 
     public static Component getColoredStatName(String stat) {
         String key = stat.toLowerCase();
-        record S(String icon, String translatable, int color) {}
+        record S(String icon, String translatable, int color, boolean resistance) {
+            S(String icon, String translatable, int color) { this(icon, translatable, color, false); }
+        }
         S s = switch (key) {
             case "mbx.stats.health"                -> new S("❤ ",  "mbx.stats.health",             0xE62046);
             case "mbx.stats.strength"              -> new S("₪ ",  "mbx.stats.strength",           0x5A370B);
+            case "mbx.stats.earth.resistance"      -> new S("₪ ",  "mbx.elements.earth",           0x5A370B, true);
             case "mbx.stats.agility"               -> new S("☄ ",  "mbx.stats.agility",            0x89C464);
+            case "mbx.stats.air.resistance"        -> new S("☄ ",  "mbx.elements.air",             0x89C464, true);
             case "mbx.stats.intelligence"          -> new S("🔥 ", "mbx.stats.intelligence",       0xE5412B);
+            case "mbx.stats.fire.resistance"       -> new S("🔥 ", "mbx.elements.fire",            0xE5412B, true);
             case "mbx.stats.wisdom"                -> new S("☽ ",  "mbx.stats.wisdom",             0x886EF6);
             case "mbx.stats.luck"                  -> new S("🌊 ", "mbx.stats.luck",               0x7ED0FF);
+            case "mbx.stats.water.resistance"      -> new S("🌊 ", "mbx.elements.water",           0x7ED0FF, true);
             case "mbx.stats.fortune"               -> new S("🔱 ", "mbx.stats.fortune",            0xF79440);
             case "mbx.stats.defense"               -> new S("🛡 ", "mbx.stats.defense",            0xCCCCCC);
             case "mbx.stats.energy"                -> new S("⚡ ", "mbx.stats.energy",             0xEDBA21);
@@ -409,9 +415,12 @@ public class MineboxItem {
             default -> null;
         };
         if (s == null) return Component.literal(stat).setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE));
-        return Component.literal(s.icon())
-                .append(Component.translatable(s.translatable()))
-                .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(s.color())));
+        MutableComponent name = Component.literal(s.icon())
+                .append(Component.translatable(s.translatable()));
+        if (s.resistance()) {
+            name.append(" ").append(Component.translatable("mbx.resistance"));
+        }
+        return name.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(s.color())));
     }
 
 
