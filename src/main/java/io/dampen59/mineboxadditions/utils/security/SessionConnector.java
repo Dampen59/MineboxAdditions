@@ -19,7 +19,9 @@ public class SessionConnector {
     public static void fetch(Consumer<String> callback) {
         AtomicBoolean done = new AtomicBoolean(false);
         Consumer<String> guarded = token -> {
-            if (done.compareAndSet(false, true)) callback.accept(token);
+            if (done.compareAndSet(false, true)) {
+                callback.accept(token);
+            }
         };
         AtomicReference<Connection> connRef = new AtomicReference<>();
 

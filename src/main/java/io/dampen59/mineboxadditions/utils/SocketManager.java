@@ -23,12 +23,21 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private static Socket socket;
-    private static final int protocol = 14;
+    private static final int protocol = 15;
     private static volatile String pendingSessionToken = null;
+
+    private static final AtomicBoolean sessionFetchInFlight = new AtomicBoolean(false);
+    private static final AtomicInteger consecutiveSessionFailures = new AtomicInteger(0);
+    private static final int BASE_BACKOFF_TICKS = 100;
+    private static final int MAX_BACKOFF_TICKS = 3600;
+
     @NotNull
     public static Socket getSocket() {
         if (socket == null) init();
@@ -44,6 +53,25 @@ public class SocketManager {
         s.connect();
     }
 
+    private static void requestSessionToken() {
+        if (!sessionFetchInFlight.compareAndSet(false, true)) {
+            return; // already fetching, skip
+        }
+
+        SessionConnector.fetch(token -> {
+            sessionFetchInFlight.set(false);
+            if (token == null || token.isEmpty()) {
+                int failures = consecutiveSessionFailures.incrementAndGet();
+                int backoffTicks = Math.min(BASE_BACKOFF_TICKS << Math.min(failures - 1, 6), MAX_BACKOFF_TICKS);
+                int jitterTicks = ThreadLocalRandom.current().nextInt(backoffTicks / 4 + 1);
+                Scheduler.INSTANCE.schedule(SocketManager::requestSessionToken, backoffTicks + jitterTicks);
+            } else {
+                consecutiveSessionFailures.set(0);
+                connectWithSessionToken(token);
+            }
+        });
+    }
+
     public static void init() {
         socket = IO.socket(URI.create("https://mineboxadditions.bartier.me"), IO.Options.builder().build());
 
@@ -57,7 +85,7 @@ public class SocketManager {
             String token = pendingSessionToken;
             pendingSessionToken = null;
             if (token == null) {
-                SessionConnector.fetch(SocketManager::connectWithSessionToken);
+                requestSessionToken();
                 return;
             }
 
@@ -118,9 +146,7 @@ public class SocketManager {
             ShopManager.getMermaid().set(itemQuantity, itemTranslationKey, itemTranslationKeyArgs);
         });
 
-        socket.on("S2CInvalidSession", args -> {
-            SessionConnector.fetch(SocketManager::connectWithSessionToken);
-        });
+        socket.on("S2CInvalidSession", args -> requestSessionToken());
 
         socket.on("S2CMineboxApiUnauthorized", args -> {
             Utils.displayChatErrorMessage(Component
