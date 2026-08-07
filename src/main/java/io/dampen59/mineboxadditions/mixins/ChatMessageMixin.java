@@ -42,7 +42,7 @@ public class ChatMessageMixin {
             if (forecastData != null) {
                 try {
                     JSONObject forecastDataJson = WeatherUtils.parseWeatherForecastJson(forecastData);
-                    SocketManager.getSocket().emit("C2SWeatherForecastData", forecastDataJson);
+                    SocketManager.getSocket().emit("C2SWeatherForecast", forecastDataJson);
                 } catch (JSONException e) {
                     System.out.println("Failed to serialize weather forecast data : " + e.getMessage());
                 }

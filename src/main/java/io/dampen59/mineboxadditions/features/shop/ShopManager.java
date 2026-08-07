@@ -11,6 +11,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class ShopManager {
 
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(ShopManager::tick);
-        SocketManager.getSocket().on("S2CShopOfferEvent", ShopManager::update);
+        SocketManager.getSocket().on("S2CShopOffer", ShopManager::update);
     }
 
     private static void tick(Minecraft client) {
@@ -70,11 +71,13 @@ public class ShopManager {
     }
 
     private static void update(Object[] args) {
-        String shopName = (String) args[0];
-        String itemName = (String) args[1];
+        JSONObject payload = (JSONObject) args[0];
+        String shopItemId = payload.optString("shopItemId", null);
+        String itemName = payload.optString("itemName", null);
+        if (shopItemId == null || itemName == null) return;
 
         Shop shop = Arrays.stream(Shop.values())
-                .filter(s -> s.name().equalsIgnoreCase(shopName))
+                .filter(s -> s.name().equalsIgnoreCase(shopItemId))
                 .findFirst()
                 .orElse(null);
 

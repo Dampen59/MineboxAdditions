@@ -19,6 +19,7 @@ import net.minecraft.network.chat.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.json.JSONObject;
 
 import java.util.*;
 
@@ -34,15 +35,17 @@ public class ShinyTracker {
     public static void init() {
         ClientTickEvents.END_CLIENT_TICK.register(ShinyTracker::tick);
         ClientCommandRegistrationCallback.EVENT.register(ShinyTracker::command);
-        SocketManager.getSocket().on("S2CShinyEvent", ShinyTracker::event);
+        SocketManager.getSocket().on("S2CShiny", ShinyTracker::event);
     }
 
     private static void event(Object[] args) {
         if (Config.shinyNotify == Config.ShinyNotify.OFF) return;
 
-        String playerName = (String) args[0];
-        String shinyKey = (String) args[1];
-        String shinyUuid = (String) args[2];
+        JSONObject payload = (JSONObject) args[0];
+        String playerName = payload.optString("username", null);
+        String shinyKey = payload.optString("mobNameKey", null);
+        String shinyUuid = payload.optString("shinyUuid", null);
+        if (playerName == null || shinyKey == null || shinyUuid == null) return;
 
         shinyUuids.put(shinyUuid, true);
 
@@ -119,7 +122,13 @@ public class ShinyTracker {
                 Component text = Component.translatable("mineboxadditions.shiny.found.message",
                         Component.translatable("mineboxadditions.shiny", Component.translatable(lastShinyKey)));
                 client.player.connection.sendChat(text.getString());
-                SocketManager.getSocket().emit("C2SShinyEvent", lastShinyUuid, lastShinyKey);
+                try {
+                    SocketManager.getSocket().emit("C2SShiny", new JSONObject()
+                            .put("shinyUuid", lastShinyUuid)
+                            .put("mobNameKey", lastShinyKey));
+                } catch (org.json.JSONException e) {
+                    System.out.println("Failed to serialize shiny event: " + e.getMessage());
+                }
 
                 message = Component.translatable("mineboxadditions.shiny.notify")
                         .setStyle(Style.EMPTY.withColor(0x00FD72));

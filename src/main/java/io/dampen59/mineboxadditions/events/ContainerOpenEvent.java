@@ -21,6 +21,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -54,7 +56,11 @@ public class ContainerOpenEvent {
 
         if (translationKey != null) {
             if (slotsCount <= 45) {
-                SocketManager.getSocket().emit("C2SShopOfferEvent", translationKey);
+                try {
+                    SocketManager.getSocket().emit("C2SShopOffer", new JSONObject().put("itemName", translationKey));
+                } catch (org.json.JSONException e) {
+                    System.out.println("Failed to serialize shop offer: " + e.getMessage());
+                }
             }
         } else {
             String containerTitleString = containerTitle.getString();
@@ -127,8 +133,18 @@ public class ContainerOpenEvent {
                         if (targetResource != null) targetResourceKey = targetResource.getKey();
                     }
 
-                    SocketManager.getSocket().emit("C2SMermaidRequest", itemId, requestedItemQuantity,
-                            requestedItemTranslationKey, targetResourceKey);
+                    try {
+                        JSONObject translation = new JSONObject()
+                                .put("key", requestedItemTranslationKey)
+                                .put("args", targetResourceKey != null ? new JSONArray(List.of(targetResourceKey)) : new JSONArray());
+                        JSONObject mermaidRequestPayload = new JSONObject()
+                                .put("itemId", itemId)
+                                .put("quantity", requestedItemQuantity)
+                                .put("translation", translation);
+                        SocketManager.getSocket().emit("C2SMermaidRequest", mermaidRequestPayload);
+                    } catch (org.json.JSONException e) {
+                        System.out.println("Failed to serialize mermaid request: " + e.getMessage());
+                    }
                 });
             } else if (Arrays.stream(jobsMenuTitles).anyMatch(containerTitleString::contains)) {
                 final AbstractContainerMenu handler = containerScreen.getMenu();

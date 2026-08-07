@@ -2,7 +2,6 @@ package io.dampen59.mineboxadditions.events;
 
 import io.dampen59.mineboxadditions.state.State;
 import io.dampen59.mineboxadditions.utils.ApiUtils;
-import io.dampen59.mineboxadditions.utils.security.SessionConnector;
 import io.dampen59.mineboxadditions.utils.SocketManager;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
@@ -24,7 +23,7 @@ public class ServerEvents {
             if (serverEntry != null) {
                 String serverAddress = serverEntry.ip;
                 if (isMineboxServer(serverAddress)) {
-                    SessionConnector.fetch(SocketManager::connectWithSessionToken);
+                    SocketManager.getSocket().connect();
                 }
             }
         });
