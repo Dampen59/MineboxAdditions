@@ -26,17 +26,29 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 @Environment(EnvType.CLIENT)
 public class SocketManager {
     private static Socket socket;
-    private static final int protocol = 15;
-    private static volatile String pendingSessionToken = null;
+    private static final int PROTOCOL_MIN = 16;
+    private static final int PROTOCOL_MAX = 16;
+    private static final List<String> CAPABILITIES = List.of("weather", "museum", "ah_alerts", "trusted_events", "mermaid", "shop", "shiny");
+
+    public enum ProtocolState { CONNECTED, NEGOTIATING, AUTHENTICATING, READY_TRUSTED, READY_UNTRUSTED }
+
+    private static volatile ProtocolState state = ProtocolState.CONNECTED;
+    private static volatile String currentChallenge = null;
+    private static volatile boolean apiFetched = false;
 
     private static final AtomicBoolean sessionFetchInFlight = new AtomicBoolean(false);
     private static final AtomicInteger consecutiveSessionFailures = new AtomicInteger(0);
-    private static final int BASE_BACKOFF_TICKS = 100;
+    private static final int BASE_BACKOFF_TICKS = 10;
     private static final int MAX_BACKOFF_TICKS = 3600;
+
+    private static final Pattern TICKET_SHAPE = Pattern.compile("^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]+$");
+    private static final Pattern LEGACY_TOKEN_SHAPE = Pattern.compile("^\\d+\\.[0-9a-f]{64}$");
 
     @NotNull
     public static Socket getSocket() {
@@ -44,30 +56,69 @@ public class SocketManager {
         return socket;
     }
 
-    public static void connectWithSessionToken(String sessionToken) {
-        pendingSessionToken = sessionToken != null ? sessionToken : "";
-        Socket s = getSocket();
-        if (s.connected()) {
-            s.disconnect();
-        }
-        s.connect();
+    public static ProtocolState getState() {
+        return state;
     }
 
-    private static void requestSessionToken() {
-        if (!sessionFetchInFlight.compareAndSet(false, true)) {
-            return; // already fetching, skip
+    public static boolean isTrusted() {
+        return state == ProtocolState.READY_TRUSTED;
+    }
+
+    private static void sendHello() {
+        state = ProtocolState.NEGOTIATING;
+        apiFetched = false;
+
+        Minecraft client = Minecraft.getInstance();
+        if (client == null || client.player == null) {
+            socket.disconnect();
+            return;
         }
 
-        SessionConnector.fetch(token -> {
+        try {
+            JSONObject protocol = new JSONObject().put("min", PROTOCOL_MIN).put("max", PROTOCOL_MAX);
+            JSONObject hello = new JSONObject()
+                    .put("protocol", protocol)
+                    .put("modVersion", Utils.getModVersion())
+                    .put("locale", client.getLanguageManager().getSelected())
+                    .put("capabilities", new JSONArray(CAPABILITIES));
+
+            socket.emit("C2SHello", hello);
+        } catch (org.json.JSONException e) {
+            System.out.println("[MineboxAdditions] Failed to serialize C2SHello: " + e.getMessage());
+        }
+    }
+
+    private static void authenticateWithChallenge(String challenge) {
+        currentChallenge = challenge;
+        state = ProtocolState.AUTHENTICATING;
+
+        if (!sessionFetchInFlight.compareAndSet(false, true)) {
+            return;
+        }
+
+        SessionConnector.fetch(challenge, token -> {
             sessionFetchInFlight.set(false);
-            if (token == null || token.isEmpty()) {
+
+            if (!challenge.equals(currentChallenge)) {
+                authenticateWithChallenge(currentChallenge);
+                return;
+            }
+
+            boolean looksLikeRealToken = token != null && (TICKET_SHAPE.matcher(token).matches() || LEGACY_TOKEN_SHAPE.matcher(token).matches());
+
+            if (!looksLikeRealToken) {
                 int failures = consecutiveSessionFailures.incrementAndGet();
                 int backoffTicks = Math.min(BASE_BACKOFF_TICKS << Math.min(failures - 1, 6), MAX_BACKOFF_TICKS);
                 int jitterTicks = ThreadLocalRandom.current().nextInt(backoffTicks / 4 + 1);
-                Scheduler.INSTANCE.schedule(SocketManager::requestSessionToken, backoffTicks + jitterTicks);
+                Scheduler.INSTANCE.schedule(() -> authenticateWithChallenge(currentChallenge), backoffTicks + jitterTicks);
             } else {
                 consecutiveSessionFailures.set(0);
-                connectWithSessionToken(token);
+                if (!socket.connected()) return;
+                try {
+                    socket.emit("C2SAuthenticate", new JSONObject().put("ticket", token));
+                } catch (org.json.JSONException e) {
+                    System.out.println("[MineboxAdditions] Failed to serialize C2SAuthenticate: " + e.getMessage());
+                }
             }
         });
     }
@@ -76,46 +127,96 @@ public class SocketManager {
         socket = IO.socket(URI.create("https://mineboxadditions.bartier.me"), IO.Options.builder().build());
 
         socket.on(Socket.EVENT_CONNECT, args -> {
-            Minecraft client = Minecraft.getInstance();
-            if (client == null || client.player == null) {
-                socket.disconnect();
-                return;
-            }
-
-            String token = pendingSessionToken;
-            pendingSessionToken = null;
-            if (token == null) {
-                requestSessionToken();
-                return;
-            }
-
-            String playerName = client.player.getName().getString();
-            String playerUuid = client.player.getUUID().toString();
-            String playerLang = client.getLanguageManager().getSelected();
-            socket.emit("C2SHelloConnectMessage", playerUuid, playerName, playerLang, protocol, token);
-            ApiUtils.fetchAll(MineboxAdditions.INSTANCE.state);
+            state = ProtocolState.CONNECTED;
+            sendHello();
         });
 
-        socket.on("S2CProtocolMismatch", args -> Utils.showToastNotification(
-                Component.translatable("mineboxadditions.strings.update.title").getString(),
-                Component.translatable("mineboxadditions.strings.update.content").getString()));
+        socket.on("S2CHello", args -> {
+            JSONObject payload = (JSONObject) args[0];
+            JSONObject protocol = payload.optJSONObject("protocol");
+            boolean hasSelected = protocol != null && !protocol.isNull("selected");
 
-        socket.on("S2CWeatherData", args -> {
-            String weather = (String) args[0];
-            Integer timestamp = Integer.parseInt(args[1].toString());
+            if (!hasSelected) {
+                Utils.showToastNotification(
+                        Component.translatable("mineboxadditions.strings.update.title").getString(),
+                        Component.translatable("mineboxadditions.strings.update.content").getString());
+                return; // goodbye, unsupported protocolVersion
+            }
 
-            switch (weather) {
-                case "RAIN" -> MineboxAdditions.INSTANCE.state.getWeatherState().addRainTimestamp(timestamp);
-                case "STORM" -> {
-                    MineboxAdditions.INSTANCE.state.getWeatherState().addRainTimestamp(timestamp); // Storms also equals rain :)
-                    MineboxAdditions.INSTANCE.state.getWeatherState().addStormTimestamp(timestamp);
-                }
-                default -> System.out.println("Received unknown weather data : " + weather);
+            if (!apiFetched) {
+                apiFetched = true;
+                ApiUtils.fetchAll(MineboxAdditions.INSTANCE.state);
+            }
+
+            JSONObject auth = payload.optJSONObject("auth");
+            String challenge = auth != null ? auth.optString("challenge", null) : null;
+            if (challenge != null) {
+                authenticateWithChallenge(challenge);
             }
         });
 
-        socket.on("S2ClearWeatherData", args -> {
+        socket.on("S2CAuthChallenge", args -> {
+            JSONObject payload = (JSONObject) args[0];
+            String challenge = payload.optString("challenge", null);
+            if (challenge != null) authenticateWithChallenge(challenge);
+        });
+
+        socket.on("S2CAuthResult", args -> {
+            JSONObject payload = (JSONObject) args[0];
+            boolean authenticated = payload.optBoolean("authenticated", false);
+            boolean trusted = payload.optBoolean("trusted", false);
+
+            if (authenticated && trusted) {
+                state = ProtocolState.READY_TRUSTED;
+                JSONObject player = payload.optJSONObject("player");
+                System.out.println("[MineboxAdditions] Authenticated as " + (player != null ? player.optString("name") : "?") + " (trusted)");
+            } else {
+                state = ProtocolState.READY_UNTRUSTED;
+                String error = payload.optString("error", "UNKNOWN");
+                System.out.println("[MineboxAdditions] Authentication failed (" + error + ") — running untrusted");
+            }
+        });
+
+        socket.on("S2CError", args -> {
+            JSONObject payload = (JSONObject) args[0];
+            System.out.println("[MineboxAdditions] S2CError " + payload.optString("code") + ": " + payload.optString("message"));
+        });
+
+        socket.on("S2CInitialState", args -> {
+            JSONObject payload = (JSONObject) args[0];
+
             MineboxAdditions.INSTANCE.state.getWeatherState().clear();
+            JSONObject weatherJson = payload.optJSONObject("weather");
+            if (weatherJson != null) {
+                applyTimestampArray(weatherJson.optJSONArray("rain"), false);
+                applyTimestampArray(weatherJson.optJSONArray("storm"), true);
+            }
+
+            JSONObject mermaid = payload.optJSONObject("mermaid");
+            if (mermaid != null && !mermaid.isNull("itemId")) {
+                applyMermaidUpdate(mermaid);
+            }
+        });
+
+        socket.on("S2CWeatherUpdate", args -> {
+            JSONObject entry = (JSONObject) args[0];
+            applyWeatherEntry(entry.optString("type"), entry.optLong("timestamp"));
+        });
+
+        socket.on("S2CWeatherReset", args -> {
+            JSONObject payload = (JSONObject) args[0];
+            MineboxAdditions.INSTANCE.state.getWeatherState().clear();
+            applyTimestampArray(payload.optJSONArray("rain"), false);
+            applyTimestampArray(payload.optJSONArray("storm"), true);
+        });
+
+        socket.on("S2CMermaidUpdate", args -> applyMermaidUpdate((JSONObject) args[0]));
+
+        socket.on("S2CAck", args -> {
+            JSONObject payload = (JSONObject) args[0];
+            if (!"OK".equals(payload.optString("status"))) {
+                System.out.println("[MineboxAdditions] S2CAck " + payload.optString("id") + " -> " + payload.optString("status") + " (" + payload.optString("error") + ")");
+            }
         });
 
         socket.on("S2CMotd", args -> {
@@ -139,29 +240,15 @@ public class SocketManager {
             });
         });
 
-        socket.on("S2CMermaidRequest", args -> {
-            int itemQuantity = (int) args[0];
-            String itemTranslationKey = (String) args[1];
-            String itemTranslationKeyArgs = (args[2] instanceof String) ? (String) args[2] : null;
-            ShopManager.getMermaid().set(itemQuantity, itemTranslationKey, itemTranslationKeyArgs);
-        });
-
-        socket.on("S2CInvalidSession", args -> requestSessionToken());
-
-        socket.on("S2CMineboxApiUnauthorized", args -> {
-            Utils.displayChatErrorMessage(Component
-                    .translatable("mineboxadditions.strings.errors.unauthorized-api").getString());
-        });
+        socket.on("S2CMineboxApiUnauthorized", args -> Utils.displayChatErrorMessage(Component
+                .translatable("mineboxadditions.strings.errors.unauthorized-api").getString()));
 
         socket.on("S2CMissingMuseumItems", args -> {
             List<String> itemIds = new ArrayList<>();
-            Object payload = args[0];
-            JSONArray arr = (JSONArray) payload;
+            JSONArray arr = (JSONArray) args[0];
             for (int i = 0; i < arr.length(); i++) {
                 String id = arr.optString(i, null);
-                if (id != null && !id.isEmpty()) {
-                    itemIds.add(id);
-                }
+                if (id != null && !id.isEmpty()) itemIds.add(id);
             }
             MineboxAdditions.INSTANCE.state.setMissingMuseumItemIds(itemIds);
         });
@@ -177,7 +264,6 @@ public class SocketManager {
                 String rawId = entry.optString("item_id", null);
                 if (rawId == null) continue;
                 String itemId = rawId.startsWith("mbi-") ? rawId.substring(4) : rawId;
-                if (itemId == null) continue;
                 long price = entry.optLong("price_per_unit", 0);
 
                 Map<String, Integer> stats = new HashMap<>();
@@ -216,6 +302,32 @@ public class SocketManager {
                 });
             }
         });
+    }
 
+    private static void applyWeatherEntry(String type, long timestamp) {
+        switch (type) {
+            case "RAIN" -> MineboxAdditions.INSTANCE.state.getWeatherState().addRainTimestamp((int) timestamp);
+            case "STORM" -> {
+                MineboxAdditions.INSTANCE.state.getWeatherState().addRainTimestamp((int) timestamp); // Storms also count as rain :)
+                MineboxAdditions.INSTANCE.state.getWeatherState().addStormTimestamp((int) timestamp);
+            }
+            default -> System.out.println("[MineboxAdditions] Received unknown weather entry type: " + type);
+        }
+    }
+
+    private static void applyTimestampArray(JSONArray timestamps, boolean isStorm) {
+        if (timestamps == null) return;
+        for (int i = 0; i < timestamps.length(); i++) {
+            applyWeatherEntry(isStorm ? "STORM" : "RAIN", timestamps.optLong(i));
+        }
+    }
+
+    private static void applyMermaidUpdate(JSONObject mermaid) {
+        int quantity = mermaid.optInt("quantity", 0);
+        JSONObject translation = mermaid.optJSONObject("translation");
+        String key = translation != null ? translation.optString("key", null) : null;
+        JSONArray args = translation != null ? translation.optJSONArray("args") : null;
+        String firstArg = args != null && args.length() > 0 ? args.optString(0, null) : null;
+        ShopManager.getMermaid().set(quantity, key, firstArg);
     }
 }

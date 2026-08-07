@@ -26,16 +26,23 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.resources.Identifier;
 import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -109,25 +116,7 @@ public class MineboxAdditions implements ClientModInitializer {
         dispatcher.register(ClientCommands.literal("mba")
                 .then(ClientCommands.literal("debug")
                     .executes(context -> {
-                        Utils.displayChatInfoMessage("=== MineboxAdditions Debug Informations ===");
-                        Utils.displayChatInfoMessage("Mod Version: " + Utils.getModVersion());
-                        Utils.displayChatInfoMessage("Socket state: " + (SocketManager.getSocket().connected() ? "connected (ID : " + SocketManager.getSocket().id() + ")" : "disconnected"));
-                        Utils.displayChatInfoMessage("Rain Data: " + this.state.getWeatherState().getRainTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
-                        Utils.displayChatInfoMessage("Storm Data: " + this.state.getWeatherState().getStormTimestamps().stream().map(String::valueOf).collect(Collectors.joining(", ")));
-                        Utils.displayChatInfoMessage("Shiny Length: " + ShinyTracker.getShinyCount());
-
-                        if (ShopManager.getMermaid().itemTranslationKey != null) {
-                            Utils.displayChatInfoMessage(String.format(
-                                    "Mermaid Data: {%s, %d}",
-                                    ShopManager.getMermaid().itemTranslationKey,
-                                    ShopManager.getMermaid().quantity
-                            ));
-                        } else {
-                            Utils.displayChatInfoMessage("Mermaid Data: None");
-                        }
-
-                        Utils.displayChatInfoMessage("Museum Length: " + this.state.getMissingMuseumItemIds().size());
-
+                        sendDebugReport();
                         return Command.SINGLE_SUCCESS;
                     })
                     .then(ClientCommands.literal("test_shops")
@@ -151,6 +140,98 @@ public class MineboxAdditions implements ClientModInitializer {
                     )
                 )
         );
+    }
+
+    private static final DateTimeFormatter DEBUG_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    private void sendDebugReport() {
+        Minecraft client = Minecraft.getInstance();
+        if (client.player == null) return;
+
+        SocketManager.ProtocolState protocolState = SocketManager.getState();
+        boolean connected = SocketManager.getSocket().connected();
+        boolean trusted = SocketManager.isTrusted();
+        String socketId = connected ? SocketManager.getSocket().id() : null;
+
+        List<Integer> rain = this.state.getWeatherState().getRainTimestamps();
+        List<Integer> storm = this.state.getWeatherState().getStormTimestamps();
+        var mermaid = ShopManager.getMermaid();
+        String mermaidText = mermaid.itemTranslationKey != null
+                ? String.format("%s x%d", mermaid.itemTranslationKey, mermaid.quantity)
+                : "none";
+
+        sendLine(header("MineboxAdditions Debug Report"));
+        sendLine(kv("Mod Version", Component.literal(Utils.getModVersion()).withStyle(ChatFormatting.WHITE)));
+        sendLine(kv("Protocol State", stateComponent(protocolState, trusted)));
+        sendLine(kv("Socket", connected
+                ? Component.literal("connected (" + socketId + ")").withStyle(ChatFormatting.GREEN)
+                : Component.literal("disconnected").withStyle(ChatFormatting.RED)));
+        sendLine(kv("Weather", Component.literal(rain.size() + " rain, " + storm.size() + " storm timestamp(s)").withStyle(ChatFormatting.WHITE)));
+        sendLine(kv("Shiny Tracked", Component.literal(String.valueOf(ShinyTracker.getShinyCount())).withStyle(ChatFormatting.WHITE)));
+        sendLine(kv("Mermaid", Component.literal(mermaidText).withStyle(ChatFormatting.WHITE)));
+        sendLine(kv("Museum Missing", Component.literal(String.valueOf(this.state.getMissingMuseumItemIds().size())).withStyle(ChatFormatting.WHITE)));
+
+        String clipboardReport = buildClipboardReport(protocolState, trusted, connected, socketId, rain, storm, mermaidText);
+        Component copyLine = Component.literal("[📋 Click to copy full report]")
+                .withStyle(s -> s
+                        .withColor(ChatFormatting.AQUA)
+                        .withBold(true)
+                        .withUnderlined(true)
+                        .withClickEvent(new ClickEvent.CopyToClipboard(clipboardReport))
+                        .withHoverEvent(new HoverEvent.ShowText(Component.literal("Copy the full debug report to your clipboard")
+                                .withStyle(ChatFormatting.GRAY))));
+        sendLine(copyLine);
+    }
+
+    private void sendLine(Component component) {
+        Minecraft.getInstance().player.sendSystemMessage(component);
+    }
+
+    private static Component header(String title) {
+        return Component.literal("═══ " + title + " ═══").withStyle(s -> s.withColor(ChatFormatting.GOLD).withBold(true));
+    }
+
+    private static Component kv(String label, Component value) {
+        return Component.literal(" " + label + ": ").withStyle(ChatFormatting.GRAY).append(value);
+    }
+
+    private static Component stateComponent(SocketManager.ProtocolState state, boolean trusted) {
+        ChatFormatting color = switch (state) {
+            case READY_TRUSTED -> ChatFormatting.GREEN;
+            case READY_UNTRUSTED -> ChatFormatting.YELLOW;
+            case CONNECTED, NEGOTIATING, AUTHENTICATING -> ChatFormatting.AQUA;
+        };
+        String label = state.name() + (state == SocketManager.ProtocolState.READY_TRUSTED || state == SocketManager.ProtocolState.READY_UNTRUSTED
+                ? "" : "…");
+        return Component.literal(label).withStyle(color);
+    }
+
+    private String buildClipboardReport(
+            SocketManager.ProtocolState protocolState,
+            boolean trusted,
+            boolean connected,
+            String socketId,
+            List<Integer> rain,
+            List<Integer> storm,
+            String mermaidText
+    ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== MineboxAdditions Debug Report ===\n");
+        sb.append("Generated: ").append(LocalDateTime.now().format(DEBUG_TIMESTAMP_FORMAT)).append("\n");
+        sb.append("Mod Version: ").append(Utils.getModVersion()).append("\n");
+        sb.append("Protocol State: ").append(protocolState.name()).append(" (trusted: ").append(trusted).append(")\n");
+        sb.append("Socket: ").append(connected ? "connected (" + socketId + ")" : "disconnected").append("\n");
+        sb.append("Rain Timestamps (").append(rain.size()).append("): ")
+                .append(rain.stream().map(String::valueOf).collect(Collectors.joining(", "))).append("\n");
+        sb.append("Storm Timestamps (").append(storm.size()).append("): ")
+                .append(storm.stream().map(String::valueOf).collect(Collectors.joining(", "))).append("\n");
+        sb.append("Shiny Tracked: ").append(ShinyTracker.getShinyCount()).append("\n");
+        sb.append("Mermaid: ").append(mermaidText).append("\n");
+        sb.append("Museum Missing: ").append(this.state.getMissingMuseumItemIds().size()).append("\n");
+        sb.append("Items Loaded: ").append(this.state.getMbxItems() != null ? this.state.getMbxItems().size() : "not loaded").append("\n");
+        sb.append("Bestiary Loaded: ").append(this.state.getMbxBestiary() != null ? this.state.getMbxBestiary().size() : "not loaded").append("\n");
+        sb.append("Insects Loaded: ").append(this.state.getInsects() != null ? this.state.getInsects().size() : "not loaded").append("\n");
+        return sb.toString();
     }
 
     private static final KeyMapping.Category MBX_CATEGORY = new KeyMapping.Category(Identifier.withDefaultNamespace(NAMESPACE));

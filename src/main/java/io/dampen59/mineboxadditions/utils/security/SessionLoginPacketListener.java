@@ -60,6 +60,7 @@ public class SessionLoginPacketListener implements ClientLoginPacketListener {
                 connection.send(new ServerboundKeyPacket(secretKey, finalPublicKey, packet.getChallenge()), (ChannelFutureListener) future -> {
                     if (!future.isSuccess()) {
                         complete(null);
+                        connection.disconnect(Component.literal("Key packet write failed"));
                         return;
                     }
                     try {
