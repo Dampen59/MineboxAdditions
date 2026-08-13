@@ -8,6 +8,8 @@
     "BossHealthOverlayMixin",
     "ChatMessageMixin",
     "ChatScreenMixin",
+    "GameRendererMixin",
+    "GuiGraphicsExtractorAccessor",
     "HandledScreenMixin",
     "ItemStackMixin",
     "PlayerListHudMixin"

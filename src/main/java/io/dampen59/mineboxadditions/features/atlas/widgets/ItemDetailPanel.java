@@ -2,14 +2,18 @@ package io.dampen59.mineboxadditions.features.atlas.widgets;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.dampen59.mineboxadditions.MineboxAdditions;
+import io.dampen59.mineboxadditions.features.atlas.model.ItemModelCatalog;
+import io.dampen59.mineboxadditions.features.atlas.render.GuiItemPreviewRenderState;
 import io.dampen59.mineboxadditions.features.bestiary.BestiaryEntry;
 import io.dampen59.mineboxadditions.features.bestiary.BestiaryListWidget;
 import io.dampen59.mineboxadditions.features.bestiary.BestiaryScreen;
 import io.dampen59.mineboxadditions.features.item.MineboxItem;
+import io.dampen59.mineboxadditions.mixins.GuiGraphicsExtractorAccessor;
 import io.dampen59.mineboxadditions.utils.RaritiesUtils;
 import io.dampen59.mineboxadditions.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -19,7 +23,11 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.MutableComponent;
@@ -61,6 +69,9 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
     private final Map<String, List<MineboxItem>> usedInCache = new HashMap<>();
     private java.util.function.Consumer<MineboxItem> onNavigate;
     private final List<ClickRegionUsedIn> usedInRegions = new ArrayList<>();
+    private final List<ClickRegionUsedIn> ingredientRegions = new ArrayList<>();
+
+    private static final int PREVIEW_SZ = 64;
 
     private static final class ClickRegion {
         final int x, y, w, h;
@@ -207,6 +218,7 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
     public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
         toggleRegions.clear();
         usedInRegions.clear();
+        ingredientRegions.clear();
         droppedByRegions.clear();
 
         MineboxItem item = isLocked ? lockedItem : itemSupplier.get();
@@ -249,18 +261,12 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
 
         int drawY = y + HEADER_H + 10;
 
-        final int heroSz = 48;
-        final int iconSz = 32;
+        final int heroSz = PREVIEW_SZ;
         int heroX = x + (width - heroSz) / 2;
         ctx.fill(heroX - 2, drawY - 2, heroX + heroSz + 2, drawY + heroSz + 2, 0x22FFFFFF);
         ctx.fill(heroX - 1, drawY - 1, heroX + heroSz + 1, drawY + heroSz + 1, 0x33FFFFFF);
         ctx.fill(heroX,     drawY,     heroX + heroSz,     drawY + heroSz,      0x11FFFFFF);
-        Identifier icon = ItemListWidget.ItemEntry.getTexture(item.getId());
-        if (icon != null) {
-            int ix = heroX + (heroSz - iconSz) / 2;
-            int iy = drawY + (heroSz - iconSz) / 2;
-            ctx.blit(RenderPipelines.GUI_TEXTURED, icon, ix, iy, 0, 0, iconSz, iconSz, iconSz, iconSz);
-        }
+        renderItemPreview(ctx, item, heroX, drawY, heroSz);
         drawY += heroSz + 8;
 
         Component nameText = MineboxItem.getDisplayName(item);
@@ -390,6 +396,40 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
         ctx.pose().popMatrix();
     }
 
+    private void renderItemPreview(GuiGraphicsExtractor ctx, MineboxItem item, int boxX, int boxY, int boxSz) {
+        ItemModelCatalog.Resolved resolved = ItemModelCatalog.resolve(item.getId());
+        if (resolved == null) {
+            Identifier icon = ItemListWidget.ItemEntry.getTexture(item.getId());
+            if (icon != null) {
+                int iconSz = boxSz * 2 / 3;
+                int ix = boxX + (boxSz - iconSz) / 2;
+                int iy = boxY + (boxSz - iconSz) / 2;
+                ctx.blit(RenderPipelines.GUI_TEXTURED, icon, ix, iy, 0, 0, iconSz, iconSz, iconSz, iconSz);
+            }
+            return;
+        }
+
+        ItemStack displayStack = ItemModelCatalog.buildDisplayStack(item.getId());
+        if (displayStack.isEmpty()) return;
+
+        Minecraft mc = Minecraft.getInstance();
+        TrackingItemStackRenderState renderState = new TrackingItemStackRenderState();
+        mc.getItemModelResolver().updateForTopItem(renderState, displayStack, ItemDisplayContext.GUI, mc.level, mc.player, 0);
+
+        float rotationX, rotationY;
+        rotationX = 0f;
+        rotationY = (System.currentTimeMillis() % 6000L) / 6000f * 360f;
+
+        boolean oversized = resolved instanceof ItemModelCatalog.NewModel newModel && newModel.oversizedInGui();
+        float scale = boxSz * (oversized ? 0.6f : 1.0f);
+
+        int screenY0 = boxY - scrollOffset;
+        ScreenRectangle scissorArea = new ScreenRectangle(x + 1, y + HEADER_H, width - 2, height - HEADER_H - 1);
+        GuiItemPreviewRenderState previewState = new GuiItemPreviewRenderState(
+                renderState, rotationX, rotationY, boxX, screenY0, boxX + boxSz, screenY0 + boxSz, scale, scissorArea);
+        ((GuiGraphicsExtractorAccessor) ctx).mbx$getGuiRenderState().addPicturesInPictureState(previewState);
+    }
+
     private int sectionHeader(GuiGraphicsExtractor ctx, Font font, String label, int x, int y, int w) {
         int lineY = y + font.lineHeight / 2;
         ctx.fill(x, lineY, x + w, lineY + 1, 0x22FFFFFF);
@@ -452,6 +492,15 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
                 : Component.literal(" ❌ (" + count + "/" + amount + ")").withStyle(s -> s.withColor(0xFFFF5555)));
 
         ctx.text(font, line, tx, ty, 0xFFEEEEEE, false);
+
+        if (!ing.isVanilla()) {
+            MineboxItem target = ing.getCustomItem();
+            if (target != null) {
+                int rowWidth = (tx - iconX) + font.width(line);
+                ingredientRegions.add(new ClickRegionUsedIn(new ClickRegion(iconX, y, rowWidth, iconSz), target));
+            }
+        }
+
         y += iconSz + spacing;
 
         if (expandable && collapsed.contains(key)) {
@@ -546,6 +595,14 @@ public class ItemDetailPanel implements Renderable, GuiEventListener, Narratable
                 else if (wasExpanded) collapsed.remove(key);
                 else collapsed.add(key);
                 if (isLocked) MineboxAdditions.INSTANCE.state.setLockedCollapsedKeys(new HashSet<>(collapsed));
+                return true;
+            }
+        }
+        for (var ing : ingredientRegions) {
+            if (ing.region.contains(mx, adjY)) {
+                preloadTextures(ing.target);
+                if (onNavigate != null) onNavigate.accept(ing.target);
+                pendingScrollOffset = 0;
                 return true;
             }
         }
