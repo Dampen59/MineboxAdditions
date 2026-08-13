@@ -33,8 +33,9 @@ public class ItemTooltip {
         boolean isKeyPressed = InputConstants.isKeyDown(Minecraft.getInstance().getWindow(), TOOLTIP_KEY);
         if (isKeyPressed) {
             String itemId = Utils.getMineboxItemId(item);
-            if (MineboxAdditions.INSTANCE.state.getMbxItems().isEmpty()) return;
-            MineboxItem mbxItem = Utils.findItemByName(MineboxAdditions.INSTANCE.state.getMbxItems(), itemId);
+            List<MineboxItem> mbxItems = MineboxAdditions.INSTANCE.state.getMbxItems();
+            if (mbxItems == null || mbxItems.isEmpty()) return;
+            MineboxItem mbxItem = Utils.findItemByName(mbxItems, itemId);
 
             if (mbxItem != null && !mbxItem.getMbxStats().isEmpty()) {
                 for (int i = 0; i < lines.size(); i++) {
