@@ -9,6 +9,7 @@ import io.dampen59.mineboxadditions.features.SpellsThrottler;
 import io.dampen59.mineboxadditions.features.fishingshoal.FishingShoalDisplay;
 import io.dampen59.mineboxadditions.features.shop.ShopManager;
 import io.dampen59.mineboxadditions.features.item.ItemTooltip;
+import io.dampen59.mineboxadditions.features.item.MuseumTracker;
 import io.dampen59.mineboxadditions.events.*;
 import io.dampen59.mineboxadditions.features.hud.BossBarScanner;
 import io.dampen59.mineboxadditions.features.hud.HudManager;
@@ -82,6 +83,7 @@ public class MineboxAdditions implements ClientModInitializer {
         ShopManager.init();
         ItemTooltip.init();
         SpellsThrottler.init();
+        MuseumTracker.init();
 
         new SkyEvent();
         new BossBarScanner();

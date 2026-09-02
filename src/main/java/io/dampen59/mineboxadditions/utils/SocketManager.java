@@ -240,19 +240,6 @@ public class SocketManager {
             });
         });
 
-        socket.on("S2CMineboxApiUnauthorized", args -> Utils.displayChatErrorMessage(Component
-                .translatable("mineboxadditions.strings.errors.unauthorized-api").getString()));
-
-        socket.on("S2CMissingMuseumItems", args -> {
-            List<String> itemIds = new ArrayList<>();
-            JSONArray arr = (JSONArray) args[0];
-            for (int i = 0; i < arr.length(); i++) {
-                String id = arr.optString(i, null);
-                if (id != null && !id.isEmpty()) itemIds.add(id);
-            }
-            MineboxAdditions.INSTANCE.state.setMissingMuseumItemIds(itemIds);
-        });
-
         socket.on("S2CAuctionsList", args -> {
             if (Config.ahAlerts.alerts.isEmpty()) return;
             JSONArray arr = (JSONArray) args[0];
